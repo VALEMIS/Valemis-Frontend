@@ -13,6 +13,8 @@ import TambahParcelLitigasi from '../views/TambahParcelLitigasi.vue'
 import LahanBebas from '../views/LahanBebas.vue'
 import PengecekanIzinLahan from '../views/PengecekanIzinLahan.vue'
 import StakeHolder from '../views/StakeHolder.vue'
+import TambahStakeHolder from '../views/TambahStakeHolder.vue'
+import DetailStakeHolder from '../views/DetailStakeHolder.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -86,6 +88,21 @@ const router = createRouter({
       path: '/stake-holder',
       name: 'stake-holder',
       component: StakeHolder
+    },
+    {
+      path: '/stake-holder/tambah',
+      name: 'tambah-stake-holder',
+      component: TambahStakeHolder
+    },
+    {
+      path: '/stake-holder/detail/:id',
+      name: 'detail-stake-holder',
+      component: DetailStakeHolder
+    },
+    {
+      path: '/stake-holder/edit/:id',
+      name: 'edit-stake-holder',
+      component: TambahStakeHolder
     }
   ]
 })
