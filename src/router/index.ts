@@ -16,6 +16,12 @@ import StakeHolder from '../views/StakeHolder.vue'
 import TambahStakeHolder from '../views/TambahStakeHolder.vue'
 import DetailStakeHolder from '../views/DetailStakeHolder.vue'
 
+// New Modules
+import LARAP from '../views/LARAP.vue'
+import LandInventory from '../views/LandInventory.vue'
+import LandCompliance from '../views/LandCompliance.vue'
+import PendataanGeospatialLahanBebas from '../views/PendataanGeospatialLahanBebas.vue'
+
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes: [
@@ -103,6 +109,30 @@ const router = createRouter({
       path: '/stake-holder/edit/:id',
       name: 'edit-stake-holder',
       component: TambahStakeHolder
+    },
+    // LARAP Module
+    {
+      path: '/larap',
+      name: 'larap',
+      component: LARAP
+    },
+    // Land Inventory Module
+    {
+      path: '/land-inventory',
+      name: 'land-inventory',
+      component: LandInventory
+    },
+    // Land Compliance Module
+    {
+      path: '/land-compliance',
+      name: 'land-compliance',
+      component: LandCompliance
+    },
+    // Pendataan Geospatial Lahan Bebas Module
+    {
+      path: '/pendataan-geospatial',
+      name: 'pendataan-geospatial',
+      component: PendataanGeospatialLahanBebas
     }
   ]
 })

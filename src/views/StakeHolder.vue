@@ -258,6 +258,7 @@
 import { ref, onMounted, nextTick } from 'vue'
 import { useRouter } from 'vue-router'
 import { Chart, registerables } from 'chart.js'
+import { initDataTable } from '../utils/datatables'
 
 Chart.register(...registerables)
 
@@ -345,15 +346,9 @@ let sentimentChartInstance: Chart | null = null
 
 onMounted(() => {
   // Initialize DataTable
-  if ((window as any).$) {
+  if (stakeholderTable.value) {
     nextTick(() => {
-      if (stakeholderTable.value) {
-        (window as any).$(stakeholderTable.value).DataTable({
-          language: {
-            url: '//cdn.datatables.net/plug-ins/1.13.7/i18n/id.json'
-          }
-        })
-      }
+      initDataTable(stakeholderTable.value)
     })
   }
 

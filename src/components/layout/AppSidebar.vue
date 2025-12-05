@@ -16,6 +16,7 @@
           data-accordion="false"
           id="navigation"
         >
+          <!-- Dashboard -->
           <li class="nav-item" :class="{ active: route.path === '/' }">
             <router-link to="/" class="nav-link">
               <i class="nav-icon bi bi-speedometer"></i>
@@ -23,55 +24,69 @@
             </router-link>
           </li>
 
-          <li class="nav-item" :class="{ active: route.path.startsWith('/aset-inventori') }">
-            <router-link to="/aset-inventori" class="nav-link">
-              <i class="nav-icon bi bi-geo-alt"></i>
-              <p>Aset Inventori</p>
+          <!-- LARAP Module -->
+          <li class="nav-item" :class="{ active: route.path.startsWith('/larap') }">
+            <router-link to="/larap" class="nav-link">
+              <i class="nav-icon bi bi-clipboard-data"></i>
+              <p>LARAP</p>
             </router-link>
           </li>
-          
+
+          <!-- Pembebasan Lahan Module -->
           <li class="nav-item" :class="{ active: route.path.startsWith('/pembebasan-lahan') }">
             <router-link to="/pembebasan-lahan" class="nav-link">
               <i class="nav-icon bi bi-map"></i>
               <p>Pembebasan Lahan</p>
             </router-link>
           </li>
-          
-          <li class="nav-item" :class="{ active: route.path.startsWith('/litigasi') }">
-            <router-link to="/litigasi" class="nav-link">
-              <i class="nav-icon bi bi-pin-map"></i>
-              <p>Litigasi/Claim Lahan</p>
+
+          <!-- Pendataan Geospatial Lahan Bebas -->
+          <li class="nav-item" :class="{ active: route.path.startsWith('/pendataan-geospatial') }">
+            <router-link to="/pendataan-geospatial" class="nav-link">
+              <i class="nav-icon bi bi-geo-alt-fill"></i>
+              <p>Geospatial Lahan Bebas</p>
+            </router-link>
+          </li>
+
+          <!-- Land Compliance Module -->
+          <li class="nav-item" :class="{ active: route.path.startsWith('/land-compliance') }">
+            <router-link to="/land-compliance" class="nav-link">
+              <i class="nav-icon bi bi-shield-check"></i>
+              <p>Land Compliance</p>
             </router-link>
           </li>
           
-          <li class="nav-item">
-            <a href="#" class="nav-link">
-              <i class="nav-icon bi bi-globe"></i>
-              <p>
-                Geospasial
-                <i class="nav-arrow bi bi-chevron-right"></i>
-              </p>
-            </a>
-            <ul class="nav nav-treeview">
-              <li class="nav-item">
-                <router-link to="/geospasial/lahan-bebas" class="nav-link">
-                  <i class="nav-icon bi bi-circle"></i>
-                  <p>Lahan Bebas</p>
-                </router-link>
-              </li>
-              <li class="nav-item">
-                <router-link to="/geospasial/pengecekan-izin-lahan" class="nav-link">
-                  <i class="nav-icon bi bi-circle"></i>
-                  <p>Pengecekan Izin Lahan</p>
-                </router-link>
-              </li>
-            </ul>
+          <!-- Litigasi/Claim Lahan Module -->
+          <li class="nav-item" :class="{ active: route.path.startsWith('/litigasi') }">
+            <router-link to="/litigasi" class="nav-link">
+              <i class="nav-icon bi bi-exclamation-triangle"></i>
+              <p>Litigasi/Claim Lahan</p>
+            </router-link>
           </li>
-          
+
+          <!-- Stakeholder Management Module -->
           <li class="nav-item" :class="{ active: route.path.startsWith('/stake-holder') }">
             <router-link to="/stake-holder" class="nav-link">
-              <i class="nav-icon bi bi-person"></i>
-              <p>Stake Holder / Identitas</p>
+              <i class="nav-icon bi bi-people"></i>
+              <p>Stakeholder Management</p>
+            </router-link>
+          </li>
+
+          <li class="nav-header">INVENTORY & DATA</li>
+
+          <!-- Asset Inventory Module -->
+          <li class="nav-item" :class="{ active: route.path.startsWith('/aset-inventori') }">
+            <router-link to="/aset-inventori" class="nav-link">
+              <i class="nav-icon bi bi-archive"></i>
+              <p>Asset Inventory</p>
+            </router-link>
+          </li>
+
+          <!-- Land Inventory Module -->
+          <li class="nav-item" :class="{ active: route.path.startsWith('/land-inventory') }">
+            <router-link to="/land-inventory" class="nav-link">
+              <i class="nav-icon bi bi-layers"></i>
+              <p>Land Inventory</p>
             </router-link>
           </li>
         </ul>

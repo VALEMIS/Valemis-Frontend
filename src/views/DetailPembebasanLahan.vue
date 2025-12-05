@@ -144,7 +144,19 @@ onMounted(() => {
   if ((window as any).$) {
     (window as any).$('#pemilikTable').DataTable({
       language: {
-        url: '//cdn.datatables.net/plug-ins/1.13.7/i18n/id.json'
+        search: "Cari:",
+        lengthMenu: "Tampilkan _MENU_ data per halaman",
+        info: "Menampilkan _START_ sampai _END_ dari _TOTAL_ data",
+        infoEmpty: "Menampilkan 0 sampai 0 dari 0 data",
+        infoFiltered: "(difilter dari _MAX_ total data)",
+        paginate: {
+          first: "Pertama",
+          last: "Terakhir",
+          next: "Selanjutnya",
+          previous: "Sebelumnya"
+        },
+        zeroRecords: "Tidak ada data yang cocok",
+        emptyTable: "Tidak ada data tersedia"
       }
     })
   }
