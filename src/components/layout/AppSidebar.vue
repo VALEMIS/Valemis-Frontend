@@ -3,7 +3,7 @@
     <div class="sidebar-brand">
       <router-link to="/" class="brand-link">
         <div class="brand-wrapper">
-          <span class="brand-text">Land Administration &<br>Management System</span>
+          <span class="brand-text">LAMIS — Land Management<br>Integrated System</span>
         </div>
       </router-link>
     </div>
@@ -28,29 +28,12 @@
 
           <li class="nav-header">MAIN MODULES</li>
 
-          <!-- 1. Asset Inventory & LARAP Module -->
-          <li class="nav-item" :class="{ 'menu-open': route.path.startsWith('/asset-inventory-larap') }">
-            <a href="#" class="nav-link" :class="{ active: route.path.startsWith('/asset-inventory-larap') }">
+          <!-- 1. Asset Inventory Module -->
+          <li class="nav-item" :class="{ active: route.path.startsWith('/asset-inventory') }">
+            <router-link to="/asset-inventory" class="nav-link">
               <i class="nav-icon bi bi-archive-fill"></i>
-              <p>
-                Asset Inventory & LARAP
-                <i class="right fas fa-angle-left"></i>
-              </p>
-            </a>
-            <ul class="nav nav-treeview">
-              <li class="nav-item">
-                <router-link to="/asset-inventory-larap/asset-inventory" class="nav-link" :class="{ active: route.path.includes('/asset-inventory') }">
-                  <i class="far fa-circle nav-icon"></i>
-                  <p>Asset Inventory</p>
-                </router-link>
-              </li>
-              <li class="nav-item">
-                <router-link to="/asset-inventory-larap/larap" class="nav-link" :class="{ active: route.path.includes('/larap') }">
-                  <i class="far fa-circle nav-icon"></i>
-                  <p>LARAP</p>
-                </router-link>
-              </li>
-            </ul>
+              <p>Asset Inventory</p>
+            </router-link>
           </li>
 
           <!-- 2. Land Acquisition/Compensation Module -->

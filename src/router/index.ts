@@ -3,10 +3,8 @@ import { createRouter, createWebHistory } from 'vue-router'
 // Main Views
 import Dashboard from '../views/Dashboard.vue'
 
-// 1. Asset Inventory & LARAP Module
+// 1. Asset Inventory Module
 import AsetInventori from '../views/AsetInventori.vue'
-import TambahAsetInventori from '../views/TambahAsetInventori.vue'
-import LARAP from '../views/LARAP.vue'
 
 // 2. Land Acquisition/Compensation Module
 import PembebasanLahan from '../views/PembebasanLahan.vue'
@@ -47,26 +45,11 @@ const router = createRouter({
       component: Dashboard
     },
     
-    // ===== 1. ASSET INVENTORY & LARAP MODULE =====
+    // ===== 1. ASSET INVENTORY MODULE =====
     {
-      path: '/asset-inventory-larap',
-      name: 'asset-inventory-larap',
-      redirect: '/asset-inventory-larap/asset-inventory'
-    },
-    {
-      path: '/asset-inventory-larap/asset-inventory',
+      path: '/asset-inventory',
       name: 'asset-inventory',
       component: AsetInventori
-    },
-    {
-      path: '/asset-inventory-larap/asset-inventory/tambah',
-      name: 'tambah-asset-inventory',
-      component: TambahAsetInventori
-    },
-    {
-      path: '/asset-inventory-larap/larap',
-      name: 'larap',
-      component: LARAP
     },
     
     // ===== 2. LAND ACQUISITION/COMPENSATION MODULE =====
@@ -172,7 +155,11 @@ const router = createRouter({
     // ===== LEGACY ROUTES (For backward compatibility) =====
     {
       path: '/aset-inventori',
-      redirect: '/asset-inventory-larap/asset-inventory'
+      redirect: '/asset-inventory'
+    },
+    {
+      path: '/asset-inventory-larap/asset-inventory',
+      redirect: '/asset-inventory'
     },
     {
       path: '/pembebasan-lahan',
