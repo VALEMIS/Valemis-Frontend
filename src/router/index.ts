@@ -1,27 +1,28 @@
 import { createRouter, createWebHistory } from 'vue-router'
-import DashboardModern from '../views/DashboardModern.vue'
-import AsetInventori from '../views/AsetInventori.vue'
-import TambahAsetInventori from '../views/TambahAsetInventori.vue'
-import PembebasanLahan from '../views/PembebasanLahan.vue'
-import TambahPembebasanLahan from '../views/TambahPembebasanLahan.vue'
-import DetailPembebasanLahan from '../views/DetailPembebasanLahan.vue'
-import TambahPemilikLahan from '../views/TambahPemilikLahan.vue'
-import Litigasi from '../views/Litigasi.vue'
-import ClaimLitigasi from '../views/ClaimLitigasi.vue'
-import TambahLitigasi from '../views/TambahLitigasi.vue'
-import TambahParcelLitigasi from '../views/TambahParcelLitigasi.vue'
-import LahanBebas from '../views/LahanBebas.vue'
-import PengecekanIzinLahan from '../views/PengecekanIzinLahan.vue'
-import StakeHolder from '../views/StakeHolder.vue'
-import StakeHolderAdvanced from '../views/StakeHolderAdvanced.vue'
-import TambahStakeHolder from '../views/TambahStakeHolder.vue'
-import DetailStakeHolder from '../views/DetailStakeHolder.vue'
 
-// New Modules
-import LARAP from '../views/LARAP.vue'
-import LandInventory from '../views/LandInventory.vue'
-import LandCompliance from '../views/LandCompliance.vue'
-import PendataanGeospatialLahanBebas from '../views/PendataanGeospatialLahanBebas.vue'
+// Modern Pages
+import DashboardModern from '../views/DashboardModern.vue'
+import AsetInventoriModern from '../views/AsetInventoriModern.vue'
+import TambahAsetInventoriModern from '../views/TambahAsetInventoriModern.vue'
+import PembebasanLahanModern from '../views/PembebasanLahanModern.vue'
+import TambahPembebasanLahanModern from '../views/TambahPembebasanLahanModern.vue'
+import DetailPembebasanLahanModern from '../views/DetailPembebasanLahanModern.vue'
+import TambahPemilikLahanModern from '../views/TambahPemilikLahanModern.vue'
+import LitigasiModern from '../views/LitigasiModern.vue'
+import ClaimLitigasiModern from '../views/ClaimLitigasiModern.vue'
+import TambahLitigasiModern from '../views/TambahLitigasiModern.vue'
+import TambahParcelLitigasiModern from '../views/TambahParcelLitigasiModern.vue'
+import LahanBebasModern from '../views/LahanBebasModern.vue'
+import PengecekanIzinLahanModern from '../views/PengecekanIzinLahanModern.vue'
+import StakeHolderModern from '../views/StakeHolderModern.vue'
+import DetailStakeHolderModern from '../views/DetailStakeHolderModern.vue'
+import TambahStakeHolderModern from '../views/TambahStakeHolderModern.vue'
+
+// New Modern Modules
+import LARAPModern from '../views/LARAPModern.vue'
+import LandInventoryModern from '../views/LandInventoryModern.vue'
+import LandComplianceModern from '../views/LandComplianceModern.vue'
+import PendataanGeospatialModern from '../views/PendataanGeospatialModern.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -34,111 +35,106 @@ const router = createRouter({
     {
       path: '/aset-inventori',
       name: 'aset-inventori',
-      component: AsetInventori
+      component: AsetInventoriModern
     },
     {
       path: '/aset-inventori/tambah',
       name: 'tambah-aset-inventori',
-      component: TambahAsetInventori
+      component: TambahAsetInventoriModern
     },
     {
       path: '/pembebasan-lahan',
       name: 'pembebasan-lahan',
-      component: PembebasanLahan
+      component: PembebasanLahanModern
     },
     {
       path: '/pembebasan-lahan/tambah',
       name: 'tambah-pembebasan-lahan',
-      component: TambahPembebasanLahan
+      component: TambahPembebasanLahanModern
     },
     {
       path: '/pembebasan-lahan/detail/:id',
       name: 'detail-pembebasan-lahan',
-      component: DetailPembebasanLahan
+      component: DetailPembebasanLahanModern
     },
     {
       path: '/pembebasan-lahan/tambah-pemilik',
       name: 'tambah-pemilik-lahan',
-      component: TambahPemilikLahan
+      component: TambahPemilikLahanModern
     },
     {
       path: '/litigasi',
       name: 'litigasi',
-      component: Litigasi
+      component: LitigasiModern
     },
     {
       path: '/litigasi/claim/:id',
       name: 'claim-litigasi',
-      component: ClaimLitigasi
+      component: ClaimLitigasiModern
     },
     {
       path: '/litigasi/tambah',
       name: 'tambah-litigasi',
-      component: TambahLitigasi
+      component: TambahLitigasiModern
     },
     {
       path: '/litigasi/tambah-parcel',
       name: 'tambah-parcel-litigasi',
-      component: TambahParcelLitigasi
+      component: TambahParcelLitigasiModern
     },
     {
       path: '/geospasial/lahan-bebas',
       name: 'lahan-bebas',
-      component: LahanBebas
+      component: LahanBebasModern
     },
     {
       path: '/geospasial/pengecekan-izin-lahan',
       name: 'pengecekan-izin-lahan',
-      component: PengecekanIzinLahan
+      component: PengecekanIzinLahanModern
     },
     {
       path: '/stake-holder',
       name: 'stake-holder',
-      component: StakeHolder
-    },
-    {
-      path: '/stakeholder-advanced',
-      name: 'stakeholder-advanced',
-      component: StakeHolderAdvanced
+      component: StakeHolderModern
     },
     {
       path: '/stake-holder/tambah',
       name: 'tambah-stake-holder',
-      component: TambahStakeHolder
+      component: TambahStakeHolderModern
     },
     {
       path: '/stake-holder/detail/:id',
       name: 'detail-stake-holder',
-      component: DetailStakeHolder
+      component: DetailStakeHolderModern
     },
     {
       path: '/stake-holder/edit/:id',
       name: 'edit-stake-holder',
-      component: TambahStakeHolder
+      component: TambahStakeHolderModern
     },
     // LARAP Module
     {
       path: '/larap',
       name: 'larap',
-      component: LARAP
+      component: LARAPModern
     },
     // Land Inventory Module
     {
       path: '/land-inventory',
       name: 'land-inventory',
-      component: LandInventory
+      component: LandInventoryModern
     },
     // Land Compliance Module
     {
       path: '/land-compliance',
       name: 'land-compliance',
-      component: LandCompliance
+      component: LandComplianceModern
     },
-    // Pendataan Geospatial Lahan Bebas Module
+    // Pendataan Geospatial Module
     {
       path: '/pendataan-geospatial',
       name: 'pendataan-geospatial',
-      component: PendataanGeospatialLahanBebas
+      component: PendataanGeospatialModern
     }
   ]
 })
