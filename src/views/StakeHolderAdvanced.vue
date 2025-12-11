@@ -18,16 +18,98 @@
 
     <div class="app-content">
       <div class="container-fluid">
-        <!-- Dashboard Cards -->
+        <!-- Stakeholder Network Visualization with Quadrant Matrix -->
+        <div class="card mb-4">
+          <div class="card-header bg-primary text-white">
+            <h5 class="mb-0">
+              <i class="bi bi-diagram-3"></i> Stakeholder Power-Interest Matrix & Network Visualization
+            </h5>
+            <small>Interactive quadrant analysis with directional relationships</small>
+          </div>
+          <div class="card-body">
+            <div class="row">
+              <!-- Canvas -->
+              <div class="col-lg-9">
+                <canvas ref="networkCanvas" width="900" height="650" class="border rounded bg-white w-100" @click="handleCanvasClick" style="max-width: 100%;"></canvas>
+              </div>
+
+              <!-- Legend -->
+              <div class="col-lg-3">
+                <div class="ps-3">
+                  <h6 class="mb-3"><i class="bi bi-info-circle"></i> Legend</h6>
+                  
+                  <!-- Sentiment -->
+                  <div class="mb-3">
+                    <small class="text-muted fw-bold d-block mb-2">Sentiment:</small>
+                    <div class="d-flex align-items-center mb-2">
+                      <span class="d-inline-block rounded-circle me-2" style="width: 12px; height: 12px; background-color: #28a745;"></span>
+                      <small>Pro Aktif</small>
+                    </div>
+                    <div class="d-flex align-items-center mb-2">
+                      <span class="d-inline-block rounded-circle me-2" style="width: 12px; height: 12px; background-color: #17a2b8;"></span>
+                      <small>Pro Pasif</small>
+                    </div>
+                    <div class="d-flex align-items-center mb-2">
+                      <span class="d-inline-block rounded-circle me-2" style="width: 12px; height: 12px; background-color: #dc3545;"></span>
+                      <small>Kontra Aktif</small>
+                    </div>
+                    <div class="d-flex align-items-center mb-2">
+                      <span class="d-inline-block rounded-circle me-2" style="width: 12px; height: 12px; background-color: #ffc107;"></span>
+                      <small>Kontra Pasif</small>
+                    </div>
+                  </div>
+
+                  <hr class="my-2">
+
+                  <!-- Arrows -->
+                  <div class="mb-3">
+                    <small class="text-muted fw-bold d-block mb-2">Direction:</small>
+                    <div class="mb-2">
+                      <small><i class="bi bi-arrow-right me-1"></i> Influences</small>
+                    </div>
+                    <div class="mb-2">
+                      <small><i class="bi bi-arrow-left-right me-1"></i> Mutual</small>
+                    </div>
+                  </div>
+
+                  <hr class="my-2">
+
+                  <!-- Strength -->
+                  <div class="mb-3">
+                    <small class="text-muted fw-bold d-block mb-2">Strength:</small>
+                    <div class="mb-2">
+                      <small><strong>━━━</strong> Strong</small>
+                      <div><small class="text-muted">(score >70)</small></div>
+                    </div>
+                    <div class="mb-2">
+                      <small><strong>──</strong> Medium</small>
+                      <div><small class="text-muted">(40-70)</small></div>
+                    </div>
+                    <div class="mb-2">
+                      <small><strong>· · ·</strong> Weak</small>
+                      <div><small class="text-muted">(score <40)</small></div>
+                    </div>
+                  </div>
+
+                  <hr class="my-2">
+
+                  <!-- Info -->
+                  <div class="alert alert-info p-2 mb-0" style="font-size: 0.8rem;">
+                    <i class="bi bi-lightbulb-fill"></i> Click nodes for details
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Dashboard Cards - Moved Below -->
         <div class="row mb-4">
           <div class="col-lg-3 col-6">
             <div class="small-box bg-success">
               <div class="inner">
                 <h3>{{ stats.proAktif }}</h3>
                 <p>Pro - Aktif</p>
-              </div>
-              <div class="icon">
-                <i class="bi bi-hand-thumbs-up-fill"></i>
               </div>
             </div>
           </div>
@@ -37,9 +119,6 @@
                 <h3>{{ stats.proPasif }}</h3>
                 <p>Pro - Pasif</p>
               </div>
-              <div class="icon">
-                <i class="bi bi-hand-thumbs-up"></i>
-              </div>
             </div>
           </div>
           <div class="col-lg-3 col-6">
@@ -48,9 +127,6 @@
                 <h3>{{ stats.kontraAktif }}</h3>
                 <p>Kontra - Aktif</p>
               </div>
-              <div class="icon">
-                <i class="bi bi-hand-thumbs-down-fill"></i>
-              </div>
             </div>
           </div>
           <div class="col-lg-3 col-6">
@@ -58,42 +134,6 @@
               <div class="inner">
                 <h3>{{ stats.kontraPasif }}</h3>
                 <p>Kontra - Pasif</p>
-              </div>
-              <div class="icon">
-                <i class="bi bi-hand-thumbs-down"></i>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <!-- Stakeholder Network Visualization -->
-        <div class="card mb-4">
-          <div class="card-header">
-            <h5 class="mb-0">
-              <i class="bi bi-diagram-3"></i> Network Visualization & Sentiment Analysis
-            </h5>
-          </div>
-          <div class="card-body">
-            <div class="row">
-              <div class="col-md-8">
-                <canvas ref="networkCanvas" width="800" height="450"></canvas>
-              </div>
-              <div class="col-md-4">
-                <h6>Legend:</h6>
-                <ul class="list-unstyled">
-                  <li><span class="badge bg-success">●</span> Pro Aktif (Arah: +, Level: 3-4)</li>
-                  <li><span class="badge bg-info">●</span> Pro Pasif (Arah: +, Level: 1-2)</li>
-                  <li><span class="badge bg-warning">●</span> Kontra Aktif (Arah: -, Level: 3-4)</li>
-                  <li><span class="badge bg-danger">●</span> Kontra Pasif (Arah: -, Level: 1-2)</li>
-                  <li><span class="badge bg-secondary">●</span> Netral</li>
-                </ul>
-                <hr>
-                <h6>Connection Strength:</h6>
-                <ul class="list-unstyled">
-                  <li><span style="border-bottom: 3px solid #333; display: inline-block; width: 30px;"></span> Strong (Score > 70)</li>
-                  <li><span style="border-bottom: 2px solid #666; display: inline-block; width: 30px;"></span> Medium (Score 40-70)</li>
-                  <li><span style="border-bottom: 1px solid #999; display: inline-block; width: 30px;"></span> Weak (Score < 40)</li>
-                </ul>
               </div>
             </div>
           </div>
@@ -150,17 +190,7 @@
                   @click="activeTab = 'network'"
                   href="javascript:void(0)"
                 >
-                  <i class="bi bi-diagram-2"></i> Network/Relasi
-                </a>
-              </li>
-              <li class="nav-item">
-                <a 
-                  class="nav-link" 
-                  :class="{ active: activeTab === 'evidence' }"
-                  @click="activeTab = 'evidence'"
-                  href="javascript:void(0)"
-                >
-                  <i class="bi bi-file-earmark-text"></i> Dokumen/Bukti
+                  <i class="bi bi-diagram-2"></i> Network/Relasi & Dokumen
                 </a>
               </li>
             </ul>
@@ -436,119 +466,228 @@
               </div>
             </div>
 
-            <!-- Tab 5: Network/Relasi -->
+            <!-- Tab 5: Network/Relasi & Dokumen -->
             <div v-show="activeTab === 'network'">
               <div class="d-flex justify-content-between align-items-center mb-3">
-                <h5>Network & Relasi Stakeholder</h5>
-                <button class="btn btn-primary" @click="openModalAdd('network')">
-                  <i class="bi bi-plus-circle"></i> Tambah Relasi
-                </button>
+                <h5><i class="bi bi-diagram-2"></i> Network & Relasi Stakeholder</h5>
+                <div>
+                  <button class="btn btn-success me-2" @click="openModalAdd('evidence')">
+                    <i class="bi bi-file-earmark-plus"></i> Upload Dokumen
+                  </button>
+                  <button class="btn btn-primary" @click="openModalAdd('network')">
+                    <i class="bi bi-plus-circle"></i> Tambah Relasi
+                  </button>
+                </div>
               </div>
 
               <div class="table-responsive">
-                <table class="table table-bordered table-hover table-sm">
+                <table class="table table-bordered table-hover">
                   <thead class="table-light">
                     <tr>
-                      <th>Stakeholder A</th>
-                      <th>Relasi</th>
-                      <th>Stakeholder B</th>
-                      <th>Jenis Relasi</th>
-                      <th>Frekuensi</th>
-                      <th>Intensitas</th>
-                      <th>Shared Attributes</th>
-                      <th>Skor Kedekatan</th>
-                      <th>Aksi</th>
+                      <th width="18%">Stakeholder A</th>
+                      <th width="5%" class="text-center">Arah</th>
+                      <th width="18%">Stakeholder B</th>
+                      <th width="12%">Jenis Relasi</th>
+                      <th width="10%">Frekuensi</th>
+                      <th width="8%">Intensitas</th>
+                      <th width="8%">Skor</th>
+                      <th width="15%">Dokumen Pendukung</th>
+                      <th width="6%">Aksi</th>
                     </tr>
                   </thead>
                   <tbody>
-                    <tr v-for="rel in relations" :key="rel.id">
-                      <td><strong>{{ rel.stakeholder_a_nama }}</strong></td>
-                      <td class="text-center">
-                        <i class="bi bi-arrow-left-right"></i>
-                      </td>
-                      <td><strong>{{ rel.stakeholder_b_nama }}</strong></td>
-                      <td>
-                        <span class="badge bg-primary">{{ rel.jenis_relasi }}</span>
-                      </td>
-                      <td>{{ rel.frekuensi_interaksi }}</td>
-                      <td>
-                        <div class="progress" style="height: 20px;">
-                          <div 
-                            class="progress-bar bg-info" 
-                            :style="{ width: (rel.intensitas_kedekatan * 20) + '%' }"
-                          >
-                            {{ rel.intensitas_kedekatan }}/5
+                    <template v-for="rel in relations" :key="rel.id">
+                      <tr>
+                        <td>
+                          <strong>{{ rel.stakeholder_a_nama }}</strong><br>
+                          <small class="text-muted">ID: {{ rel.stakeholder_a_id }}</small>
+                        </td>
+                        <td class="text-center">
+                          <i class="bi fs-5" :class="getArrowIcon(rel.arah_pengaruh)" :title="rel.arah_pengaruh"></i>
+                        </td>
+                        <td>
+                          <strong>{{ rel.stakeholder_b_nama }}</strong><br>
+                          <small class="text-muted">ID: {{ rel.stakeholder_b_id }}</small>
+                        </td>
+                        <td>
+                          <span class="badge bg-primary">{{ rel.jenis_relasi }}</span>
+                        </td>
+                        <td>
+                          <small>{{ rel.frekuensi_interaksi }}</small>
+                        </td>
+                        <td>
+                          <div class="progress" style="height: 20px;">
+                            <div 
+                              class="progress-bar" 
+                              :class="rel.intensitas_kedekatan >= 4 ? 'bg-success' : rel.intensitas_kedekatan >= 3 ? 'bg-info' : 'bg-warning'"
+                              :style="{ width: (rel.intensitas_kedekatan * 20) + '%' }"
+                            >
+                              {{ rel.intensitas_kedekatan }}/5
+                            </div>
                           </div>
-                        </div>
-                      </td>
-                      <td>
-                        <span v-if="rel.satu_universitas" class="badge bg-secondary me-1">Univ</span>
-                        <span v-if="rel.satu_jurusan" class="badge bg-secondary me-1">Jurusan</span>
-                        <span v-if="rel.satu_organisasi" class="badge bg-secondary me-1">Orgs</span>
-                        <span v-if="rel.hubungan_kekerabatan" class="badge bg-secondary me-1">Keluarga</span>
-                      </td>
-                      <td>
-                        <span class="badge" :class="getBadgeKedekatan(rel.skor_kedekatan_total)">
-                          {{ rel.skor_kedekatan_total }}/100
-                        </span>
-                      </td>
-                      <td>
-                        <div class="btn-group btn-group-sm">
-                          <button class="btn btn-warning" @click="editRelation(rel)">
-                            <i class="bi bi-pencil"></i>
-                          </button>
-                          <button class="btn btn-danger" @click="deleteRelation(rel.id)">
-                            <i class="bi bi-trash"></i>
-                          </button>
-                        </div>
-                      </td>
-                    </tr>
+                        </td>
+                        <td>
+                          <span class="badge" :class="getBadgeKedekatan(rel.skor_kedekatan_total)">
+                            {{ rel.skor_kedekatan_total }}
+                          </span>
+                        </td>
+                        <td>
+                          <div class="d-flex align-items-center justify-content-between">
+                            <span class="badge bg-secondary">
+                              <i class="bi bi-files"></i> {{ getRelationDocuments(rel).length }} dokumen
+                            </span>
+                            <button 
+                              class="btn btn-sm btn-outline-primary" 
+                              @click="toggleRelationDocuments(rel.id)"
+                              v-if="getRelationDocuments(rel).length > 0"
+                            >
+                              <i class="bi" :class="expandedRelations.includes(rel.id) ? 'bi-chevron-up' : 'bi-chevron-down'"></i>
+                            </button>
+                          </div>
+                        </td>
+                        <td>
+                          <div class="btn-group btn-group-sm">
+                            <button class="btn btn-warning" @click="editRelation(rel)" title="Edit">
+                              <i class="bi bi-pencil"></i>
+                            </button>
+                            <button class="btn btn-danger" @click="deleteRelation(rel.id)" title="Hapus">
+                              <i class="bi bi-trash"></i>
+                            </button>
+                          </div>
+                        </td>
+                      </tr>
+                      <!-- Expanded row for documents -->
+                      <tr v-if="expandedRelations.includes(rel.id)" class="bg-light">
+                        <td colspan="9" class="p-3">
+                          <h6 class="mb-2"><i class="bi bi-files"></i> Dokumen Pendukung Relasi:</h6>
+                          <div class="row">
+                            <div class="col-md-4" v-for="doc in getRelationDocuments(rel)" :key="doc.id">
+                              <div class="card mb-2 border-primary">
+                                <div class="card-body p-2">
+                                  <div class="d-flex align-items-start mb-2">
+                                    <i class="bi fs-4 me-2" :class="getFileIcon(doc.jenis_bukti)"></i>
+                                    <div class="flex-grow-1">
+                                      <h6 class="mb-1 small"><strong>{{ doc.jenis_bukti }}</strong></h6>
+                                      <p class="mb-1 small text-muted">{{ doc.deskripsi_pendek }}</p>
+                                      <small class="text-muted">
+                                        <i class="bi bi-calendar"></i> {{ formatDate(doc.tanggal_dokumen) }}<br>
+                                        <i class="bi bi-person-badge"></i> {{ doc.penanggung_jawab }}
+                                      </small>
+                                    </div>
+                                  </div>
+                                  <div class="btn-group btn-group-sm w-100">
+                                    <button class="btn btn-outline-primary" @click="viewDocument(doc)" title="Lihat">
+                                      <i class="bi bi-eye"></i>
+                                    </button>
+                                    <button class="btn btn-outline-success" @click="downloadDocument(doc)" title="Download">
+                                      <i class="bi bi-download"></i>
+                                    </button>
+                                    <button class="btn btn-outline-danger" @click="deleteEvidence(doc.id)" title="Hapus">
+                                      <i class="bi bi-trash"></i>
+                                    </button>
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+                            <div class="col-md-12" v-if="getRelationDocuments(rel).length === 0">
+                              <p class="text-muted mb-0"><i class="bi bi-info-circle"></i> Belum ada dokumen untuk relasi ini.</p>
+                            </div>
+                          </div>
+                        </td>
+                      </tr>
+                    </template>
                   </tbody>
                 </table>
               </div>
             </div>
+          </div>
+        </div>
 
-            <!-- Tab 6: Evidence/Dokumen -->
-            <div v-show="activeTab === 'evidence'">
-              <div class="d-flex justify-content-between align-items-center mb-3">
-                <h5>Dokumen & Bukti Pendukung</h5>
-                <button class="btn btn-primary" @click="openModalAdd('evidence')">
-                  <i class="bi bi-plus-circle"></i> Upload Dokumen
-                </button>
+        <!-- Stakeholder Detail Modal -->
+        <div class="modal fade" id="detailModal" tabindex="-1">
+          <div class="modal-dialog modal-lg">
+            <div class="modal-content" v-if="selectedStakeholder">
+              <div class="modal-header bg-primary text-white">
+                <h5 class="modal-title">
+                  <i class="bi bi-person-badge"></i> Detail Stakeholder
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
               </div>
-
-              <div class="row">
-                <div class="col-md-4" v-for="doc in evidences" :key="doc.id">
-                  <div class="card mb-3">
-                    <div class="card-body">
-                      <div class="d-flex justify-content-between align-items-start mb-2">
-                        <h6 class="mb-0">
-                          <i class="bi" :class="getFileIcon(doc.jenis_bukti)"></i>
-                          {{ doc.jenis_bukti }}
-                        </h6>
-                        <div class="btn-group btn-group-sm">
-                          <button class="btn btn-outline-primary" @click="viewDocument(doc)">
-                            <i class="bi bi-eye"></i>
-                          </button>
-                          <button class="btn btn-outline-danger" @click="deleteEvidence(doc.id)">
-                            <i class="bi bi-trash"></i>
-                          </button>
-                        </div>
-                      </div>
-                      <p class="mb-2"><small>{{ doc.deskripsi_pendek }}</small></p>
-                      <div class="mb-2">
-                        <small class="text-muted">
-                          <i class="bi bi-person"></i> {{ doc.stakeholder_nama || 'Multiple' }}<br>
-                          <i class="bi bi-calendar"></i> {{ formatDate(doc.tanggal_dokumen) }}<br>
-                          <i class="bi bi-person-badge"></i> {{ doc.penanggung_jawab }}
-                        </small>
-                      </div>
-                      <button class="btn btn-sm btn-outline-secondary w-100" @click="downloadDocument(doc)">
-                        <i class="bi bi-download"></i> Download
-                      </button>
-                    </div>
+              <div class="modal-body">
+                <div class="row">
+                  <div class="col-md-6">
+                    <h6 class="text-primary">Informasi Dasar</h6>
+                    <table class="table table-sm">
+                      <tr>
+                        <th width="40%">ID</th>
+                        <td>{{ selectedStakeholder.stakeholder_id }}</td>
+                      </tr>
+                      <tr>
+                        <th>Nama Lengkap</th>
+                        <td><strong>{{ selectedStakeholder.nama_lengkap }}</strong></td>
+                      </tr>
+                      <tr>
+                        <th>Nama Panggilan</th>
+                        <td>{{ selectedStakeholder.nama_panggilan }}</td>
+                      </tr>
+                      <tr>
+                        <th>Jenis</th>
+                        <td>{{ selectedStakeholder.jenis_stakeholder }}</td>
+                      </tr>
+                      <tr>
+                        <th>Peran</th>
+                        <td>{{ selectedStakeholder.peran_di_proyek }}</td>
+                      </tr>
+                    </table>
+                  </div>
+                  <div class="col-md-6">
+                    <h6 class="text-primary">Klasifikasi & Analisis</h6>
+                    <table class="table table-sm">
+                      <tr>
+                        <th width="40%">Level Pengaruh</th>
+                        <td>
+                          <span class="badge" :class="getBadgeInfluence(selectedStakeholder.level_pengaruh)">
+                            {{ selectedStakeholder.level_pengaruh }}/5
+                          </span>
+                        </td>
+                      </tr>
+                      <tr>
+                        <th>Level Kepentingan</th>
+                        <td>
+                          <span class="badge" :class="getBadgeInterest(selectedStakeholder.level_kepentingan)">
+                            {{ selectedStakeholder.level_kepentingan }}/5
+                          </span>
+                        </td>
+                      </tr>
+                      <tr>
+                        <th>Klasifikasi Sikap</th>
+                        <td>
+                          <span class="badge" :class="getBadgeSentimen(selectedStakeholder.klasifikasi_sikap)">
+                            {{ selectedStakeholder.klasifikasi_sikap }}
+                          </span>
+                        </td>
+                      </tr>
+                      <tr>
+                        <th>Strategi Engagement</th>
+                        <td><small>{{ selectedStakeholder.strategi_engagement }}</small></td>
+                      </tr>
+                    </table>
                   </div>
                 </div>
+                <div class="row mt-3">
+                  <div class="col-12">
+                    <h6 class="text-primary">Kontak</h6>
+                    <p class="mb-1"><i class="bi bi-telephone"></i> {{ selectedStakeholder.kontak_phone || 'N/A' }}</p>
+                    <p class="mb-1"><i class="bi bi-envelope"></i> {{ selectedStakeholder.kontak_email || 'N/A' }}</p>
+                    <p class="mb-0"><i class="bi bi-geo-alt"></i> {{ selectedStakeholder.alamat || 'N/A' }}</p>
+                  </div>
+                </div>
+              </div>
+              <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Tutup</button>
+                <button type="button" class="btn btn-warning" @click="editStakeholder(selectedStakeholder)">
+                  <i class="bi bi-pencil"></i> Edit
+                </button>
               </div>
             </div>
           </div>
@@ -920,6 +1059,8 @@ const showModal = ref(false)
 const modalType = ref('')
 const modalTitle = ref('')
 const networkCanvas = ref<HTMLCanvasElement | null>(null)
+const selectedStakeholder = ref<any>(null)
+const expandedRelations = ref<number[]>([])
 
 // Statistics
 const stats = ref({
@@ -1343,7 +1484,8 @@ const relations = ref([
     satu_jurusan: false,
     satu_organisasi: true,
     hubungan_kekerabatan: true,
-    skor_kedekatan_total: 75
+    skor_kedekatan_total: 75,
+    arah_pengaruh: 'A → B'
   },
   {
     id: 2,
@@ -1358,7 +1500,8 @@ const relations = ref([
     satu_jurusan: false,
     satu_organisasi: true,
     hubungan_kekerabatan: false,
-    skor_kedekatan_total: 55
+    skor_kedekatan_total: 55,
+    arah_pengaruh: 'Bidirectional'
   },
   {
     id: 3,
@@ -1373,7 +1516,8 @@ const relations = ref([
     satu_jurusan: false,
     satu_organisasi: true,
     hubungan_kekerabatan: false,
-    skor_kedekatan_total: 45
+    skor_kedekatan_total: 45,
+    arah_pengaruh: 'B → A'
   },
   {
     id: 4,
@@ -1388,7 +1532,8 @@ const relations = ref([
     satu_jurusan: false,
     satu_organisasi: false,
     hubungan_kekerabatan: false,
-    skor_kedekatan_total: 30
+    skor_kedekatan_total: 30,
+    arah_pengaruh: 'A → B'
   },
   {
     id: 5,
@@ -1403,56 +1548,72 @@ const relations = ref([
     satu_jurusan: false,
     satu_organisasi: true,
     hubungan_kekerabatan: false,
-    skor_kedekatan_total: 50
+    skor_kedekatan_total: 50,
+    arah_pengaruh: 'Bidirectional'
   }
 ])
 
-// Sample data - Evidence
+// Sample data - Evidence (linked to relations)
 const evidences = ref([
   {
     id: 1,
+    relation_id: 1, // Ahmad <-> Budi
     stakeholder_id: 1,
     stakeholder_nama: 'Ahmad Sulaiman',
     jenis_bukti: 'Notulen',
-    deskripsi_pendek: 'Notulen rapat desa tanggal 15 Jan 2025',
+    deskripsi_pendek: 'Notulen rapat desa tentang relasi keluarga',
     tanggal_dokumen: '2025-01-15',
     penanggung_jawab: 'Tim Community Relations'
   },
   {
     id: 2,
+    relation_id: 1, // Ahmad <-> Budi
     stakeholder_id: 2,
     stakeholder_nama: 'Budi Santoso',
     jenis_bukti: 'Foto',
-    deskripsi_pendek: 'Foto pertemuan dengan tokoh adat',
+    deskripsi_pendek: 'Foto pertemuan keluarga besar',
     tanggal_dokumen: '2025-01-16',
     penanggung_jawab: 'Tim Dokumentasi'
   },
   {
     id: 3,
+    relation_id: 2, // Ahmad <-> Siti
     stakeholder_id: 1,
     stakeholder_nama: 'Ahmad Sulaiman',
     jenis_bukti: 'Rekaman Audio',
-    deskripsi_pendek: 'Rekaman pernyataan Ahmad di rapat desa',
+    deskripsi_pendek: 'Rekaman pernyataan Ahmad tentang tetangga',
     tanggal_dokumen: '2025-01-15',
     penanggung_jawab: 'Tim Community Relations'
   },
   {
     id: 4,
-    stakeholder_id: 5,
-    stakeholder_nama: 'Dewi Lestari',
+    relation_id: 2, // Ahmad <-> Siti  
+    stakeholder_id: 3,
+    stakeholder_nama: 'Siti Aminah',
     jenis_bukti: 'Surat',
-    deskripsi_pendek: 'Surat dukungan dari LSM Peduli Lingkungan',
-    tanggal_dokumen: '2025-01-19',
+    deskripsi_pendek: 'Surat pernyataan hubungan bertetangga',
+    tanggal_dokumen: '2025-01-17',
     penanggung_jawab: 'Tim Legal'
   },
   {
     id: 5,
-    stakeholder_id: 4,
-    stakeholder_nama: 'Joko Widodo',
+    relation_id: 3, // Budi <-> Dewi
+    stakeholder_id: 2,
+    stakeholder_nama: 'Budi Santoso',
     jenis_bukti: 'Dokumen',
-    deskripsi_pendek: 'Surat keberatan nilai ganti rugi',
+    deskripsi_pendek: 'Dokumen organisasi bersama',
     tanggal_dokumen: '2025-01-18',
     penanggung_jawab: 'Tim LARAP'
+  },
+  {
+    id: 6,
+    relation_id: 4, // Siti <-> Joko
+    stakeholder_id: 4,
+    stakeholder_nama: 'Joko Widodo',
+    jenis_bukti: 'Foto',
+    deskripsi_pendek: 'Foto acara RT/RW bersama',
+    tanggal_dokumen: '2025-01-19',
+    penanggung_jawab: 'Tim Dokumentasi'
   }
 ])
 
@@ -1542,6 +1703,72 @@ const formatDate = (date: string) => {
   })
 }
 
+// Helper function for arrow icons in table
+const getArrowIcon = (direction: string) => {
+  if (direction === 'A → B') return 'bi-arrow-right'
+  if (direction === 'B → A') return 'bi-arrow-left'
+  if (direction === 'Bidirectional') return 'bi-arrow-left-right'
+  return 'bi-arrow-left-right'
+}
+
+// Get documents for a specific relation
+const getRelationDocuments = (relation: any) => {
+  return evidences.value.filter(doc => doc.relation_id === relation.id)
+}
+
+// Toggle expanded state for relation documents
+const toggleRelationDocuments = (relationId: number) => {
+  const index = expandedRelations.value.indexOf(relationId)
+  if (index > -1) {
+    expandedRelations.value.splice(index, 1)
+  } else {
+    expandedRelations.value.push(relationId)
+  }
+}
+
+// Handle canvas click to show stakeholder details
+const handleCanvasClick = (event: MouseEvent) => {
+  if (!networkCanvas.value) return
+  
+  const canvas = networkCanvas.value
+  const rect = canvas.getBoundingClientRect()
+  
+  // Calculate scale factor for responsive canvas
+  const scaleX = canvas.width / rect.width
+  const scaleY = canvas.height / rect.height
+  
+  const clickX = (event.clientX - rect.left) * scaleX
+  const clickY = (event.clientY - rect.top) * scaleY
+  
+  const padding = 50
+  const width = canvas.width - padding * 2
+  const height = canvas.height - padding * 2
+  const nodeRadius = 30
+  const textMargin = 70
+  
+  // Check if click is on any stakeholder node - using same formula as drawNetwork
+  for (const sh of stakeholders.value) {
+    const usableWidth = width - (nodeRadius * 2) - 20
+    const xPos = padding + nodeRadius + 10 + (sh.level_kepentingan / 5) * usableWidth
+    
+    const usableHeight = height - textMargin
+    const yPos = canvas.height - padding - textMargin - (sh.level_pengaruh / 5) * usableHeight
+    
+    const distance = Math.sqrt((clickX - xPos) ** 2 + (clickY - yPos) ** 2)
+    
+    if (distance <= 30) { // node radius
+      selectedStakeholder.value = sh
+      // Show modal using Bootstrap 5
+      const modalEl = document.getElementById('detailModal')
+      if (modalEl) {
+        const modal = new (window as any).bootstrap.Modal(modalEl)
+        modal.show()
+      }
+      break
+    }
+  }
+}
+
 // Modal functions
 const openModalAdd = (type: string) => {
   modalType.value = type
@@ -1561,7 +1788,12 @@ const saveForm = () => {
 
 // CRUD functions
 const viewDetail = (sh: any) => {
-  console.log('View detail:', sh)
+  selectedStakeholder.value = sh
+  const modalEl = document.getElementById('detailModal')
+  if (modalEl) {
+    const modal = new (window as any).bootstrap.Modal(modalEl)
+    modal.show()
+  }
 }
 
 const editStakeholder = (sh: any) => {
@@ -1632,7 +1864,7 @@ const deleteEvidence = (id: number) => {
   }
 }
 
-// Draw network visualization
+// Draw network visualization with quadrant matrix and directional arrows
 const drawNetwork = () => {
   if (!networkCanvas.value) return
   
@@ -1643,85 +1875,263 @@ const drawNetwork = () => {
   // Clear canvas
   ctx.clearRect(0, 0, canvas.width, canvas.height)
 
-  // Define node positions (circular layout)
+  // Draw quadrant background and grid
+  const padding = 50
+  const width = canvas.width - padding * 2
+  const height = canvas.height - padding * 2
   const centerX = canvas.width / 2
   const centerY = canvas.height / 2
-  const radius = 150
-  const nodes = stakeholders.value.map((sh, index) => {
-    const angle = (index * 2 * Math.PI) / stakeholders.value.length
+
+  // Draw quadrant background colors
+  ctx.fillStyle = 'rgba(255, 193, 7, 0.1)' // Yellow - Keep Satisfied
+  ctx.fillRect(padding, padding, width / 2, height / 2)
+  
+  ctx.fillStyle = 'rgba(40, 167, 69, 0.1)' // Green - Manage Closely
+  ctx.fillRect(centerX, padding, width / 2, height / 2)
+  
+  ctx.fillStyle = 'rgba(108, 117, 125, 0.1)' // Gray - Monitor
+  ctx.fillRect(padding, centerY, width / 2, height / 2)
+  
+  ctx.fillStyle = 'rgba(23, 162, 184, 0.1)' // Cyan - Keep Informed
+  ctx.fillRect(centerX, centerY, width / 2, height / 2)
+
+  // Draw grid lines
+  ctx.strokeStyle = '#ccc'
+  ctx.lineWidth = 1
+  ctx.setLineDash([5, 5])
+  
+  // Vertical center line
+  ctx.beginPath()
+  ctx.moveTo(centerX, padding)
+  ctx.lineTo(centerX, canvas.height - padding)
+  ctx.stroke()
+  
+  // Horizontal center line
+  ctx.beginPath()
+  ctx.moveTo(padding, centerY)
+  ctx.lineTo(canvas.width - padding, centerY)
+  ctx.stroke()
+  
+  ctx.setLineDash([])
+
+  // Draw axis labels
+  ctx.fillStyle = '#333'
+  ctx.font = 'bold 12px Arial'
+  ctx.textAlign = 'center'
+  
+  // X-axis label (Interest)
+  ctx.fillText('Interest / Engagement →', canvas.width / 2, canvas.height - 20)
+  
+  // Y-axis label (Power)
+  ctx.save()
+  ctx.translate(20, canvas.height / 2)
+  ctx.rotate(-Math.PI / 2)
+  ctx.fillText('Power / Influence →', 0, 0)
+  ctx.restore()
+
+  // Draw quadrant labels
+  ctx.font = 'bold 11px Arial'
+  ctx.fillStyle = '#666'
+  
+  ctx.textAlign = 'center'
+  ctx.fillText('Keep Satisfied', padding + width / 4, padding + 20)
+  ctx.fillText('Manage Closely', centerX + width / 4, padding + 20)
+  ctx.fillText('Monitor', padding + width / 4, centerY + 20)
+  ctx.fillText('Keep Informed', centerX + width / 4, centerY + 20)
+
+  // Define node positions based on Power-Interest matrix
+  const nodeRadius = 30
+  const textMargin = 70 // extra margin for text below nodes
+  
+  const nodes = stakeholders.value.map(sh => {
+    // Map 1-5 scale to canvas coordinates with margin for text
+    // Interest (X-axis): 1 = left edge, 5 = right edge
+    const usableWidth = width - (nodeRadius * 2) - 20
+    const xPos = padding + nodeRadius + 10 + (sh.level_kepentingan / 5) * usableWidth
+    
+    // Power (Y-axis): 1 = bottom, 5 = top (inverted)
+    // Reserve space at bottom for text labels
+    const usableHeight = height - textMargin
+    const yPos = canvas.height - padding - textMargin - (sh.level_pengaruh / 5) * usableHeight
+    
     return {
-      x: centerX + radius * Math.cos(angle),
-      y: centerY + radius * Math.sin(angle),
+      x: xPos,
+      y: yPos,
       ...sh
     }
   })
 
-  // Draw connections first (so they appear behind nodes)
+  // Helper function to draw arrow
+  const drawArrow = (fromX: number, fromY: number, toX: number, toY: number, color: string, lineWidth: number, isDashed: boolean = false) => {
+    const headlen = 12 // length of arrow head
+    const angle = Math.atan2(toY - fromY, toX - fromX)
+    
+    // Calculate positions to draw from edge of circle (radius 25) not center
+    const fromRadius = 28
+    const toRadius = 28
+    const startX = fromX + fromRadius * Math.cos(angle)
+    const startY = fromY + fromRadius * Math.sin(angle)
+    const endX = toX - toRadius * Math.cos(angle)
+    const endY = toY - toRadius * Math.sin(angle)
+    
+    ctx.beginPath()
+    ctx.moveTo(startX, startY)
+    ctx.lineTo(endX, endY)
+    ctx.strokeStyle = color
+    ctx.lineWidth = lineWidth
+    
+    if (isDashed) {
+      ctx.setLineDash([5, 5])
+    } else {
+      ctx.setLineDash([])
+    }
+    ctx.stroke()
+    
+    // Draw arrow head
+    ctx.beginPath()
+    ctx.moveTo(endX, endY)
+    ctx.lineTo(
+      endX - headlen * Math.cos(angle - Math.PI / 6),
+      endY - headlen * Math.sin(angle - Math.PI / 6)
+    )
+    ctx.lineTo(
+      endX - headlen * Math.cos(angle + Math.PI / 6),
+      endY - headlen * Math.sin(angle + Math.PI / 6)
+    )
+    ctx.closePath()
+    ctx.fillStyle = color
+    ctx.fill()
+    ctx.setLineDash([])
+  }
+
+  // Draw connections with arrows based on direction
   relations.value.forEach(rel => {
     const nodeA = nodes.find(n => n.id === rel.stakeholder_a_id)
     const nodeB = nodes.find(n => n.id === rel.stakeholder_b_id)
     
     if (nodeA && nodeB) {
-      ctx.beginPath()
-      ctx.moveTo(nodeA.x, nodeA.y)
-      ctx.lineTo(nodeB.x, nodeB.y)
+      // Determine color and line style based on closeness score
+      let color = '#999'
+      let lineWidth = 1
+      let isDashed = false
       
-      // Line thickness based on closeness score
       if (rel.skor_kedekatan_total > 70) {
-        ctx.lineWidth = 3
-        ctx.strokeStyle = '#333'
+        lineWidth = 3
+        color = '#2c3e50'
       } else if (rel.skor_kedekatan_total > 40) {
-        ctx.lineWidth = 2
-        ctx.strokeStyle = '#666'
+        lineWidth = 2
+        color = '#555'
+        isDashed = false
       } else {
-        ctx.lineWidth = 1
-        ctx.strokeStyle = '#999'
+        lineWidth = 1
+        color = '#999'
+        isDashed = true
       }
       
-      ctx.stroke()
+      // Draw arrow based on direction
+      if (rel.arah_pengaruh === 'A → B') {
+        // A influences B
+        drawArrow(nodeA.x, nodeA.y, nodeB.x, nodeB.y, color, lineWidth, isDashed)
+      } else if (rel.arah_pengaruh === 'B → A') {
+        // B influences A
+        drawArrow(nodeB.x, nodeB.y, nodeA.x, nodeA.y, color, lineWidth, isDashed)
+      } else if (rel.arah_pengaruh === 'Bidirectional') {
+        // Mutual influence - draw double-headed arrow with slight offset
+        const offsetAngle = Math.atan2(nodeB.y - nodeA.y, nodeB.x - nodeA.x) + Math.PI / 2
+        const offset = 6
+        
+        // Upper arrow (A to B)
+        const a1x = nodeA.x + offset * Math.cos(offsetAngle)
+        const a1y = nodeA.y + offset * Math.sin(offsetAngle)
+        const b1x = nodeB.x + offset * Math.cos(offsetAngle)
+        const b1y = nodeB.y + offset * Math.sin(offsetAngle)
+        drawArrow(a1x, a1y, b1x, b1y, color, lineWidth, isDashed)
+        
+        // Lower arrow (B to A)
+        const a2x = nodeA.x - offset * Math.cos(offsetAngle)
+        const a2y = nodeA.y - offset * Math.sin(offsetAngle)
+        const b2x = nodeB.x - offset * Math.cos(offsetAngle)
+        const b2y = nodeB.y - offset * Math.sin(offsetAngle)
+        drawArrow(b2x, b2y, a2x, a2y, color, lineWidth, isDashed)
+      }
       
       // Draw closeness score in the middle of line
       const midX = (nodeA.x + nodeB.x) / 2
       const midY = (nodeA.y + nodeB.y) / 2
-      ctx.fillStyle = '#000'
-      ctx.font = '10px Arial'
+      ctx.fillStyle = '#fff'
+      ctx.strokeStyle = '#000'
+      ctx.lineWidth = 3
+      ctx.font = 'bold 11px Arial'
+      ctx.textAlign = 'center'
+      ctx.strokeText(rel.skor_kedekatan_total.toString(), midX, midY)
       ctx.fillText(rel.skor_kedekatan_total.toString(), midX, midY)
     }
   })
 
-  // Draw nodes
+  // Draw nodes on top
   nodes.forEach(node => {
-    // Determine color based on sentiment
+    // Determine color based on sentiment with gradient
     let color = '#6c757d' // default gray
+    let gradientColor = '#5a6268'
+    
     if (node.klasifikasi_sikap?.includes('Pro-Aktif')) {
       color = '#28a745' // green
+      gradientColor = '#20c997'
     } else if (node.klasifikasi_sikap?.includes('Pro-Pasif')) {
       color = '#17a2b8' // cyan
+      gradientColor = '#20c997'
     } else if (node.klasifikasi_sikap?.includes('Kontra-Aktif')) {
       color = '#dc3545' // red
+      gradientColor = '#ff6b6b'
     } else if (node.klasifikasi_sikap?.includes('Kontra-Pasif')) {
       color = '#ffc107' // yellow
+      gradientColor = '#ffdd57'
     }
 
-    // Draw circle
+    // Create radial gradient for node
+    const gradient = ctx.createRadialGradient(node.x, node.y, 0, node.x, node.y, 30)
+    gradient.addColorStop(0, color)
+    gradient.addColorStop(1, gradientColor)
+
+    // Draw circle with gradient
     ctx.beginPath()
     ctx.arc(node.x, node.y, 30, 0, 2 * Math.PI)
-    ctx.fillStyle = color
+    ctx.fillStyle = gradient
     ctx.fill()
     ctx.strokeStyle = '#fff'
     ctx.lineWidth = 3
     ctx.stroke()
 
-    // Draw name
-    ctx.fillStyle = '#000'
-    ctx.font = 'bold 11px Arial'
+    // Add inner shadow effect
+    ctx.strokeStyle = 'rgba(0, 0, 0, 0.2)'
+    ctx.lineWidth = 1
+    ctx.stroke()
+
+    // Draw initials in white
+    const initials = node.nama_panggilan 
+      ? node.nama_panggilan.substring(0, 2).toUpperCase() 
+      : node.nama_lengkap.substring(0, 2).toUpperCase()
+    ctx.fillStyle = '#fff'
+    ctx.font = 'bold 14px Arial'
     ctx.textAlign = 'center'
-    ctx.fillText(node.nama_panggilan || node.nama_lengkap || '', node.x, node.y + 50)
+    ctx.textBaseline = 'middle'
+    ctx.fillText(initials, node.x, node.y)
+
+    // Draw name below node - more compact
+    ctx.fillStyle = '#000'
+    ctx.font = 'bold 10px Arial'
+    ctx.textBaseline = 'top'
+    const displayName = node.nama_panggilan || node.nama_lengkap || ''
+    // Truncate long names
+    const shortName = displayName.length > 12 ? displayName.substring(0, 10) + '...' : displayName
+    ctx.fillText(shortName, node.x, node.y + 35)
     
-    // Draw role
-    ctx.font = '9px Arial'
+    // Draw role below name - more compact
+    ctx.font = '8px Arial'
     ctx.fillStyle = '#666'
-    ctx.fillText(node.peran_di_proyek || '', node.x, node.y + 62)
+    const displayRole = node.peran_di_proyek || ''
+    const shortRole = displayRole.length > 15 ? displayRole.substring(0, 13) + '...' : displayRole
+    ctx.fillText(shortRole, node.x, node.y + 48)
   })
 }
 
@@ -1763,4 +2173,156 @@ onMounted(() => {
 .card {
   box-shadow: 0 0 1px rgba(0,0,0,.125), 0 1px 3px rgba(0,0,0,.2);
 }
+
+/* Quadrant Matrix Styles */
+.quadrant-container {
+  width: 100%;
+  height: 500px;
+  margin: 20px 0;
+}
+
+.quadrant-grid {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(to right, #f8f9fa 50%, #ffffff 50%), 
+              linear-gradient(to bottom, #ffffff 50%, #f8f9fa 50%);
+  border: 2px solid #dee2e6;
+  border-radius: 8px;
+}
+
+.quadrant-grid::before {
+  content: '';
+  position: absolute;
+  left: 50%;
+  top: 0;
+  bottom: 0;
+  width: 2px;
+  background: #6c757d;
+}
+
+.quadrant-grid::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: #6c757d;
+}
+
+.quadrant-label {
+  position: absolute;
+  font-size: 0.85rem;
+  padding: 10px;
+  text-align: center;
+  color: #495057;
+}
+
+.quadrant-label.top-left {
+  top: 10px;
+  left: 10px;
+  width: 45%;
+}
+
+.quadrant-label.top-right {
+  top: 10px;
+  right: 10px;
+  width: 45%;
+}
+
+.quadrant-label.bottom-left {
+  bottom: 10px;
+  left: 10px;
+  width: 45%;
+}
+
+.quadrant-label.bottom-right {
+  bottom: 10px;
+  right: 10px;
+  width: 45%;
+}
+
+.axis-label {
+  position: absolute;
+  font-weight: bold;
+  color: #495057;
+  font-size: 0.9rem;
+}
+
+.axis-label.y-axis {
+  left: 10px;
+  top: 50%;
+  transform: translateY(-50%) rotate(-90deg);
+  transform-origin: left center;
+}
+
+.axis-label.x-axis {
+  bottom: 10px;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+.stakeholder-dot {
+  position: absolute;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.7rem;
+  font-weight: bold;
+  color: white;
+  transform: translate(-50%, -50%);
+  cursor: pointer;
+  transition: all 0.3s ease;
+  z-index: 10;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+}
+
+.stakeholder-dot:hover {
+  transform: translate(-50%, -50%) scale(1.3);
+  box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+  z-index: 20;
+}
+
+.stakeholder-dot.sentiment-pro-aktif {
+  background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+}
+
+.stakeholder-dot.sentiment-pro-pasif {
+  background: linear-gradient(135deg, #17a2b8 0%, #5bc0de 100%);
+}
+
+.stakeholder-dot.sentiment-kontra-aktif {
+  background: linear-gradient(135deg, #dc3545 0%, #c82333 100%);
+}
+
+.stakeholder-dot.sentiment-kontra-pasif {
+  background: linear-gradient(135deg, #ffc107 0%, #ff9800 100%);
+}
+
+.stakeholder-dot.sentiment-netral {
+  background: linear-gradient(135deg, #6c757d 0%, #5a6268 100%);
+}
+
+/* Network Controls */
+.network-controls {
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+}
+
+/* Document Link Items */
+.document-link-item {
+  transition: all 0.2s ease;
+  background: white;
+}
+
+.document-link-item:hover {
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  transform: translateY(-2px);
+}
 </style>
+
