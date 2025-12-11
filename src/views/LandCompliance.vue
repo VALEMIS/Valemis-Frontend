@@ -241,8 +241,8 @@
                         <h6 class="mb-1">{{ item.locationName }}</h6>
                         <small class="text-muted">{{ item.permitType }} - {{ item.permitNumber }}</small>
                       </div>
-                      <span class="badge" :class="item.daysRemaining < 0 ? 'bg-danger' : 'bg-warning'">
-                        {{ item.daysRemaining < 0 ? 'EXPIRED' : item.daysRemaining + ' hari' }}
+                      <span class="badge" :class="(item.daysRemaining ?? 0) < 0 ? 'bg-danger' : 'bg-warning'">
+                        {{ (item.daysRemaining ?? 0) < 0 ? 'EXPIRED' : (item.daysRemaining ?? 0) + ' hari' }}
                       </span>
                     </div>
                   </div>
@@ -531,9 +531,9 @@ const saveCompliance = () => {
 
   if (isEditMode.value && formData.value.id) {
     const index = compliances.value.findIndex(c => c.id === formData.value.id)
-    if (index !== -1) {
+    if (index !== -1 && formData.value.id) {
       compliances.value[index] = {
-        ...compliances.value[index],
+        id: formData.value.id,
         landCode: formData.value.landCode,
         locationName: formData.value.locationName,
         permitType: formData.value.permitType,

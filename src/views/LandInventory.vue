@@ -722,10 +722,11 @@ const saveLand = () => {
 
   if (isEditMode.value && formData.value.id) {
     const index = lands.value.findIndex(l => l.id === formData.value.id)
-    if (index !== -1) {
+    if (index !== -1 && formData.value.id && lands.value[index]) {
+      const currentLand = lands.value[index]
       lands.value[index] = {
-        id: lands.value[index].id,
-        code: lands.value[index].code,
+        id: formData.value.id,
+        code: currentLand.code,
         locationName: formData.value.locationName,
         category: formData.value.category,
         area: formData.value.area,

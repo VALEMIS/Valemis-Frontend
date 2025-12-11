@@ -398,7 +398,7 @@ const initAssetMap = () => {
 
   if (!assetMapContainer.value) return
 
-  const centerCoords = filteredAssets.value.length > 0 
+  const centerCoords = filteredAssets.value.length > 0 && filteredAssets.value[0]
     ? [filteredAssets.value[0].lat, filteredAssets.value[0].lng] as [number, number]
     : [-2.5650, 121.3450] as [number, number]
 
@@ -511,10 +511,11 @@ const saveAsset = () => {
   if (isEditMode.value && formData.value.id) {
     // Edit existing asset
     const index = assets.value.findIndex(a => a.id === formData.value.id)
-    if (index !== -1) {
+    if (index !== -1 && formData.value.id && assets.value[index]) {
+      const currentAsset = assets.value[index]
       assets.value[index] = {
-        id: assets.value[index].id,
-        code: assets.value[index].code,
+        id: formData.value.id,
+        code: currentAsset.code,
         ownerName: formData.value.ownerName,
         village: formData.value.village,
         landArea: formData.value.landArea,

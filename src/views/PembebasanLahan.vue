@@ -94,7 +94,7 @@
                     <p class="mb-0" style="white-space: nowrap; overflow: visible;"><strong style="font-size: 0.9rem;">{{ formatRupiah(project.totalCost) }}</strong></p>
                   </div>
                 </div>
-                <button class="btn btn-sm btn-outline-primary mt-2 w-100" @click="filterByProject(project.name)">
+                <button class="btn btn-sm btn-outline-primary mt-2 w-100" @click="filterByProject(project.name || '')">
                   <i class="bi bi-eye"></i> Lihat Detail
                 </button>
               </div>
@@ -546,8 +546,8 @@ const filterData = () => {
 }
 
 const filterByProject = (projectName: string) => {
-  const fullProjectName = parcels.value.find(p => p.project.startsWith(projectName))?.project || projectName
-  selectedProject.value = fullProjectName
+  const fullProjectName = parcels.value.find(p => p.project.startsWith(projectName))?.project
+  selectedProject.value = fullProjectName || projectName
 }
 
 const getStatusClass = (status: string) => {
@@ -592,7 +592,7 @@ const markAsBebas = (parcel: Parcel) => {
   
   if (confirm(`Tandai parcel ${parcel.code} sebagai Bebas?`)) {
     parcel.status = 'Bebas'
-    parcel.negotiationDate = new Date().toISOString().split('T')[0]
+    parcel.negotiationDate = new Date().toISOString().split('T')[0] || '-'
     alert('Status berhasil diupdate menjadi Bebas. Negosiasi telah di-clear.')
   }
 }
@@ -607,7 +607,8 @@ const addParcel = () => {
     area: 0,
     status: '',
     jumlahBebas: 0,
-    biayaPembebasan: 0
+    biayaPembebasan: 0,
+    id: undefined
   }
   openParcelModal()
 }
@@ -632,9 +633,9 @@ const saveParcel = () => {
   if (isEditMode.value && formData.value.id) {
     // Edit existing parcel
     const index = parcels.value.findIndex(p => p.id === formData.value.id)
-    if (index !== -1) {
+    if (index !== -1 && formData.value.id && parcels.value[index]) {
       parcels.value[index] = {
-        id: parcels.value[index].id,
+        id: formData.value.id,
         code: parcels.value[index].code,
         project: formData.value.project,
         ownerName: formData.value.ownerName,
@@ -717,6 +718,7 @@ const openHistoryModal = () => {
   }
 }
 
+// @ts-ignore - Reserved for future use
 const closeHistoryModal = () => {
   if (historyModalInstance) {
     historyModalInstance.hide()
