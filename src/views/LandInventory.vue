@@ -163,6 +163,7 @@
                       <th>No. Sertifikat</th>
                       <th>Koordinat</th>
                       <th>Tahun Akuisisi</th>
+                      <th>Dokumen</th>
                       <th>Aksi</th>
                     </tr>
                   </thead>
@@ -177,6 +178,17 @@
                       <td><small>{{ land.certificateNo || '-' }}</small></td>
                       <td><small class="text-muted">{{ land.coordinates }}</small></td>
                       <td class="text-center">{{ land.acquisitionYear || '-' }}</td>
+                      <td>
+                        <button 
+                          v-if="land.documents.length > 0" 
+                          class="btn btn-sm btn-outline-secondary"
+                          @click="viewDocuments(land)"
+                          title="Lihat Dokumen"
+                        >
+                          <i class="bi bi-file-earmark-text"></i> {{ land.documents.length }} file
+                        </button>
+                        <small v-else class="text-muted">-</small>
+                      </td>
                       <td class="text-center" style="white-space: nowrap;">
                         <div class="btn-group" role="group">
                           <button class="btn btn-sm btn-info" @click="viewOnMap(land)" title="Lihat di Peta">
@@ -196,7 +208,7 @@
                     <tr class="table-secondary">
                       <td colspan="4" class="text-end"><strong>Total:</strong></td>
                       <td class="text-end"><strong>{{ filteredTotalArea.toLocaleString() }} Ha</strong></td>
-                      <td colspan="5"></td>
+                      <td colspan="6"></td>
                     </tr>
                   </tfoot>
                 </table>
@@ -377,6 +389,46 @@
                 </div>
               </div>
 
+              <div class="mb-3">
+                <label class="form-label"><strong><i class="bi bi-file-earmark-text"></i> Dokumen Lahan</strong></label>
+                <div class="input-group mb-2">
+                  <input 
+                    type="text" 
+                    class="form-control" 
+                    v-model="newDocument" 
+                    placeholder="Nama file dokumen (contoh: SHM-001-2020.pdf)"
+                    @keyup.enter="addDocument"
+                  />
+                  <button 
+                    type="button" 
+                    class="btn btn-outline-primary" 
+                    @click="addDocument"
+                  >
+                    <i class="bi bi-plus-circle"></i> Tambah
+                  </button>
+                </div>
+                <div v-if="formData.documents.length > 0" class="border rounded p-2">
+                  <small class="text-muted d-block mb-2">Daftar Dokumen:</small>
+                  <div class="d-flex flex-wrap gap-1">
+                    <span 
+                      v-for="(doc, idx) in formData.documents" 
+                      :key="idx"
+                      class="badge bg-secondary d-inline-flex align-items-center"
+                    >
+                      <i class="bi bi-file-earmark-text me-1"></i>
+                      {{ doc }}
+                      <button 
+                        type="button" 
+                        class="btn-close btn-close-white ms-2" 
+                        style="font-size: 0.7rem;"
+                        @click="removeDocument(idx)"
+                      ></button>
+                    </span>
+                  </div>
+                </div>
+                <small class="text-muted">Tekan Enter atau klik Tambah untuk menambahkan dokumen</small>
+              </div>
+
               <div class="d-flex justify-content-end gap-2">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
                   <i class="bi bi-x-circle"></i> Batal
@@ -410,6 +462,7 @@ interface Land {
   lat: number
   lng: number
   acquisitionYear: number | null
+  documents: string[]
 }
 
 interface FormData {
@@ -423,6 +476,7 @@ interface FormData {
   lat: string
   lng: string
   acquisitionYear: number | null
+  documents: string[]
 }
 
 const selectedCategory = ref<string>('all')
@@ -430,6 +484,7 @@ const selectedCertificate = ref<string>('all')
 const showMap = ref<boolean>(false)
 const landMapContainer = ref<HTMLElement | null>(null)
 const landModalRef = ref<HTMLElement | null>(null)
+const newDocument = ref<string>('')
 let landMap: L.Map | null = null
 let landModalInstance: any = null
 
@@ -443,25 +498,26 @@ const formData = ref<FormData>({
   certificateNo: '',
   lat: '',
   lng: '',
-  acquisitionYear: null
+  acquisitionYear: null,
+  documents: []
 })
 
 const lands = ref<Land[]>([
-  { id: 1, code: 'LND-VALE-001', locationName: 'Vale Central Mining Area', category: 'Vale Owned', area: 450.5, certificate: 'HGU', certificateNo: 'HGU-001/2015', coordinates: '-2.5650, 121.3450', lat: -2.5650, lng: 121.3450, acquisitionYear: 2015 },
-  { id: 2, code: 'LND-VALE-002', locationName: 'Vale North Sector', category: 'Vale Owned', area: 320.8, certificate: 'HGU', certificateNo: 'HGU-002/2016', coordinates: '-2.5500, 121.3500', lat: -2.5500, lng: 121.3500, acquisitionYear: 2016 },
-  { id: 3, code: 'LND-VALE-003', locationName: 'Vale South Sector', category: 'Vale Owned', area: 285.3, certificate: 'HGU', certificateNo: 'HGU-003/2017', coordinates: '-2.5800, 121.3400', lat: -2.5800, lng: 121.3400, acquisitionYear: 2017 },
-  { id: 4, code: 'LND-ACQ-001', locationName: 'Sorowako Expansion Area', category: 'Acquired', area: 125.5, certificate: 'SHM', certificateNo: 'SHM-045/2020', coordinates: '-2.5595, 121.3415', lat: -2.5595, lng: 121.3415, acquisitionYear: 2020 },
-  { id: 5, code: 'LND-ACQ-002', locationName: 'Magani Buffer Zone', category: 'Acquired', area: 98.7, certificate: 'SHM', certificateNo: 'SHM-046/2021', coordinates: '-2.5605, 121.3465', lat: -2.5605, lng: 121.3465, acquisitionYear: 2021 },
-  { id: 6, code: 'LND-ACQ-003', locationName: 'Wewangriu Access Road', category: 'Acquired', area: 45.2, certificate: 'SHGB', certificateNo: 'SHGB-012/2022', coordinates: '-2.5685, 121.3425', lat: -2.5685, lng: 121.3425, acquisitionYear: 2022 },
-  { id: 7, code: 'LND-ACQ-004', locationName: 'Nikkel Infrastructure', category: 'Acquired', area: 67.8, certificate: 'SHM', certificateNo: 'SHM-047/2023', coordinates: '-2.5695, 121.3485', lat: -2.5695, lng: 121.3485, acquisitionYear: 2023 },
-  { id: 8, code: 'LND-IUPK-001', locationName: 'IUPK Block A', category: 'IUPK', area: 550.0, certificate: 'HGU', certificateNo: 'IUPK-A/2010', coordinates: '-2.5400, 121.3300', lat: -2.5400, lng: 121.3300, acquisitionYear: 2010 },
-  { id: 9, code: 'LND-IUPK-002', locationName: 'IUPK Block B', category: 'IUPK', area: 475.5, certificate: 'HGU', certificateNo: 'IUPK-B/2011', coordinates: '-2.5450, 121.3600', lat: -2.5450, lng: 121.3600, acquisitionYear: 2011 },
-  { id: 10, code: 'LND-IUPK-003', locationName: 'IUPK Block C', category: 'IUPK', area: 390.2, certificate: 'HGU', certificateNo: 'IUPK-C/2012', coordinates: '-2.5700, 121.3300', lat: -2.5700, lng: 121.3300, acquisitionYear: 2012 },
-  { id: 11, code: 'LND-PPKH-001', locationName: 'PPKH Conservation Area 1', category: 'PPKH', area: 280.5, certificate: 'HGU', certificateNo: 'PPKH-001/2018', coordinates: '-2.5350, 121.3550', lat: -2.5350, lng: 121.3550, acquisitionYear: 2018 },
-  { id: 12, code: 'LND-PPKH-002', locationName: 'PPKH Conservation Area 2', category: 'PPKH', area: 315.8, certificate: 'HGU', certificateNo: 'PPKH-002/2019', coordinates: '-2.5750, 121.3550', lat: -2.5750, lng: 121.3550, acquisitionYear: 2019 },
-  { id: 13, code: 'LND-OPS-001', locationName: 'Operational Base Camp', category: 'Operational', area: 35.5, certificate: 'SHGB', certificateNo: 'SHGB-020/2020', coordinates: '-2.5600, 121.3450', lat: -2.5600, lng: 121.3450, acquisitionYear: 2020 },
-  { id: 14, code: 'LND-OPS-002', locationName: 'Processing Plant Area', category: 'Operational', area: 120.3, certificate: 'HGU', certificateNo: 'HGU-008/2015', coordinates: '-2.5620, 121.3470', lat: -2.5620, lng: 121.3470, acquisitionYear: 2015 },
-  { id: 15, code: 'LND-OPS-003', locationName: 'Storage & Logistics', category: 'Operational', area: 48.7, certificate: 'SHGB', certificateNo: 'SHGB-021/2021', coordinates: '-2.5680, 121.3480', lat: -2.5680, lng: 121.3480, acquisitionYear: 2021 },
+  { id: 1, code: 'LND-VALE-001', locationName: 'Vale Central Mining Area', category: 'Vale Owned', area: 450.5, certificate: 'HGU', certificateNo: 'HGU-001/2015', coordinates: '-2.5650, 121.3450', lat: -2.5650, lng: 121.3450, acquisitionYear: 2015, documents: ['HGU-001-2015.pdf', 'Peta-Kadaster.pdf'] },
+  { id: 2, code: 'LND-VALE-002', locationName: 'Vale North Sector', category: 'Vale Owned', area: 320.8, certificate: 'HGU', certificateNo: 'HGU-002/2016', coordinates: '-2.5500, 121.3500', lat: -2.5500, lng: 121.3500, acquisitionYear: 2016, documents: ['HGU-002-2016.pdf', 'Site-Plan.pdf'] },
+  { id: 3, code: 'LND-VALE-003', locationName: 'Vale South Sector', category: 'Vale Owned', area: 285.3, certificate: 'HGU', certificateNo: 'HGU-003/2017', coordinates: '-2.5800, 121.3400', lat: -2.5800, lng: 121.3400, acquisitionYear: 2017, documents: ['HGU-003-2017.pdf'] },
+  { id: 4, code: 'LND-ACQ-001', locationName: 'Sorowako Expansion Area', category: 'Acquired', area: 125.5, certificate: 'SHM', certificateNo: 'SHM-045/2020', coordinates: '-2.5595, 121.3415', lat: -2.5595, lng: 121.3415, acquisitionYear: 2020, documents: ['SHM-045-2020.pdf', 'Akta-Jual-Beli.pdf', 'PPJB.pdf'] },
+  { id: 5, code: 'LND-ACQ-002', locationName: 'Magani Buffer Zone', category: 'Acquired', area: 98.7, certificate: 'SHM', certificateNo: 'SHM-046/2021', coordinates: '-2.5605, 121.3465', lat: -2.5605, lng: 121.3465, acquisitionYear: 2021, documents: ['SHM-046-2021.pdf', 'Akta-Jual-Beli.pdf'] },
+  { id: 6, code: 'LND-ACQ-003', locationName: 'Wewangriu Access Road', category: 'Acquired', area: 45.2, certificate: 'SHGB', certificateNo: 'SHGB-012/2022', coordinates: '-2.5685, 121.3425', lat: -2.5685, lng: 121.3425, acquisitionYear: 2022, documents: ['SHGB-012-2022.pdf', 'Perjanjian-Kompensasi.pdf'] },
+  { id: 7, code: 'LND-ACQ-004', locationName: 'Nikkel Infrastructure', category: 'Acquired', area: 67.8, certificate: 'SHM', certificateNo: 'SHM-047/2023', coordinates: '-2.5695, 121.3485', lat: -2.5695, lng: 121.3485, acquisitionYear: 2023, documents: ['SHM-047-2023.pdf'] },
+  { id: 8, code: 'LND-IUPK-001', locationName: 'IUPK Block A', category: 'IUPK', area: 550.0, certificate: 'HGU', certificateNo: 'IUPK-A/2010', coordinates: '-2.5400, 121.3300', lat: -2.5400, lng: 121.3300, acquisitionYear: 2010, documents: ['SK-IUPK-A-2010.pdf', 'Peta-Wilayah-Kerja.pdf'] },
+  { id: 9, code: 'LND-IUPK-002', locationName: 'IUPK Block B', category: 'IUPK', area: 475.5, certificate: 'HGU', certificateNo: 'IUPK-B/2011', coordinates: '-2.5450, 121.3600', lat: -2.5450, lng: 121.3600, acquisitionYear: 2011, documents: ['SK-IUPK-B-2011.pdf'] },
+  { id: 10, code: 'LND-IUPK-003', locationName: 'IUPK Block C', category: 'IUPK', area: 390.2, certificate: 'HGU', certificateNo: 'IUPK-C/2012', coordinates: '-2.5700, 121.3300', lat: -2.5700, lng: 121.3300, acquisitionYear: 2012, documents: ['SK-IUPK-C-2012.pdf', 'AMDAL.pdf'] },
+  { id: 11, code: 'LND-PPKH-001', locationName: 'PPKH Conservation Area 1', category: 'PPKH', area: 280.5, certificate: 'HGU', certificateNo: 'PPKH-001/2018', coordinates: '-2.5350, 121.3550', lat: -2.5350, lng: 121.3550, acquisitionYear: 2018, documents: ['SK-PPKH-001-2018.pdf', 'RKL-RPL.pdf'] },
+  { id: 12, code: 'LND-PPKH-002', locationName: 'PPKH Conservation Area 2', category: 'PPKH', area: 315.8, certificate: 'HGU', certificateNo: 'PPKH-002/2019', coordinates: '-2.5750, 121.3550', lat: -2.5750, lng: 121.3550, acquisitionYear: 2019, documents: ['SK-PPKH-002-2019.pdf'] },
+  { id: 13, code: 'LND-OPS-001', locationName: 'Operational Base Camp', category: 'Operational', area: 35.5, certificate: 'SHGB', certificateNo: 'SHGB-020/2020', coordinates: '-2.5600, 121.3450', lat: -2.5600, lng: 121.3450, acquisitionYear: 2020, documents: ['SHGB-020-2020.pdf', 'IMB.pdf'] },
+  { id: 14, code: 'LND-OPS-002', locationName: 'Processing Plant Area', category: 'Operational', area: 120.3, certificate: 'HGU', certificateNo: 'HGU-008/2015', coordinates: '-2.5620, 121.3470', lat: -2.5620, lng: 121.3470, acquisitionYear: 2015, documents: ['HGU-008-2015.pdf', 'Izin-Operasional.pdf', 'UKL-UPL.pdf'] },
+  { id: 15, code: 'LND-OPS-003', locationName: 'Storage & Logistics', category: 'Operational', area: 48.7, certificate: 'SHGB', certificateNo: 'SHGB-021/2021', coordinates: '-2.5680, 121.3480', lat: -2.5680, lng: 121.3480, acquisitionYear: 2021, documents: ['SHGB-021-2021.pdf'] },
 ])
 
 const filteredLands = computed(() => {
@@ -629,7 +685,8 @@ const addLand = () => {
     certificateNo: '',
     lat: '',
     lng: '',
-    acquisitionYear: null
+    acquisitionYear: null,
+    documents: []
   }
   openLandModal()
 }
@@ -646,7 +703,8 @@ const editLand = (land: Land) => {
     certificateNo: land.certificateNo,
     lat: land.lat.toString(),
     lng: land.lng.toString(),
-    acquisitionYear: land.acquisitionYear
+    acquisitionYear: land.acquisitionYear,
+    documents: [...land.documents]
   }
   openLandModal()
 }
@@ -676,7 +734,8 @@ const saveLand = () => {
         coordinates,
         lat,
         lng,
-        acquisitionYear: formData.value.acquisitionYear
+        acquisitionYear: formData.value.acquisitionYear,
+        documents: formData.value.documents
       }
       alert(`Lahan ${formData.value.code} berhasil diupdate!`)
     }
@@ -693,7 +752,8 @@ const saveLand = () => {
       coordinates,
       lat,
       lng,
-      acquisitionYear: formData.value.acquisitionYear
+      acquisitionYear: formData.value.acquisitionYear,
+      documents: formData.value.documents
     })
     alert(`Lahan ${formData.value.code} berhasil ditambahkan!`)
   }
@@ -717,6 +777,22 @@ const deleteLand = (land: Land) => {
   }
 }
 
+const addDocument = () => {
+  if (newDocument.value.trim()) {
+    formData.value.documents.push(newDocument.value.trim())
+    newDocument.value = ''
+  }
+}
+
+const removeDocument = (index: number) => {
+  formData.value.documents.splice(index, 1)
+}
+
+const viewDocuments = (land: Land) => {
+  const docList = land.documents.map((doc, idx) => `${idx + 1}. ${doc}`).join('\n')
+  alert(`Dokumen Lahan: ${land.code}\n\n${docList}`)
+}
+
 const openLandModal = () => {
   if (landModalRef.value) {
     const Modal = (window as any).bootstrap?.Modal
@@ -737,7 +813,7 @@ const closeLandModal = () => {
 }
 
 const exportData = () => {
-  const headers = ['No', 'Kode Lahan', 'Nama Lokasi', 'Kategori', 'Luas (Ha)', 'Status Sertifikat', 'No. Sertifikat', 'Koordinat', 'Tahun Akuisisi']
+  const headers = ['No', 'Kode Lahan', 'Nama Lokasi', 'Kategori', 'Luas (Ha)', 'Status Sertifikat', 'No. Sertifikat', 'Koordinat', 'Tahun Akuisisi', 'Dokumen']
   
   const rows = filteredLands.value.map((land, index) => [
     index + 1,
@@ -748,7 +824,8 @@ const exportData = () => {
     land.certificate,
     land.certificateNo || '-',
     land.coordinates,
-    land.acquisitionYear || '-'
+    land.acquisitionYear || '-',
+    land.documents.length > 0 ? land.documents.join('; ') : '-'
   ])
 
   const csvContent = [
