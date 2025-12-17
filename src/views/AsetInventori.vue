@@ -748,7 +748,26 @@ const editAsset = (asset: Asset) => {
     buildingArea: asset.buildingArea,
     certificateStatus: asset.certificateStatus,
     lat: asset.lat.toString(),
-    lng: asset.lng.toString()
+    lng: asset.lng.toString(),
+    // Form Identitas Kepala Keluarga - empty for existing data
+    namaDepan: '',
+    namaTengah: '',
+    namaBelakang: '',
+    namaAyah: '',
+    namaKakek: '',
+    namaPasangan: '',
+    nomorTelepon: '',
+    nik: '',
+    kecamatan: '',
+    kabupaten: '',
+    provinsi: '',
+    namaResponden: '',
+    hubunganResponden: '',
+    // Identifikasi Rumah Tangga dan PAP - empty for existing data
+    kodeEnumerator: '',
+    tanggalSurvei: '',
+    kodeFotoSurvei: '',
+    idUnik: ''
   }
   openModal()
 }
