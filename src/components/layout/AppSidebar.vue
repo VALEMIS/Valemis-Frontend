@@ -61,12 +61,55 @@
           </li>
           
           <!-- 5. Land Litigasi/Claim Module -->
-          <li class="nav-item" :class="{ active: route.path.startsWith('/land-litigasi') }">
-            <router-link to="/land-litigasi" class="nav-link">
+          <li class="nav-item"
+              :class="{ 
+                'menu-open': route.path.startsWith('/land-litigasi'),
+                active: route.path.startsWith('/land-litigasi')
+              }">
+
+            <a href="#" class="nav-link">
               <i class="nav-icon bi bi-exclamation-triangle-fill"></i>
-              <p>Land Litigasi/Claim</p>
-            </router-link>
+              <p>
+                Land Litigasi / Claim
+                <!-- <i class="right bi bi-chevron-left"></i> -->
+              </p>
+            </a>
+
+            <ul class="nav nav-treeview">
+              <li class="nav-item">
+                <router-link
+                  to="/land-litigasi/parcel"
+                  class="nav-link"
+                  :class="{ active: route.path === '/land-litigasi/parcel' }">
+                  <i class="bi bi-dot nav-icon"></i>
+                  <p>Data Spasial</p>
+                </router-link>
+              </li>
+
+              <li class="nav-item">
+                <router-link
+                  to="/land-litigasi/claim"
+                  class="nav-link"
+                  :class="{ active: route.path.startsWith('/land-litigasi/claim') }"
+                >
+                  <i class="bi bi-dot nav-icon"></i>
+                  <p>Data Claim</p>
+                </router-link>
+
+              </li>
+
+              <li class="nav-item">
+                <router-link
+                  to="/land-litigasi/log"
+                  class="nav-link"
+                  :class="{ active: route.path === '/land-litigasi/log' }">
+                  <i class="bi bi-dot nav-icon"></i>
+                  <p>Riwayat Kasus</p>
+                </router-link>
+              </li>
+            </ul>
           </li>
+
 
           <!-- 6. Stakeholder Management Module -->
           <li class="nav-item" :class="{ 'menu-open': route.path.startsWith('/stakeholder-management') }">
