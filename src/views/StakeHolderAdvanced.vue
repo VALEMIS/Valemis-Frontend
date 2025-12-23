@@ -618,59 +618,63 @@
                   <div class="col-md-6">
                     <h6 class="text-primary">Informasi Dasar</h6>
                     <table class="table table-sm">
-                      <tr>
-                        <th width="40%">ID</th>
-                        <td>{{ selectedStakeholder.stakeholder_id }}</td>
-                      </tr>
-                      <tr>
-                        <th>Nama Lengkap</th>
-                        <td><strong>{{ selectedStakeholder.nama_lengkap }}</strong></td>
-                      </tr>
-                      <tr>
-                        <th>Nama Panggilan</th>
-                        <td>{{ selectedStakeholder.nama_panggilan }}</td>
-                      </tr>
-                      <tr>
-                        <th>Jenis</th>
-                        <td>{{ selectedStakeholder.jenis_stakeholder }}</td>
-                      </tr>
-                      <tr>
-                        <th>Peran</th>
-                        <td>{{ selectedStakeholder.peran_di_proyek }}</td>
-                      </tr>
+                      <tbody>
+                        <tr>
+                          <th width="40%">ID</th>
+                          <td>{{ selectedStakeholder.stakeholder_id }}</td>
+                        </tr>
+                        <tr>
+                          <th>Nama Lengkap</th>
+                          <td><strong>{{ selectedStakeholder.nama_lengkap }}</strong></td>
+                        </tr>
+                        <tr>
+                          <th>Nama Panggilan</th>
+                          <td>{{ selectedStakeholder.nama_panggilan }}</td>
+                        </tr>
+                        <tr>
+                          <th>Jenis</th>
+                          <td>{{ selectedStakeholder.jenis_stakeholder }}</td>
+                        </tr>
+                        <tr>
+                          <th>Peran</th>
+                          <td>{{ selectedStakeholder.peran_di_proyek }}</td>
+                        </tr>
+                      </tbody>
                     </table>
                   </div>
                   <div class="col-md-6">
                     <h6 class="text-primary">Klasifikasi & Analisis</h6>
                     <table class="table table-sm">
-                      <tr>
-                        <th width="40%">Level Pengaruh</th>
-                        <td>
-                          <span class="badge" :class="getBadgeInfluence(selectedStakeholder.level_pengaruh)">
-                            {{ selectedStakeholder.level_pengaruh }}/5
-                          </span>
-                        </td>
-                      </tr>
-                      <tr>
-                        <th>Level Kepentingan</th>
-                        <td>
-                          <span class="badge" :class="getBadgeInterest(selectedStakeholder.level_kepentingan)">
-                            {{ selectedStakeholder.level_kepentingan }}/5
-                          </span>
-                        </td>
-                      </tr>
-                      <tr>
-                        <th>Klasifikasi Sikap</th>
-                        <td>
-                          <span class="badge" :class="getBadgeSentimen(selectedStakeholder.klasifikasi_sikap)">
-                            {{ selectedStakeholder.klasifikasi_sikap }}
-                          </span>
-                        </td>
-                      </tr>
-                      <tr>
-                        <th>Strategi Engagement</th>
-                        <td><small>{{ selectedStakeholder.strategi_engagement }}</small></td>
-                      </tr>
+                      <tbody>
+                        <tr>
+                          <th width="40%">Level Pengaruh</th>
+                          <td>
+                            <span class="badge" :class="getBadgeInfluence(selectedStakeholder.level_pengaruh)">
+                              {{ selectedStakeholder.level_pengaruh }}/5
+                            </span>
+                          </td>
+                        </tr>
+                        <tr>
+                          <th>Level Kepentingan</th>
+                          <td>
+                            <span class="badge" :class="getBadgeInterest(selectedStakeholder.level_kepentingan)">
+                              {{ selectedStakeholder.level_kepentingan }}/5
+                            </span>
+                          </td>
+                        </tr>
+                        <tr>
+                          <th>Klasifikasi Sikap</th>
+                          <td>
+                            <span class="badge" :class="getBadgeSentimen(selectedStakeholder.klasifikasi_sikap)">
+                              {{ selectedStakeholder.klasifikasi_sikap }}
+                            </span>
+                          </td>
+                        </tr>
+                        <tr>
+                          <th>Strategi Engagement</th>
+                          <td><small>{{ selectedStakeholder.strategi_engagement }}</small></td>
+                        </tr>
+                      </tbody>
                     </table>
                   </div>
                 </div>
