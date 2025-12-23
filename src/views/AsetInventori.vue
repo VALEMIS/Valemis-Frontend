@@ -669,6 +669,29 @@ const initAssetMap = () => {
     `)
   })
 
+  // Draw IUPK Valemis boundary (larger area encompassing all villages)
+  const iupkBoundary: [number, number][] = [
+    [-2.556, 121.338],  // Northwest corner
+    [-2.556, 121.353],  // Northeast corner
+    [-2.574, 121.353],  // Southeast corner
+    [-2.574, 121.338],  // Southwest corner
+    [-2.556, 121.338]   // Close the polygon
+  ]
+
+  L.polygon(iupkBoundary, {
+    color: '#0d6efd',        // Blue border
+    weight: 3,               // Thicker border for visibility
+    fillColor: '#0d6efd',    // Blue fill
+    fillOpacity: 0.05,       // Very low opacity to not obscure villages
+    dashArray: '10, 5'       // Dashed line for distinction
+  }).addTo(assetMap!).bindPopup(`
+    <div style="min-width: 200px;">
+      <h6><strong>Area IUPK Valemis</strong></h6>
+      <p class="mb-1"><small>Izin Usaha Pertambangan Khusus</small></p>
+      <p class="mb-0"><small>Mencakup 4 desa: Sorowako, Magani, Wewangriu, Nikkel</small></p>
+    </div>
+  `)
+
   // Draw village polygons
   const villagePolygons: Record<string, [number, number][]> = {
     'Desa Sorowako': [[-2.558, 121.340], [-2.559, 121.344], [-2.562, 121.345], [-2.563, 121.343], [-2.561, 121.339], [-2.559, 121.339], [-2.558, 121.340]],
