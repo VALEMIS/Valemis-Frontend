@@ -448,8 +448,9 @@
 <script setup lang="ts">
 import { ref, computed, onMounted, onUnmounted, watch, nextTick } from 'vue'
 import L from 'leaflet'
-import 'leaflet/dist/leaflet.css'
-
+import 'leaflet/dist/leaflet.css' 
+import "@geoman-io/leaflet-geoman-free";
+import "@geoman-io/leaflet-geoman-free/dist/leaflet-geoman.css";
 interface Land {
   id: number
   code: string
@@ -602,7 +603,11 @@ const initLandMap = () => {
   if (!landMapContainer.value) return
 
   landMap = L.map('land-map').setView([-2.5650, 121.3450], 12)
-
+  landMap.pm.addControls({  
+    position: 'topleft',  
+    drawCircleMarker: false,
+    rotateMode: false,
+  }); 
   L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
     attribution: '© OpenStreetMap contributors',
     maxZoom: 19
