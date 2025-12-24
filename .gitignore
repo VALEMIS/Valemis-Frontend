@@ -87,3 +87,7 @@ $RECYCLE.BIN/
 
 # Tailwind CSS
 .postcssrc
+
+# Markdown files (except README.md)
+*.md
+!README.md
