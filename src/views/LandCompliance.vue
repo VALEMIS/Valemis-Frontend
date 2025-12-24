@@ -1,9 +1,6 @@
 <template>
   <div class="container d-grid gap-0 row-gap-3">
     <h2>Compliance</h2>
-
-    
-
     <div id="map"></div>
     <div class="card"> 
       <div class="card-header">

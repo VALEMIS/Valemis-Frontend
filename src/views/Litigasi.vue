@@ -564,10 +564,11 @@ const editLitigation = (litigation: Litigation) => {
 const saveLitigation = () => {
   if (isEditMode.value && formData.value.id) {
     const index = litigations.value.findIndex(l => l.id === formData.value.id)
-    if (index !== -1) {
+    if (index !== -1 && formData.value.id && litigations.value[index]) {
+      const currentLitigation = litigations.value[index]
       litigations.value[index] = {
-        id: litigations.value[index].id,
-        caseCode: litigations.value[index].caseCode,
+        id: formData.value.id,
+        caseCode: currentLitigation.caseCode,
         landCode: formData.value.landCode,
         caseType: formData.value.caseType,
         claimant: formData.value.claimant,

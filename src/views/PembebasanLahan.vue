@@ -18,7 +18,112 @@
 
     <div class="app-content">
       <div class="container-fluid">
-        <!-- Filter Section -->
+        <!-- Projects Cards (Paling Atas) -->
+        <div class="row mb-3">
+          <div class="col-md-4" v-for="project in projectSummary" :key="project.name">
+            <div class="card border-left-primary">
+              <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center mb-2">
+                  <h5 class="mb-0">{{ project.name }}</h5>
+                  <span class="badge bg-primary">{{ project.progress }}%</span>
+                </div>
+                <div class="progress mb-2" style="height: 8px;">
+                  <div class="progress-bar bg-success" :style="{ width: project.progress + '%' }"></div>
+                </div>
+                <div class="row text-center">
+                  <div class="col-3">
+                    <small class="text-muted">Terdampak</small>
+                    <p class="mb-0"><strong>{{ project.totalParcels }}</strong></p>
+                  </div>
+                  <div class="col-3">
+                    <small class="text-muted">Bebas</small>
+                    <p class="mb-0"><strong class="text-success">{{ project.bebas }}</strong></p>
+                  </div>
+                  <div class="col-6">
+                    <small class="text-muted">Biaya</small>
+                    <p class="mb-0" style="white-space: nowrap; overflow: visible;"><strong style="font-size: 0.9rem;">{{ formatRupiah(project.totalCost) }}</strong></p>
+                  </div>
+                </div>
+                <button class="btn btn-sm btn-outline-primary mt-2 w-100" @click="filterByProject(project.name || '')">
+                  <i class="bi bi-eye"></i> Lihat Detail
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Map Toggle Button -->
+        <div class="row mb-3">
+          <div class="col-12">
+            <div class="card bg-primary text-white">
+              <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center">
+                  <div>
+                    <h5 class="mb-0"><i class="bi bi-map"></i> Visualisasi Dampak Project</h5>
+                    <small>Lihat peta interaktif project dan desa terdampak</small>
+                  </div>
+                  <button class="btn btn-light" @click="toggleMapView">
+                    <i class="bi" :class="showMap ? 'bi-eye-slash' : 'bi-map'"></i>
+                    {{ showMap ? 'Sembunyikan Peta' : 'Tampilkan Peta' }}
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Map View -->
+        <div v-if="showMap" class="row mb-3">
+          <div class="col-12">
+            <div class="card">
+              <div class="card-header">
+                <h3 class="card-title">
+                  <i class="bi bi-map"></i> Peta Dampak Project terhadap Desa
+                  <span v-if="selectedMapProject" class="badge bg-primary ms-2">{{ selectedMapProject }}</span>
+                </h3>
+                <div class="card-tools" v-if="selectedMapProject">
+                  <button class="btn btn-sm btn-secondary" @click="clearMapFilter">
+                    <i class="bi bi-x-circle"></i> Tampilkan Semua Project
+                  </button>
+                </div>
+              </div>
+              <div class="card-body">
+                <div id="acquisition-map" ref="acquisitionMapContainer" style="height: 600px; border-radius: 8px;"></div>
+                
+                <!-- Legend -->
+                <div class="mt-3 p-3 bg-light rounded">
+                  <h6><strong>Legend:</strong></h6>
+                  <div class="row">
+                    <div class="col-md-3 mb-2">
+                      <span style="display: inline-block; width: 20px; height: 20px; background: rgba(13, 110, 253, 0.05); border: 2px dashed #0d6efd;"></span>
+                      <small class="ms-2">IUPK Valemis</small>
+                    </div>
+                    <div class="col-md-3 mb-2">
+                      <span style="display: inline-block; width: 20px; height: 20px; background: rgba(255, 193, 7, 0.3); border: 2px solid #ffc107;"></span>
+                      <small class="ms-2">Project Alpha</small>
+                    </div>
+                    <div class="col-md-3 mb-2">
+                      <span style="display: inline-block; width: 20px; height: 20px; background: rgba(13, 202, 240, 0.3); border: 2px solid #0dcaf0;"></span>
+                      <small class="ms-2">Project Beta</small>
+                    </div>
+                    <div class="col-md-3 mb-2">
+                      <span style="display: inline-block; width: 20px; height: 20px; background: rgba(25, 135, 84, 0.3); border: 2px solid #198754;"></span>
+                      <small class="ms-2">Project Gamma</small>
+                    </div>
+                  </div>
+                  <div class="row mt-2">
+                    <div class="col-md-12">
+                      <span style="display: inline-block; width: 20px; height: 20px; background: rgba(220, 53, 69, 0.1); border: 2px solid #dc3545;"></span>
+                      <small class="ms-2">Batas Desa</small>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Filter Section (Di bawah peta) -->
         <div class="row mb-3">
           <div class="col-md-3">
             <div class="card">
@@ -63,40 +168,6 @@
                     <small>Dalam Negosiasi</small>
                   </div>
                 </div>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <!-- Projects Cards -->
-        <div class="row mb-3">
-          <div class="col-md-4" v-for="project in projectSummary" :key="project.name">
-            <div class="card border-left-primary">
-              <div class="card-body">
-                <div class="d-flex justify-content-between align-items-center mb-2">
-                  <h5 class="mb-0">{{ project.name }}</h5>
-                  <span class="badge bg-primary">{{ project.progress }}%</span>
-                </div>
-                <div class="progress mb-2" style="height: 8px;">
-                  <div class="progress-bar bg-success" :style="{ width: project.progress + '%' }"></div>
-                </div>
-                <div class="row text-center">
-                  <div class="col-3">
-                    <small class="text-muted">Terdampak</small>
-                    <p class="mb-0"><strong>{{ project.totalParcels }}</strong></p>
-                  </div>
-                  <div class="col-3">
-                    <small class="text-muted">Bebas</small>
-                    <p class="mb-0"><strong class="text-success">{{ project.bebas }}</strong></p>
-                  </div>
-                  <div class="col-6">
-                    <small class="text-muted">Biaya</small>
-                    <p class="mb-0" style="white-space: nowrap; overflow: visible;"><strong style="font-size: 0.9rem;">{{ formatRupiah(project.totalCost) }}</strong></p>
-                  </div>
-                </div>
-                <button class="btn btn-sm btn-outline-primary mt-2 w-100" @click="filterByProject(project.name)">
-                  <i class="bi bi-eye"></i> Lihat Detail
-                </button>
               </div>
             </div>
           </div>
@@ -419,7 +490,8 @@ import L from 'leaflet'
 import 'leaflet/dist/leaflet.css' 
 import "@geoman-io/leaflet-geoman-free";
 import "@geoman-io/leaflet-geoman-free/dist/leaflet-geoman.css";
-import { ref, computed,onMounted } from 'vue'
+import { ref, computed,onMounted, onUnmounted, watch, nextTick } from 'vue'
+import 'leaflet/dist/leaflet.css'
 
 interface Parcel {
   id: number
@@ -450,11 +522,18 @@ const selectedProject = ref<string>('all')
 const selectedStatus = ref<string>('all')
 const parcelModalRef = ref<HTMLElement | null>(null)
 const historyModalRef = ref<HTMLElement | null>(null)
+
 let selectedGeometry:any = null
 let parcelModalInstance: any = null
 let historyModalInstance: any = null
 let map: L.Map | null = null
 let  uploadedGeojson = null
+
+// Map state
+const showMap = ref<boolean>(true)  // Default to show map first
+const acquisitionMapContainer = ref<HTMLElement | null>(null)
+let acquisitionMap: L.Map | null = null
+const selectedMapProject = ref<string | null>(null)
 
 // Form state
 const isEditMode = ref<boolean>(false)
@@ -556,8 +635,22 @@ const filterData = () => {
 }
 
 const filterByProject = (projectName: string) => {
-  const fullProjectName = parcels.value.find(p => p.project.startsWith(projectName))?.project || projectName
-  selectedProject.value = fullProjectName
+  const fullProjectName = parcels.value.find(p => p.project.startsWith(projectName))?.project
+  selectedProject.value = fullProjectName || projectName
+  
+  // Show map with filtered project
+  selectedMapProject.value = projectName
+  showMap.value = true
+  nextTick(() => {
+    initAcquisitionMap()
+    // Scroll to map
+    acquisitionMapContainer.value?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+  })
+}
+
+const clearMapFilter = () => {
+  selectedMapProject.value = null
+  initAcquisitionMap()
 }
 
 const getStatusClass = (status: string) => {
@@ -602,7 +695,7 @@ const markAsBebas = (parcel: Parcel) => {
   
   if (confirm(`Tandai parcel ${parcel.code} sebagai Bebas?`)) {
     parcel.status = 'Bebas'
-    parcel.negotiationDate = new Date().toISOString().split('T')[0]
+    parcel.negotiationDate = new Date().toISOString().split('T')[0] || '-'
     alert('Status berhasil diupdate menjadi Bebas. Negosiasi telah di-clear.')
   }
 }
@@ -617,7 +710,8 @@ const addParcel = () => {
     area: 0,
     status: '',
     jumlahBebas: 0,
-    biayaPembebasan: 0
+    biayaPembebasan: 0,
+    id: undefined
   }
   openParcelModal()
 }
@@ -642,9 +736,9 @@ const saveParcel = () => {
   if (isEditMode.value && formData.value.id) {
     // Edit existing parcel
     const index = parcels.value.findIndex(p => p.id === formData.value.id)
-    if (index !== -1) {
+    if (index !== -1 && formData.value.id && parcels.value[index]) {
       parcels.value[index] = {
-        id: parcels.value[index].id,
+        id: formData.value.id,
         code: parcels.value[index].code,
         project: formData.value.project,
         ownerName: formData.value.ownerName,
@@ -737,6 +831,7 @@ const openHistoryModal = () => {
   }
 }
 
+// @ts-ignore - Reserved for future use
 const closeHistoryModal = () => {
   if (historyModalInstance) {
     historyModalInstance.hide()
@@ -747,6 +842,67 @@ const closeHistoryModal = () => {
   }
 }
 
+function initMap(){
+  map = L.map("map").setView([-2, 118], 5)
+  L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png").addTo(map)
+  map.pm.addControls({  
+    position: 'topleft',  
+    drawCircleMarker: false,
+    rotateMode: false,
+  }); 
+}
+function handleGeoJsonUpload(){
+
+ const file = event.target.files[0]
+  if (!file) return
+
+  const reader = new FileReader()
+
+  reader.onload = (e) => {
+    try {
+      uploadedGeojson = JSON.parse(e.target.result)
+      console.log('Hasil JSON:', uploadedGeojson)
+
+
+      // 🔥 buat layer baru
+      var selectedLayer:any
+      var geojsonLayer = new L.GeoJSON(uploadedGeojson, {
+          style: {
+            color: '#3388ff',
+            weight: 2
+          },
+          onEachFeature: (feature, layer) => {
+            layer.on('click', () => {
+              // 🔥 reset highlight lama
+              if (selectedLayer) {
+                geojsonLayer.resetStyle(selectedLayer)
+              }
+
+              // 🔥 highlight layer baru
+              layer.setStyle({
+                color: 'yellow',
+                weight: 4
+              })
+
+              selectedLayer = layer
+
+              // 🔥 simpan geometry
+              selectedGeometry = feature.geometry
+
+              console.log('Selected geometry:', selectedGeometry)
+            })
+          }
+        }).addTo(map)
+      // 🔥 auto zoom ke data
+      map.fitBounds(geojsonLayer.getBounds())
+
+    } catch (err) {
+      console.error('JSON tidak valid:', err)
+    }
+  }
+
+  reader.readAsText(file)
+}
 const exportData = () => {
   // Generate CSV data
   const headers = ['No', 'Kode Parcel', 'Project', 'Nama Pemilik', 'Desa', 'Luas (m²)', 'Status Negosiasi', 'Jumlah Bebas', 'Biaya Pembebasan', 'Tanggal Negosiasi']
@@ -784,6 +940,188 @@ const exportData = () => {
   
   alert('Data berhasil di-export ke CSV!')
 }
+
+// Map functions
+const toggleMapView = () => {
+  showMap.value = !showMap.value
+}
+
+const initAcquisitionMap = () => {
+  if (acquisitionMap) {
+    acquisitionMap.remove()
+  }
+
+  if (!acquisitionMapContainer.value) return
+
+  // Center on IUPK area
+  acquisitionMap = L.map('acquisition-map').setView([-2.565, 121.345], 13)
+
+  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    attribution: '© OpenStreetMap contributors',
+    maxZoom: 19
+  }).addTo(acquisitionMap)
+
+  // 1. Draw IUPK boundary
+  const iupkBoundary: [number, number][] = [
+    [-2.556, 121.338],
+    [-2.556, 121.353],
+    [-2.574, 121.353],
+    [-2.574, 121.338],
+    [-2.556, 121.338]
+  ]
+
+  L.polygon(iupkBoundary, {
+    color: '#0d6efd',
+    weight: 3,
+    fillColor: '#0d6efd',
+    fillOpacity: 0.05,
+    dashArray: '10, 5'
+  }).addTo(acquisitionMap).bindPopup(`
+    <div style="min-width: 200px;">
+      <h6><strong>Area IUPK Valemis</strong></h6>
+      <p class="mb-0"><small>Izin Usaha Pertambangan Khusus</small></p>
+    </div>
+  `)
+
+  // 2. Define project areas with coordinates
+  const projectAreas: Record<string, { coords: [number, number][], color: string, villages: string[] }> = {
+    'Project Alpha - Mining Expansion': {
+      coords: [
+        [-2.557, 121.339],
+        [-2.557, 121.351],
+        [-2.565, 121.351],
+        [-2.565, 121.339],
+        [-2.557, 121.339]
+      ],
+      color: '#ffc107',
+      villages: ['Desa Sorowako', 'Desa Magani']
+    },
+    'Project Beta - Infrastructure Development': {
+      coords: [
+        [-2.566, 121.340],
+        [-2.566, 121.347],
+        [-2.573, 121.347],
+        [-2.573, 121.340],
+        [-2.566, 121.340]
+      ],
+      color: '#0dcaf0',
+      villages: ['Desa Wewangriu']
+    },
+    'Project Gamma - Road Access': {
+      coords: [
+        [-2.567, 121.346],
+        [-2.567, 121.353],
+        [-2.574, 121.353],
+        [-2.574, 121.346],
+        [-2.567, 121.346]
+      ],
+      color: '#198754',
+      villages: ['Desa Nikkel']
+    }
+  }
+
+  // 3. Draw project areas (filtered if selectedMapProject is set)
+  Object.entries(projectAreas).forEach(([projectName, data]) => {
+    // Skip if filtering and this is not the selected project
+    if (selectedMapProject.value && !projectName.startsWith(selectedMapProject.value)) {
+      return
+    }
+
+    const projectParcels = parcels.value.filter(p => p.project === projectName)
+    const bebasCount = projectParcels.filter(p => p.status === 'Bebas').length
+    const progress = projectParcels.length > 0 
+      ? Math.round((bebasCount / projectParcels.length) * 100) 
+      : 0
+
+    const totalCostProject = projectParcels.reduce((sum, p) => {
+      const cost = typeof p.biayaPembebasan === 'number' ? p.biayaPembebasan : 0
+      return sum + cost
+    }, 0)
+
+    L.polygon(data.coords, {
+      color: data.color,
+      weight: 3,
+      fillColor: data.color,
+      fillOpacity: 0.3
+    }).addTo(acquisitionMap!).bindPopup(`
+      <div style="min-width: 280px;">
+        <h6><strong>${projectName.split(' - ')[0]}</strong></h6>
+        <p class="mb-1"><small>${projectName.split(' - ')[1]}</small></p>
+        <hr class="my-2">
+        <p class="mb-1"><strong>Desa Terdampak:</strong><br>${data.villages.map(v => v.replace('Desa ', '')).join(', ')}</p>
+        <p class="mb-1"><strong>Total Parcels:</strong> ${projectParcels.length}</p>
+        <p class="mb-1"><strong>Progress:</strong> ${progress}% (${bebasCount}/${projectParcels.length} bebas)</p>
+        <p class="mb-0"><strong>Total Biaya:</strong> ${formatRupiah(totalCostProject)}</p>
+      </div>
+    `)
+  })
+
+  // 4. Draw village polygons (filtered if selectedMapProject is set)
+  const villagePolygons: Record<string, [number, number][]> = {
+    'Desa Sorowako': [[-2.558, 121.340], [-2.559, 121.344], [-2.562, 121.345], [-2.563, 121.343], [-2.561, 121.339], [-2.559, 121.339], [-2.558, 121.340]],
+    'Desa Magani': [[-2.559, 121.345], [-2.560, 121.349], [-2.563, 121.350], [-2.564, 121.347], [-2.562, 121.344], [-2.560, 121.344], [-2.559, 121.345]],
+    'Desa Wewangriu': [[-2.567, 121.341], [-2.568, 121.345], [-2.571, 121.346], [-2.572, 121.343], [-2.570, 121.340], [-2.568, 121.340], [-2.567, 121.341]],
+    'Desa Nikkel': [[-2.568, 121.347], [-2.569, 121.351], [-2.572, 121.352], [-2.573, 121.349], [-2.571, 121.346], [-2.569, 121.346], [-2.568, 121.347]]
+  }
+
+  Object.entries(villagePolygons).forEach(([villageName, coords]) => {
+    const affectedProjects = Object.entries(projectAreas)
+      .filter(([_, data]) => data.villages.includes(villageName))
+      .map(([name, _]) => name.split(' - ')[0])
+
+    // Skip if filtering and this village is not affected by the selected project
+    if (selectedMapProject.value && !affectedProjects.includes(selectedMapProject.value)) {
+      return
+    }
+
+    const villageParcels = parcels.value.filter(p => p.village === villageName)
+    const bebasCount = villageParcels.filter(p => p.status === 'Bebas').length
+
+    L.polygon(coords, {
+      color: '#dc3545',
+      weight: 2,
+      fillColor: '#dc3545',
+      fillOpacity: 0.1
+    }).addTo(acquisitionMap!).bindPopup(`
+      <div style="min-width: 200px;">
+        <h6><strong>${villageName}</strong></h6>
+        ${affectedProjects.length > 0 
+          ? `<p class="mb-1"><strong>Terdampak oleh:</strong><br>${affectedProjects.join(', ')}</p>
+             <p class="mb-1"><strong>Parcels:</strong> ${villageParcels.length}</p>
+             <p class="mb-0"><strong>Status:</strong> ${bebasCount}/${villageParcels.length} bebas</p>`
+          : '<p class="mb-0"><em>Tidak ada project yang berdampak</em></p>'
+        }
+      </div>
+    `)
+  })
+}
+
+// Initialize map on mount if showMap is true
+onMounted(() => {
+  if (showMap.value) {
+    nextTick(() => {
+      initAcquisitionMap()
+    })
+  }
+})
+
+// Watch for map toggle
+watch(showMap, (newVal) => {
+  if (newVal) {
+    nextTick(() => {
+      initAcquisitionMap()
+    })
+  }
+})
+
+// Cleanup on unmount
+onUnmounted(() => {
+  if (acquisitionMap) {
+    acquisitionMap.remove()
+    acquisitionMap = null
+  }
+})
+
 </script>
 
 <style scoped>

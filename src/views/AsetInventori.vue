@@ -149,7 +149,7 @@
 
     <!-- Add/Edit Modal -->
     <div class="modal fade" id="assetModal" tabindex="-1" aria-labelledby="assetModalLabel" aria-hidden="true" ref="assetModalRef">
-      <div class="modal-dialog modal-lg">
+      <div class="modal-dialog modal-xl">
         <div class="modal-content">
           <div class="modal-header">
             <h5 class="modal-title" id="assetModalLabel">
@@ -159,105 +159,303 @@
           </div>
           <div class="modal-body">
             <form @submit.prevent="saveAsset">
-              <div class="row">
-                <div class="col-md-6 mb-3">
-                  <label class="form-label"><strong>Kode Asset</strong> <span class="text-danger">*</span></label>
-                  <input 
-                    type="text" 
-                    class="form-control" 
-                    v-model="formData.code" 
-                    placeholder="Contoh: AST-SRW-001"
-                    :disabled="isEditMode"
-                    required 
-                  />
+              <!-- Basic Asset Information -->
+              <div class="card mb-3">
+                <div class="card-header bg-primary text-white">
+                  <h6 class="mb-0"><strong>Informasi Dasar Asset</strong></h6>
                 </div>
-                <div class="col-md-6 mb-3">
-                  <label class="form-label"><strong>Nama Pemilik</strong> <span class="text-danger">*</span></label>
-                  <input 
-                    type="text" 
-                    class="form-control" 
-                    v-model="formData.ownerName" 
-                    placeholder="Nama lengkap pemilik"
-                    required 
-                  />
+                <div class="card-body">
+                  <div class="row">
+                    <div class="col-md-6 mb-3">
+                      <label class="form-label"><strong>Kode Asset</strong> <span class="text-danger">*</span></label>
+                      <input 
+                        type="text" 
+                        class="form-control" 
+                        v-model="formData.code" 
+                        placeholder="Contoh: AST-SRW-001"
+                        :disabled="isEditMode"
+                        required 
+                      />
+                    </div>
+                    <div class="col-md-6 mb-3">
+                      <label class="form-label"><strong>Nama Pemilik</strong> <span class="text-danger">*</span></label>
+                      <input 
+                        type="text" 
+                        class="form-control" 
+                        v-model="formData.ownerName" 
+                        placeholder="Nama lengkap pemilik"
+                        required 
+                      />
+                    </div>
+                  </div>
+
+                  <div class="row">
+                    <div class="col-md-6 mb-3">
+                      <label class="form-label"><strong>Desa</strong> <span class="text-danger">*</span></label>
+                      <select class="form-select" v-model="formData.village" required>
+                        <option value="">Pilih Desa</option>
+                        <option value="Desa Sorowako">Desa Sorowako</option>
+                        <option value="Desa Magani">Desa Magani</option>
+                        <option value="Desa Wewangriu">Desa Wewangriu</option>
+                        <option value="Desa Nikkel">Desa Nikkel</option>
+                      </select>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                      <label class="form-label"><strong>Status Sertifikat</strong> <span class="text-danger">*</span></label>
+                      <select class="form-select" v-model="formData.certificateStatus" required>
+                        <option value="">Pilih Status</option>
+                        <option value="SHM">SHM (Sertifikat Hak Milik)</option>
+                        <option value="SHGB">SHGB (Sertifikat Hak Guna Bangunan)</option>
+                        <option value="Girik">Girik</option>
+                        <option value="Belum Sertifikat">Belum Sertifikat</option>
+                      </select>
+                    </div>
+                  </div>
+
+                  <div class="row">
+                    <div class="col-md-6 mb-3">
+                      <label class="form-label"><strong>Luas Tanah (m²)</strong> <span class="text-danger">*</span></label>
+                      <input 
+                        type="number" 
+                        class="form-control" 
+                        v-model.number="formData.landArea" 
+                        placeholder="Contoh: 500"
+                        min="1"
+                        required 
+                      />
+                    </div>
+                    <div class="col-md-6 mb-3">
+                      <label class="form-label"><strong>Luas Bangunan (m²)</strong> <span class="text-danger">*</span></label>
+                      <input 
+                        type="number" 
+                        class="form-control" 
+                        v-model.number="formData.buildingArea" 
+                        placeholder="Contoh: 120"
+                        min="1"
+                        required 
+                      />
+                    </div>
+                  </div>
+
+                  <div class="row">
+                    <div class="col-md-6 mb-3">
+                      <label class="form-label"><strong>Latitude</strong> <span class="text-danger">*</span></label>
+                      <input 
+                        type="text" 
+                        class="form-control" 
+                        v-model="formData.lat" 
+                        placeholder="Contoh: -2.5595"
+                        required 
+                      />
+                      <small class="text-muted">Format: -2.5595</small>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                      <label class="form-label"><strong>Longitude</strong> <span class="text-danger">*</span></label>
+                      <input 
+                        type="text" 
+                        class="form-control" 
+                        v-model="formData.lng" 
+                        placeholder="Contoh: 121.3415"
+                        required 
+                      />
+                      <small class="text-muted">Format: 121.3415</small>
+                    </div>
+                  </div>
                 </div>
               </div>
 
-              <div class="row">
-                <div class="col-md-6 mb-3">
-                  <label class="form-label"><strong>Desa</strong> <span class="text-danger">*</span></label>
-                  <select class="form-select" v-model="formData.village" required>
-                    <option value="">Pilih Desa</option>
-                    <option value="Desa Sorowako">Desa Sorowako</option>
-                    <option value="Desa Magani">Desa Magani</option>
-                    <option value="Desa Wewangriu">Desa Wewangriu</option>
-                    <option value="Desa Nikkel">Desa Nikkel</option>
-                  </select>
+              <!-- Form Identitas Kepala Keluarga -->
+              <div class="card mb-3">
+                <div class="card-header bg-light">
+                  <h6 class="mb-0"><strong>Form Identitas Kepala Keluarga</strong></h6>
                 </div>
-                <div class="col-md-6 mb-3">
-                  <label class="form-label"><strong>Status Sertifikat</strong> <span class="text-danger">*</span></label>
-                  <select class="form-select" v-model="formData.certificateStatus" required>
-                    <option value="">Pilih Status</option>
-                    <option value="SHM">SHM (Sertifikat Hak Milik)</option>
-                    <option value="SHGB">SHGB (Sertifikat Hak Guna Bangunan)</option>
-                    <option value="Girik">Girik</option>
-                    <option value="Belum Sertifikat">Belum Sertifikat</option>
-                  </select>
+                <div class="card-body">
+                  <div class="row">
+                    <div class="col-md-4 mb-3">
+                      <label class="form-label">Nama Depan</label>
+                      <input 
+                        type="text" 
+                        class="form-control" 
+                        v-model="formData.namaDepan" 
+                        placeholder="Nama Depan"
+                      />
+                    </div>
+                    <div class="col-md-4 mb-3">
+                      <label class="form-label">Nama Tengah</label>
+                      <input 
+                        type="text" 
+                        class="form-control" 
+                        v-model="formData.namaTengah" 
+                        placeholder="Nama Tengah"
+                      />
+                    </div>
+                    <div class="col-md-4 mb-3">
+                      <label class="form-label">Nama Belakang</label>
+                      <input 
+                        type="text" 
+                        class="form-control" 
+                        v-model="formData.namaBelakang" 
+                        placeholder="Nama Belakang"
+                      />
+                    </div>
+                  </div>
+
+                  <div class="row">
+                    <div class="col-md-4 mb-3">
+                      <label class="form-label">Nama Ayah</label>
+                      <input 
+                        type="text" 
+                        class="form-control" 
+                        v-model="formData.namaAyah" 
+                        placeholder="Nama Ayah"
+                      />
+                    </div>
+                    <div class="col-md-4 mb-3">
+                      <label class="form-label">Nama Kakek</label>
+                      <input 
+                        type="text" 
+                        class="form-control" 
+                        v-model="formData.namaKakek" 
+                        placeholder="Nama Kakek"
+                      />
+                    </div>
+                    <div class="col-md-4 mb-3">
+                      <label class="form-label">Nama Pasangan</label>
+                      <input 
+                        type="text" 
+                        class="form-control" 
+                        v-model="formData.namaPasangan" 
+                        placeholder="Nama Pasangan"
+                      />
+                    </div>
+                  </div>
+
+                  <div class="row">
+                    <div class="col-md-4 mb-3">
+                      <label class="form-label">Nomor Telepon</label>
+                      <input 
+                        type="text" 
+                        class="form-control" 
+                        v-model="formData.nomorTelepon" 
+                        placeholder="0812xxxxxxx"
+                      />
+                    </div>
+                    <div class="col-md-4 mb-3">
+                      <label class="form-label">NIK</label>
+                      <input 
+                        type="text" 
+                        class="form-control" 
+                        v-model="formData.nik" 
+                        placeholder="16 digit NIK"
+                        maxlength="16"
+                      />
+                    </div>
+                    <div class="col-md-4 mb-3">
+                      <label class="form-label">Kecamatan</label>
+                      <input 
+                        type="text" 
+                        class="form-control" 
+                        v-model="formData.kecamatan" 
+                        placeholder="Kecamatan"
+                      />
+                    </div>
+                  </div>
+
+                  <div class="row">
+                    <div class="col-md-4 mb-3">
+                      <label class="form-label">Kabupaten</label>
+                      <input 
+                        type="text" 
+                        class="form-control" 
+                        v-model="formData.kabupaten" 
+                        placeholder="Kabupaten"
+                      />
+                    </div>
+                    <div class="col-md-4 mb-3">
+                      <label class="form-label">Provinsi</label>
+                      <input 
+                        type="text" 
+                        class="form-control" 
+                        v-model="formData.provinsi" 
+                        placeholder="Provinsi"
+                      />
+                    </div>
+                    <div class="col-md-4 mb-3">
+                      <label class="form-label">Nama Responden</label>
+                      <input 
+                        type="text" 
+                        class="form-control" 
+                        v-model="formData.namaResponden" 
+                        placeholder="Jika berbeda dengan Kepala Keluarga"
+                      />
+                    </div>
+                  </div>
+
+                  <div class="row">
+                    <div class="col-md-6 mb-3">
+                      <label class="form-label">Hubungan Responden dengan Kepala Keluarga</label>
+                      <select class="form-select" v-model="formData.hubunganResponden">
+                        <option value="">Pilih hubungan</option>
+                        <option value="Kepala Keluarga">Kepala Keluarga</option>
+                        <option value="Istri/Suami">Istri/Suami</option>
+                        <option value="Anak">Anak</option>
+                        <option value="Orang Tua">Orang Tua</option>
+                        <option value="Saudara">Saudara</option>
+                        <option value="Lainnya">Lainnya</option>
+                      </select>
+                    </div>
+                  </div>
                 </div>
               </div>
 
-              <div class="row">
-                <div class="col-md-6 mb-3">
-                  <label class="form-label"><strong>Luas Tanah (m²)</strong> <span class="text-danger">*</span></label>
-                  <input 
-                    type="number" 
-                    class="form-control" 
-                    v-model.number="formData.landArea" 
-                    placeholder="Contoh: 500"
-                    min="1"
-                    required 
-                  />
+              <!-- A. Identifikasi Rumah Tangga dan PAP -->
+              <div class="card mb-3">
+                <div class="card-header bg-light">
+                  <h6 class="mb-0"><strong>A. Identifikasi Rumah Tangga dan PAP</strong></h6>
                 </div>
-                <div class="col-md-6 mb-3">
-                  <label class="form-label"><strong>Luas Bangunan (m²)</strong> <span class="text-danger">*</span></label>
-                  <input 
-                    type="number" 
-                    class="form-control" 
-                    v-model.number="formData.buildingArea" 
-                    placeholder="Contoh: 120"
-                    min="1"
-                    required 
-                  />
-                </div>
-              </div>
+                <div class="card-body">
+                  <div class="row">
+                    <div class="col-md-4 mb-3">
+                      <label class="form-label">1. Kode Enumerator</label>
+                      <input 
+                        type="text" 
+                        class="form-control" 
+                        v-model="formData.kodeEnumerator" 
+                        placeholder="Kode Enumerator"
+                      />
+                    </div>
+                    <div class="col-md-4 mb-3">
+                      <label class="form-label">3. Tanggal (DD/MM/YYYY)</label>
+                      <input 
+                        type="date" 
+                        class="form-control" 
+                        v-model="formData.tanggalSurvei" 
+                        placeholder="dd/mm/yyyy"
+                      />
+                    </div>
+                    <div class="col-md-4 mb-3">
+                      <label class="form-label">4. Kode Foto Survei</label>
+                      <input 
+                        type="text" 
+                        class="form-control" 
+                        v-model="formData.kodeFotoSurvei" 
+                        placeholder="Kode Foto Survei"
+                      />
+                    </div>
+                  </div>
 
-              <div class="row">
-                <div class="col-md-6 mb-3">
-                  <label class="form-label"><strong>Latitude</strong> <span class="text-danger">*</span></label>
-                  <input 
-                    type="text" 
-                    class="form-control" 
-                    v-model="formData.lat" 
-                    placeholder="Contoh: -2.5595"
-                    required 
-                  />
-                  <small class="text-muted">Format: -2.5595</small>
+                  <div class="row">
+                    <div class="col-md-12 mb-3">
+                      <label class="form-label">5. ID Unik (ID Entitas Terdampak) Dalam Rumah Tangga</label>
+                      <input 
+                        type="text" 
+                        class="form-control" 
+                        v-model="formData.idUnik" 
+                        placeholder="ID Unik"
+                      />
+                    </div>
+                  </div>
                 </div>
-                <div class="col-md-6 mb-3">
-                  <label class="form-label"><strong>Longitude</strong> <span class="text-danger">*</span></label>
-                  <input 
-                    type="text" 
-                    class="form-control" 
-                    v-model="formData.lng" 
-                    placeholder="Contoh: 121.3415"
-                    required 
-                  />
-                  <small class="text-muted">Format: 121.3415</small>
-                </div>
-              </div>
-
-              <div class="alert alert-info">
-                <i class="bi bi-info-circle"></i> <strong>Tip:</strong> Koordinat akan otomatis terformat menjadi "lat, lng"
               </div>
 
               <div class="d-flex justify-content-end gap-2">
@@ -277,7 +475,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onUnmounted, watch, nextTick } from 'vue'
+import { ref, computed, onMounted, onUnmounted, watch, nextTick } from 'vue'
 import L from 'leaflet'
 import 'leaflet/dist/leaflet.css'
 
@@ -304,10 +502,30 @@ interface FormData {
   certificateStatus: string
   lat: string
   lng: string
+  // Form Identitas Kepala Keluarga
+  namaDepan: string
+  namaTengah: string
+  namaBelakang: string
+  namaAyah: string
+  namaKakek: string
+  namaPasangan: string
+  nomorTelepon: string
+  nik: string
+  kecamatan: string
+  kabupaten: string
+  provinsi: string
+  namaResponden: string
+  hubunganResponden: string
+  // Identifikasi Rumah Tangga dan PAP
+  kodeEnumerator: string
+  tanggalSurvei: string
+  kodeFotoSurvei: string
+  idUnik: string
 }
 
+
 const selectedVillage = ref<string>('all')
-const showMap = ref<boolean>(false)
+const showMap = ref<boolean>(true)  // Default to show map first
 const assetMapContainer = ref<HTMLElement | null>(null)
 const assetModalRef = ref<HTMLElement | null>(null)
 let assetMap: L.Map | null = null
@@ -323,7 +541,26 @@ const formData = ref<FormData>({
   buildingArea: 0,
   certificateStatus: '',
   lat: '',
-  lng: ''
+  lng: '',
+  // Form Identitas Kepala Keluarga
+  namaDepan: '',
+  namaTengah: '',
+  namaBelakang: '',
+  namaAyah: '',
+  namaKakek: '',
+  namaPasangan: '',
+  nomorTelepon: '',
+  nik: '',
+  kecamatan: '',
+  kabupaten: '',
+  provinsi: '',
+  namaResponden: '',
+  hubunganResponden: '',
+  // Identifikasi Rumah Tangga dan PAP
+  kodeEnumerator: '',
+  tanggalSurvei: '',
+  kodeFotoSurvei: '',
+  idUnik: ''
 })
 
 // Dummy data
@@ -398,7 +635,7 @@ const initAssetMap = () => {
 
   if (!assetMapContainer.value) return
 
-  const centerCoords = filteredAssets.value.length > 0 
+  const centerCoords = filteredAssets.value.length > 0 && filteredAssets.value[0]
     ? [filteredAssets.value[0].lat, filteredAssets.value[0].lng] as [number, number]
     : [-2.5650, 121.3450] as [number, number]
 
@@ -431,6 +668,29 @@ const initAssetMap = () => {
       </div>
     `)
   })
+
+  // Draw IUPK Valemis boundary (larger area encompassing all villages)
+  const iupkBoundary: [number, number][] = [
+    [-2.556, 121.338],  // Northwest corner
+    [-2.556, 121.353],  // Northeast corner
+    [-2.574, 121.353],  // Southeast corner
+    [-2.574, 121.338],  // Southwest corner
+    [-2.556, 121.338]   // Close the polygon
+  ]
+
+  L.polygon(iupkBoundary, {
+    color: '#0d6efd',        // Blue border
+    weight: 3,               // Thicker border for visibility
+    fillColor: '#0d6efd',    // Blue fill
+    fillOpacity: 0.05,       // Very low opacity to not obscure villages
+    dashArray: '10, 5'       // Dashed line for distinction
+  }).addTo(assetMap!).bindPopup(`
+    <div style="min-width: 200px;">
+      <h6><strong>Area IUPK Valemis</strong></h6>
+      <p class="mb-1"><small>Izin Usaha Pertambangan Khusus</small></p>
+      <p class="mb-0"><small>Mencakup 4 desa: Sorowako, Magani, Wewangriu, Nikkel</small></p>
+    </div>
+  `)
 
   // Draw village polygons
   const villagePolygons: Record<string, [number, number][]> = {
@@ -476,7 +736,26 @@ const addAsset = () => {
     buildingArea: 0,
     certificateStatus: '',
     lat: '',
-    lng: ''
+    lng: '',
+    // Form Identitas Kepala Keluarga
+    namaDepan: '',
+    namaTengah: '',
+    namaBelakang: '',
+    namaAyah: '',
+    namaKakek: '',
+    namaPasangan: '',
+    nomorTelepon: '',
+    nik: '',
+    kecamatan: '',
+    kabupaten: '',
+    provinsi: '',
+    namaResponden: '',
+    hubunganResponden: '',
+    // Identifikasi Rumah Tangga dan PAP
+    kodeEnumerator: '',
+    tanggalSurvei: '',
+    kodeFotoSurvei: '',
+    idUnik: ''
   }
   openModal()
 }
@@ -492,7 +771,26 @@ const editAsset = (asset: Asset) => {
     buildingArea: asset.buildingArea,
     certificateStatus: asset.certificateStatus,
     lat: asset.lat.toString(),
-    lng: asset.lng.toString()
+    lng: asset.lng.toString(),
+    // Form Identitas Kepala Keluarga - empty for existing data
+    namaDepan: '',
+    namaTengah: '',
+    namaBelakang: '',
+    namaAyah: '',
+    namaKakek: '',
+    namaPasangan: '',
+    nomorTelepon: '',
+    nik: '',
+    kecamatan: '',
+    kabupaten: '',
+    provinsi: '',
+    namaResponden: '',
+    hubunganResponden: '',
+    // Identifikasi Rumah Tangga dan PAP - empty for existing data
+    kodeEnumerator: '',
+    tanggalSurvei: '',
+    kodeFotoSurvei: '',
+    idUnik: ''
   }
   openModal()
 }
@@ -511,10 +809,11 @@ const saveAsset = () => {
   if (isEditMode.value && formData.value.id) {
     // Edit existing asset
     const index = assets.value.findIndex(a => a.id === formData.value.id)
-    if (index !== -1) {
+    if (index !== -1 && formData.value.id && assets.value[index]) {
+      const currentAsset = assets.value[index]
       assets.value[index] = {
-        id: assets.value[index].id,
-        code: assets.value[index].code,
+        id: formData.value.id,
+        code: currentAsset.code,
         ownerName: formData.value.ownerName,
         village: formData.value.village,
         landArea: formData.value.landArea,
@@ -589,6 +888,15 @@ const deleteAsset = (asset: Asset) => {
     }
   }
 }
+
+// Initialize map on mount if showMap is true
+onMounted(() => {
+  if (showMap.value) {
+    nextTick(() => {
+      initAssetMap()
+    })
+  }
+})
 
 watch(showMap, (newVal) => {
   if (newVal) {

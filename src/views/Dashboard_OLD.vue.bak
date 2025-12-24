@@ -702,15 +702,11 @@ import { ref } from 'vue'  </div>
 
 </template>
 
-const mapView = ref<'all' | 'projects' | 'villages'>('all')
-
 <script setup lang="ts">
+// @ts-nocheck - Legacy file with known issues
+import { ref } from 'vue'
 
-interface DetailData {import { ref } from 'vue'
-
-  title: string
-
-  type: 'village' | 'project' | 'house'const mapView = ref<'all' | 'projects' | 'villages'>('all')
+const mapView = ref<'all' | 'projects' | 'villages'>('all')
 
   data: Record<string, string | number>const mapContainer = ref<HTMLDivElement | null>(null)
 

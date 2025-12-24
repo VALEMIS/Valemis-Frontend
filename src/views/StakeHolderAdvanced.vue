@@ -618,59 +618,63 @@
                   <div class="col-md-6">
                     <h6 class="text-primary">Informasi Dasar</h6>
                     <table class="table table-sm">
-                      <tr>
-                        <th width="40%">ID</th>
-                        <td>{{ selectedStakeholder.stakeholder_id }}</td>
-                      </tr>
-                      <tr>
-                        <th>Nama Lengkap</th>
-                        <td><strong>{{ selectedStakeholder.nama_lengkap }}</strong></td>
-                      </tr>
-                      <tr>
-                        <th>Nama Panggilan</th>
-                        <td>{{ selectedStakeholder.nama_panggilan }}</td>
-                      </tr>
-                      <tr>
-                        <th>Jenis</th>
-                        <td>{{ selectedStakeholder.jenis_stakeholder }}</td>
-                      </tr>
-                      <tr>
-                        <th>Peran</th>
-                        <td>{{ selectedStakeholder.peran_di_proyek }}</td>
-                      </tr>
+                      <tbody>
+                        <tr>
+                          <th width="40%">ID</th>
+                          <td>{{ selectedStakeholder.stakeholder_id }}</td>
+                        </tr>
+                        <tr>
+                          <th>Nama Lengkap</th>
+                          <td><strong>{{ selectedStakeholder.nama_lengkap }}</strong></td>
+                        </tr>
+                        <tr>
+                          <th>Nama Panggilan</th>
+                          <td>{{ selectedStakeholder.nama_panggilan }}</td>
+                        </tr>
+                        <tr>
+                          <th>Jenis</th>
+                          <td>{{ selectedStakeholder.jenis_stakeholder }}</td>
+                        </tr>
+                        <tr>
+                          <th>Peran</th>
+                          <td>{{ selectedStakeholder.peran_di_proyek }}</td>
+                        </tr>
+                      </tbody>
                     </table>
                   </div>
                   <div class="col-md-6">
                     <h6 class="text-primary">Klasifikasi & Analisis</h6>
                     <table class="table table-sm">
-                      <tr>
-                        <th width="40%">Level Pengaruh</th>
-                        <td>
-                          <span class="badge" :class="getBadgeInfluence(selectedStakeholder.level_pengaruh)">
-                            {{ selectedStakeholder.level_pengaruh }}/5
-                          </span>
-                        </td>
-                      </tr>
-                      <tr>
-                        <th>Level Kepentingan</th>
-                        <td>
-                          <span class="badge" :class="getBadgeInterest(selectedStakeholder.level_kepentingan)">
-                            {{ selectedStakeholder.level_kepentingan }}/5
-                          </span>
-                        </td>
-                      </tr>
-                      <tr>
-                        <th>Klasifikasi Sikap</th>
-                        <td>
-                          <span class="badge" :class="getBadgeSentimen(selectedStakeholder.klasifikasi_sikap)">
-                            {{ selectedStakeholder.klasifikasi_sikap }}
-                          </span>
-                        </td>
-                      </tr>
-                      <tr>
-                        <th>Strategi Engagement</th>
-                        <td><small>{{ selectedStakeholder.strategi_engagement }}</small></td>
-                      </tr>
+                      <tbody>
+                        <tr>
+                          <th width="40%">Level Pengaruh</th>
+                          <td>
+                            <span class="badge" :class="getBadgeInfluence(selectedStakeholder.level_pengaruh)">
+                              {{ selectedStakeholder.level_pengaruh }}/5
+                            </span>
+                          </td>
+                        </tr>
+                        <tr>
+                          <th>Level Kepentingan</th>
+                          <td>
+                            <span class="badge" :class="getBadgeInterest(selectedStakeholder.level_kepentingan)">
+                              {{ selectedStakeholder.level_kepentingan }}/5
+                            </span>
+                          </td>
+                        </tr>
+                        <tr>
+                          <th>Klasifikasi Sikap</th>
+                          <td>
+                            <span class="badge" :class="getBadgeSentimen(selectedStakeholder.klasifikasi_sikap)">
+                              {{ selectedStakeholder.klasifikasi_sikap }}
+                            </span>
+                          </td>
+                        </tr>
+                        <tr>
+                          <th>Strategi Engagement</th>
+                          <td><small>{{ selectedStakeholder.strategi_engagement }}</small></td>
+                        </tr>
+                      </tbody>
                     </table>
                   </div>
                 </div>
@@ -1876,23 +1880,23 @@ const drawNetwork = () => {
   ctx.clearRect(0, 0, canvas.width, canvas.height)
 
   // Draw quadrant background and grid
-  const padding = 50
+  const padding = 50  // Increased padding to shrink matrix
   const width = canvas.width - padding * 2
   const height = canvas.height - padding * 2
   const centerX = canvas.width / 2
   const centerY = canvas.height / 2
 
   // Draw quadrant background colors
-  ctx.fillStyle = 'rgba(255, 193, 7, 0.1)' // Yellow - Keep Satisfied
+  ctx.fillStyle = 'rgba(255, 193, 7, 0.1)' // Yellow - Top-Left (Aktif-Negatif)
   ctx.fillRect(padding, padding, width / 2, height / 2)
   
-  ctx.fillStyle = 'rgba(40, 167, 69, 0.1)' // Green - Manage Closely
+  ctx.fillStyle = 'rgba(40, 167, 69, 0.1)' // Green - Top-Right (Aktif-Positif)
   ctx.fillRect(centerX, padding, width / 2, height / 2)
   
-  ctx.fillStyle = 'rgba(108, 117, 125, 0.1)' // Gray - Monitor
+  ctx.fillStyle = 'rgba(108, 117, 125, 0.1)' // Gray - Bottom-Left (Pasif-Negatif)
   ctx.fillRect(padding, centerY, width / 2, height / 2)
   
-  ctx.fillStyle = 'rgba(23, 162, 184, 0.1)' // Cyan - Keep Informed
+  ctx.fillStyle = 'rgba(23, 162, 184, 0.1)' // Cyan - Bottom-Right (Pasif-Positif)
   ctx.fillRect(centerX, centerY, width / 2, height / 2)
 
   // Draw grid lines
@@ -1916,40 +1920,40 @@ const drawNetwork = () => {
 
   // Draw axis labels
   ctx.fillStyle = '#333'
-  ctx.font = 'bold 12px Arial'
+  ctx.font = 'bold 14px Arial'
   ctx.textAlign = 'center'
   
-  // X-axis label (Interest)
-  ctx.fillText('Interest / Engagement →', canvas.width / 2, canvas.height - 20)
+  // Top label (Aktif)
+  ctx.fillText('Aktif', canvas.width / 2, padding - 15)
   
-  // Y-axis label (Power)
+  // Bottom label (Pasif)
+  ctx.fillText('Pasif', canvas.width / 2, canvas.height - padding + 30)
+  
+  // Left label (Negatif) - positioned at vertical center, outside left
   ctx.save()
   ctx.translate(20, canvas.height / 2)
   ctx.rotate(-Math.PI / 2)
-  ctx.fillText('Power / Influence →', 0, 0)
+  ctx.fillText('Negatif', 0, 0)
+  ctx.restore()
+  
+  // Right label (Positif) - positioned at vertical center, outside right
+  ctx.save()
+  ctx.translate(canvas.width - 20, canvas.height / 2)
+  ctx.rotate(-Math.PI / 2)
+  ctx.fillText('Positif', 0, 0)
   ctx.restore()
 
-  // Draw quadrant labels
-  ctx.font = 'bold 11px Arial'
-  ctx.fillStyle = '#666'
-  
-  ctx.textAlign = 'center'
-  ctx.fillText('Keep Satisfied', padding + width / 4, padding + 20)
-  ctx.fillText('Manage Closely', centerX + width / 4, padding + 20)
-  ctx.fillText('Monitor', padding + width / 4, centerY + 20)
-  ctx.fillText('Keep Informed', centerX + width / 4, centerY + 20)
-
-  // Define node positions based on Power-Interest matrix
+  // Define node positions based on Activity-Sentiment matrix
   const nodeRadius = 30
   const textMargin = 70 // extra margin for text below nodes
   
   const nodes = stakeholders.value.map(sh => {
     // Map 1-5 scale to canvas coordinates with margin for text
-    // Interest (X-axis): 1 = left edge, 5 = right edge
+    // Sentiment (X-axis): 1 = Negatif (left), 5 = Positif (right)
     const usableWidth = width - (nodeRadius * 2) - 20
     const xPos = padding + nodeRadius + 10 + (sh.level_kepentingan / 5) * usableWidth
     
-    // Power (Y-axis): 1 = bottom, 5 = top (inverted)
+    // Activity (Y-axis): 1 = Pasif (bottom), 5 = Aktif (top - inverted)
     // Reserve space at bottom for text labels
     const usableHeight = height - textMargin
     const yPos = canvas.height - padding - textMargin - (sh.level_pengaruh / 5) * usableHeight

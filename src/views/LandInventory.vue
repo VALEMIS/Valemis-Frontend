@@ -482,7 +482,7 @@ interface FormData {
 
 const selectedCategory = ref<string>('all')
 const selectedCertificate = ref<string>('all')
-const showMap = ref<boolean>(false)
+const showMap = ref<boolean>(true)  // Default to show map first
 const landMapContainer = ref<HTMLElement | null>(null)
 const landModalRef = ref<HTMLElement | null>(null)
 const newDocument = ref<string>('')
@@ -727,10 +727,11 @@ const saveLand = () => {
 
   if (isEditMode.value && formData.value.id) {
     const index = lands.value.findIndex(l => l.id === formData.value.id)
-    if (index !== -1) {
+    if (index !== -1 && formData.value.id && lands.value[index]) {
+      const currentLand = lands.value[index]
       lands.value[index] = {
-        id: lands.value[index].id,
-        code: lands.value[index].code,
+        id: formData.value.id,
+        code: currentLand.code,
         locationName: formData.value.locationName,
         category: formData.value.category,
         area: formData.value.area,
@@ -852,6 +853,15 @@ const exportData = () => {
   
   alert('Data berhasil di-export!')
 }
+
+// Initialize map on mount if showMap is true
+onMounted(() => {
+  if (showMap.value) {
+    nextTick(() => {
+      initLandMap()
+    })
+  }
+})
 
 watch(showMap, (newVal) => {
   if (newVal) {
