@@ -1,37 +1,121 @@
 <template>
-  <div class="container">
-    <h2>Upload Spatial File</h2>
+  <div class="container d-grid gap-0 row-gap-3">
+    <h2>Compliance</h2>
 
-    <input type="file" @change="handleFile" />
-    <button @click="analyze">Proses Intersect</button>
+    
 
     <div id="map"></div>
+    <div class="card"> 
+      <div class="card-header">
+        <h5 class="card-title mb-0">Masukan Data Spasial</h5>
+      </div>
+      <div class="card-body">
+        <div class="mb-3">
+          <label for="fileInput" class="form-label">Pilih File</label>
+          <input 
+            type="file" 
+            id="fileInput"
+            class="form-control" 
+            @change="handleFile"
+            accept=".shp,.geojson,.json,.kml"
+          />
+        <div class="form-text">Format yang didukung: SHP, GeoJSON, KML</div>
+      </div>
+        <button 
+          @click="analyze" 
+          class="btn btn-primary w-100"
+          :disabled="!fileSelected"
+        >
+          <i class="bi bi-upload me-2"></i>Upload Data
+        </button>
+      </div>   
+    </div>
+    <div class="card"> 
+      <div class="card-header">
+        <h4>Tambahkan Asset untuk Overlay Spasial</h4>
+      </div>
+      <div class="card-tools d-grid gap-0 row-gap-3">
+        <button class="btn btn-sm btn-primary me-2" id="addBtn" v-on:click="openForm()">
+          <i class="bi bi-plus-circle"></i> Tambah Data
+        </button>
+      </div>
+      <div class="card-body">
+        <table>
+          <thead>
+            <tr>
+              <th>Layer</th>
+              <th>Tahun Terbit</th>
+              <th>Luas (m²)</th>
+              <th>Luas (ha)</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr v-for="row in stats" :key="row.layer">
+              <td>{{ row.layer }}</td>
+              <td>{{ row.jumlah_fitur }}</td>
+              <td>{{ row.luas_m2 }}</td>
+              <td>{{ row.luas_ha }}</td>
+            </tr>
+            
+          </tbody>
+        </table>
+      </div>
+    </div>
 
-    <h3>Hasil Analisis</h3>
-    <table>
-      <thead>
-        <tr>
-          <th>Layer</th>
-          <th>Jumlah</th>
-          <th>Luas (m²)</th>
-          <th>Luas (ha)</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr v-for="row in stats" :key="row.layer">
-          <td>{{ row.layer }}</td>
-          <td>{{ row.jumlah_fitur }}</td>
-          <td>{{ row.luas_m2 }}</td>
-          <td>{{ row.luas_ha }}</td>
-        </tr>
-      </tbody>
-    </table>
+    <div class="card">  
+      <div class="card-header">
+        <h4>Hasil Analisis</h4>
+      </div>
+      <div class="card-body">
+        <table>
+          <thead>
+            <tr>
+              <th>Layer</th>
+              <th>Jumlah</th>
+              <th>Luas (m²)</th>
+              <th>Luas (ha)</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr v-for="row in stats" :key="row.layer">
+              <td>{{ row.layer }}</td>
+              <td>{{ row.jumlah_fitur }}</td>
+              <td>{{ row.luas_m2 }}</td>
+              <td>{{ row.luas_ha }}</td>
+            </tr>
+            
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+  <div class="modal-bg" id="modal">
+    <div class="modal-content-custom">
+        <h4 id="modalTitle">Tambah Data</h4>
+        <form id="form">
+          <div class="form-floating">
+            <select class="form-select" id="floatingSelect" aria-label="Floating label select example">
+              <option selected>Pilih Layer Spasial</option>
+              <option v-for="value,i in layerSelection" :value="i">{{value.nama}}</option>
+            </select>
+            <label for="floatingSelect">Works with selects</label>
+          </div>
+        </form>
+        <div class="mt-3 text-end">
+            <button class="btn btn-secondary" id="closeModal" v-on:click="addLayer()">Batal</button>
+            <button class="btn btn-primary" id="saveBtn" v-on:click="addLayer()">Simpan</button>
+          
+        </div>
+    </div>
   </div>
 </template>
 
 <script setup>
 import { ref, onMounted } from "vue"
 import L from "leaflet"
+
+// import Select from 'primevue/select';
+
 import "leaflet/dist/leaflet.css"
 
 const file = ref(null)
@@ -86,6 +170,38 @@ async function analyze() {
   stats.value = data.stats
 }
 
+var layerSelection = [
+  {
+    nama : 'IUPK',
+    tahun : 2015
+  },
+  {
+    nama : 'Kawasan Hutan',
+    tahun : 2010
+  },
+  {
+    nama : 'HGB',
+    tahun : 2013
+  },
+  {
+    nama : 'Lahan Bebas',
+    tahun : 2015
+  },
+  {
+    nama : 'Kawasan Hutan',
+    tahun : 2022
+  },
+]
+var layerSelected = []
+function addLayer(){
+  const modal = document.getElementById("modal");
+  modal.style.display = "none";
+  // layerSelected.push()
+}
+function openForm(){
+  const modal = document.getElementById("modal");
+  modal.style.display = "flex";
+}
 onMounted(() => {
   initMap()
 })
@@ -111,4 +227,19 @@ td, th {
 button {
   margin-left: 10px;
 }
+.modal-bg {
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.5);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 9999;
+        }
+        .modal-content-custom {
+            background: white;
+            padding: 20px;
+            border-radius: 12px;
+            width: 400px;
+        }
 </style>

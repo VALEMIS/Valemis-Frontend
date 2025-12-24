@@ -309,7 +309,9 @@
                   />
                 </div>
               </div>
-
+              <div id="map" style="height: 400px;width:100%;margin-bottom: 1rem;"></div>
+              <input type="file" accept=".geojson" @change="handleGeoJsonUpload" />
+              <!-- <p></p> -->
               <div class="d-flex justify-content-end gap-2">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
                   <i class="bi bi-x-circle"></i> Batal
@@ -318,6 +320,7 @@
                   <i class="bi bi-save"></i> {{ isEditMode ? 'Update' : 'Simpan' }}
                 </button>
               </div>
+              
             </form>
           </div>
         </div>
@@ -412,7 +415,11 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed } from 'vue'
+import L from 'leaflet'
+import 'leaflet/dist/leaflet.css' 
+import "@geoman-io/leaflet-geoman-free";
+import "@geoman-io/leaflet-geoman-free/dist/leaflet-geoman.css";
+import { ref, computed,onMounted } from 'vue'
 
 interface Parcel {
   id: number
@@ -443,8 +450,11 @@ const selectedProject = ref<string>('all')
 const selectedStatus = ref<string>('all')
 const parcelModalRef = ref<HTMLElement | null>(null)
 const historyModalRef = ref<HTMLElement | null>(null)
+let selectedGeometry:any = null
 let parcelModalInstance: any = null
 let historyModalInstance: any = null
+let map: L.Map | null = null
+let  uploadedGeojson = null
 
 // Form state
 const isEditMode = ref<boolean>(false)
@@ -680,18 +690,28 @@ const viewHistory = (parcel: Parcel) => {
 }
 
 const openParcelModal = () => {
-  if (parcelModalRef.value) {
-    const Modal = (window as any).bootstrap?.Modal
-    if (Modal) {
-      parcelModalInstance = new Modal(parcelModalRef.value)
-      parcelModalInstance.show()
-    } else {
-      parcelModalRef.value.classList.add('show')
-      parcelModalRef.value.style.display = 'block'
-      document.body.classList.add('modal-open')
-    }
-  }
+  if (!parcelModalRef.value) return
+
+  const Modal = (window as any).bootstrap?.Modal
+  if (!Modal) return
+
+  parcelModalInstance = new Modal(parcelModalRef.value)
+
+  parcelModalRef.value.addEventListener(
+    'shown.bs.modal',
+    () => {
+      if (!map) {
+        initMap()
+      } else {
+        map.invalidateSize()
+      }
+    },
+    { once: true } // penting: jangan dobel
+  )
+
+  parcelModalInstance.show()
 }
+
 
 const closeParcelModal = () => {
   if (parcelModalInstance) {
