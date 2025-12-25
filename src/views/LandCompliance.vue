@@ -107,36 +107,49 @@
   </div>
 </template>
 
-<script setup>
-import { ref, onMounted } from "vue"
+<script setup lang="ts">
+import { ref, onMounted, computed } from "vue"
 import L from "leaflet"
 
 // import Select from 'primevue/select';
 
 import "leaflet/dist/leaflet.css"
 
-const file = ref(null)
-const map = ref(null)
-const layersOnMap = ref([])
-const stats = ref([])
+interface StatRow {
+  layer: string
+  jumlah_fitur: number
+  luas_m2: number
+  luas_ha: number
+}
 
-function handleFile(e) {
-  file.value = e.target.files[0]
+const file = ref<File | null>(null)
+const map = ref<L.Map | null>(null)
+const layersOnMap = ref<any[]>([])
+const stats = ref<StatRow[]>([])
+
+const fileSelected = computed(() => file.value !== null)
+
+function handleFile(e: Event) {
+  const target = e.target as HTMLInputElement
+  file.value = target.files?.[0] || null
 }
 
 function initMap() {
   map.value = L.map("map").setView([-2, 118], 5)
-  L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png").addTo(map.value)
+  if (map.value) {
+    L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png").addTo(map.value as any)
+  }
 }
 
 function clearLayers() {
-  layersOnMap.value.forEach(l => map.value.removeLayer(l))
+  if (!map.value) return
+  layersOnMap.value.forEach(l => map.value!.removeLayer(l))
   layersOnMap.value = []
 }
 
-function addGeoJSON(geojson, style) {
-  if (!geojson) return
-  const layer = L.geoJSON(geojson, { style }).addTo(map.value)
+function addGeoJSON(geojson: any, style: any) {
+  if (!geojson || !map.value) return
+  const layer = L.geoJSON(geojson, { style }).addTo(map.value as any)
   layersOnMap.value.push(layer)
 }
 
@@ -158,9 +171,9 @@ async function analyze() {
 
   clearLayers()
 
-  
 
-  for (const [name, geo] of Object.entries(data.layers)) {
+
+  for (const [_name, geo] of Object.entries(data.layers)) {
     addGeoJSON(geo, { color: "blue", weight: 1, opacity: 0.5 })
   }
   addGeoJSON(data.input, { color: "red", weight: 2 })
@@ -189,15 +202,18 @@ var layerSelection = [
     tahun : 2022
   },
 ]
-var layerSelected = []
 function addLayer(){
   const modal = document.getElementById("modal");
-  modal.style.display = "none";
+  if (modal) {
+    modal.style.display = "none";
+  }
   // layerSelected.push()
 }
 function openForm(){
   const modal = document.getElementById("modal");
-  modal.style.display = "flex";
+  if (modal) {
+    modal.style.display = "flex";
+  }
 }
 onMounted(() => {
   initMap()

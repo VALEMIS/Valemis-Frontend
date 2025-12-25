@@ -99,13 +99,13 @@
                     <tr v-for="(asset, index) in filteredAssets" :key="asset.id">
                       <td>{{ index + 1 }}</td>
                       <td><span class="badge bg-primary">{{ asset.code }}</span></td>
-                      <td><strong>{{ asset.ownerName }}</strong></td>
+                      <td><strong>{{ asset.owner_name }}</strong></td>
                       <td>{{ asset.village }}</td>
-                      <td class="text-end">{{ asset.landArea.toLocaleString() }}</td>
-                      <td class="text-end">{{ asset.buildingArea.toLocaleString() }}</td>
+                      <td class="text-end">{{ asset.land_area.toLocaleString() }}</td>
+                      <td class="text-end">{{ asset.building_area.toLocaleString() }}</td>
                       <td>
-                        <span class="badge" :class="getCertificateClass(asset.certificateStatus)">
-                          {{ asset.certificateStatus }}
+                        <span class="badge" :class="getCertificateClass(asset.certificate_status)">
+                          {{ asset.certificate_status }}
                         </span>
                       </td>
                       <td><small class="text-muted">{{ asset.coordinates }}</small></td>
@@ -462,8 +462,8 @@
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
                   <i class="bi bi-x-circle"></i> Batal
                 </button>
-                <button type="submit" class="btn btn-primary">
-                  <i class="bi bi-save"></i> {{ isEditMode ? 'Update' : 'Simpan' }}
+                <button type="submit" class="btn btn-primary" :disabled="loading">
+                  <i class="bi bi-save"></i> {{ loading ? 'Memproses...' : (isEditMode ? 'Update' : 'Simpan') }}
                 </button>
               </div>
             </form>
@@ -478,15 +478,16 @@
 import { ref, computed, onMounted, onUnmounted, watch, nextTick } from 'vue'
 import L from 'leaflet'
 import 'leaflet/dist/leaflet.css'
+import { assetApi } from '../api'
 
 interface Asset {
   id: number
   code: string
-  ownerName: string
+  owner_name: string
   village: string
-  landArea: number
-  buildingArea: number
-  certificateStatus: string
+  land_area: number
+  building_area: number
+  certificate_status: string
   coordinates: string
   lat: number
   lng: number
@@ -563,28 +564,36 @@ const formData = ref<FormData>({
   idUnik: ''
 })
 
-// Dummy data
-const assets = ref<Asset[]>([
-  { id: 1, code: 'AST-SRW-001', ownerName: 'Budi Santoso', village: 'Desa Sorowako', landArea: 500, buildingArea: 120, certificateStatus: 'SHM', coordinates: '-2.5595, 121.3415', lat: -2.5595, lng: 121.3415 },
-  { id: 2, code: 'AST-SRW-002', ownerName: 'Ahmad Hidayat', village: 'Desa Sorowako', landArea: 450, buildingArea: 110, certificateStatus: 'SHM', coordinates: '-2.5605, 121.3425', lat: -2.5605, lng: 121.3425 },
-  { id: 3, code: 'AST-SRW-003', ownerName: 'Siti Rahma', village: 'Desa Sorowako', landArea: 600, buildingArea: 150, certificateStatus: 'SHGB', coordinates: '-2.5615, 121.3435', lat: -2.5615, lng: 121.3435 },
-  { id: 4, code: 'AST-SRW-004', ownerName: 'Joko Widodo', village: 'Desa Sorowako', landArea: 520, buildingArea: 130, certificateStatus: 'SHM', coordinates: '-2.5610, 121.3410', lat: -2.5610, lng: 121.3410 },
-  
-  { id: 5, code: 'AST-MGN-001', ownerName: 'Andi Suryanto', village: 'Desa Magani', landArea: 480, buildingArea: 115, certificateStatus: 'SHM', coordinates: '-2.5605, 121.3465', lat: -2.5605, lng: 121.3465 },
-  { id: 6, code: 'AST-MGN-002', ownerName: 'Maria Ulfa', village: 'Desa Magani', landArea: 550, buildingArea: 140, certificateStatus: 'SHGB', coordinates: '-2.5615, 121.3475', lat: -2.5615, lng: 121.3475 },
-  { id: 7, code: 'AST-MGN-003', ownerName: 'Hasan Basri', village: 'Desa Magani', landArea: 470, buildingArea: 125, certificateStatus: 'SHM', coordinates: '-2.5620, 121.3485', lat: -2.5620, lng: 121.3485 },
-  { id: 8, code: 'AST-MGN-004', ownerName: 'Ratna Dewi', village: 'Desa Magani', landArea: 490, buildingArea: 120, certificateStatus: 'SHM', coordinates: '-2.5612, 121.3460', lat: -2.5612, lng: 121.3460 },
-  
-  { id: 9, code: 'AST-WWR-001', ownerName: 'Usman Harun', village: 'Desa Wewangriu', landArea: 530, buildingArea: 135, certificateStatus: 'SHM', coordinates: '-2.5685, 121.3425', lat: -2.5685, lng: 121.3425 },
-  { id: 10, code: 'AST-WWR-002', ownerName: 'Fatimah Zahra', village: 'Desa Wewangriu', landArea: 510, buildingArea: 128, certificateStatus: 'SHGB', coordinates: '-2.5695, 121.3435', lat: -2.5695, lng: 121.3435 },
-  { id: 11, code: 'AST-WWR-003', ownerName: 'Rahman Wiranto', village: 'Desa Wewangriu', landArea: 560, buildingArea: 145, certificateStatus: 'SHM', coordinates: '-2.5705, 121.3445', lat: -2.5705, lng: 121.3445 },
-  { id: 12, code: 'AST-WWR-004', ownerName: 'Nurul Huda', village: 'Desa Wewangriu', landArea: 495, buildingArea: 122, certificateStatus: 'SHM', coordinates: '-2.5698, 121.3420', lat: -2.5698, lng: 121.3420 },
-  
-  { id: 13, code: 'AST-NKL-001', ownerName: 'Bambang Trianto', village: 'Desa Nikkel', landArea: 540, buildingArea: 138, certificateStatus: 'SHM', coordinates: '-2.5695, 121.3485', lat: -2.5695, lng: 121.3485 },
-  { id: 14, code: 'AST-NKL-002', ownerName: 'Dewi Anggraini', village: 'Desa Nikkel', landArea: 520, buildingArea: 132, certificateStatus: 'SHGB', coordinates: '-2.5705, 121.3495', lat: -2.5705, lng: 121.3495 },
-  { id: 15, code: 'AST-NKL-003', ownerName: 'Irfan Maulana', village: 'Desa Nikkel', landArea: 575, buildingArea: 148, certificateStatus: 'SHM', coordinates: '-2.5715, 121.3505', lat: -2.5715, lng: 121.3505 },
-  { id: 16, code: 'AST-NKL-004', ownerName: 'Wulan Sari', village: 'Desa Nikkel', landArea: 505, buildingArea: 125, certificateStatus: 'SHM', coordinates: '-2.5708, 121.3480', lat: -2.5708, lng: 121.3480 },
-])
+// API data
+const assets = ref<Asset[]>([])
+const loading = ref<boolean>(false)
+const error = ref<string | null>(null)
+
+// Fetch assets from API
+const fetchAssets = async () => {
+  loading.value = true
+  error.value = null
+  try {
+    const response = await assetApi.getAll()
+    assets.value = response.results.map(asset => ({
+      id: asset.id,
+      code: asset.code,
+      owner_name: asset.owner_name,
+      village: asset.village,
+      land_area: parseFloat(asset.land_area),
+      building_area: parseFloat(asset.building_area),
+      certificate_status: asset.certificate_status,
+      coordinates: asset.coordinates,
+      lat: parseFloat(asset.lat),
+      lng: parseFloat(asset.lng),
+    }))
+  } catch (err) {
+    error.value = err instanceof Error ? err.message : 'Failed to fetch assets'
+    console.error('Error fetching assets:', err)
+  } finally {
+    loading.value = false
+  }
+}
 
 const filteredAssets = computed(() => {
   if (selectedVillage.value === 'all') {
@@ -601,7 +610,7 @@ const villageSummary = computed(() => {
       name: village,
       totalAssets: villageAssets.length,
       totalKK: villageAssets.length,
-      totalArea: villageAssets.reduce((sum, a) => sum + a.landArea, 0)
+      totalArea: villageAssets.reduce((sum, a) => sum + a.land_area, 0)
     }
   })
 })
@@ -659,12 +668,12 @@ const initAssetMap = () => {
     
     marker.bindPopup(`
       <div style="min-width: 200px;">
-        <h6><strong>${asset.ownerName}</strong></h6>
+        <h6><strong>${asset.owner_name}</strong></h6>
         <p class="mb-1"><small><strong>Kode:</strong> ${asset.code}</small></p>
         <p class="mb-1"><small><strong>Desa:</strong> ${asset.village}</small></p>
-        <p class="mb-1"><small><strong>Luas Tanah:</strong> ${asset.landArea} m²</small></p>
-        <p class="mb-1"><small><strong>Luas Bangunan:</strong> ${asset.buildingArea} m²</small></p>
-        <p class="mb-0"><small><strong>Sertifikat:</strong> ${asset.certificateStatus}</small></p>
+        <p class="mb-1"><small><strong>Luas Tanah:</strong> ${asset.land_area} m²</small></p>
+        <p class="mb-1"><small><strong>Luas Bangunan:</strong> ${asset.building_area} m²</small></p>
+        <p class="mb-0"><small><strong>Sertifikat:</strong> ${asset.certificate_status}</small></p>
       </div>
     `)
   })
@@ -765,11 +774,11 @@ const editAsset = (asset: Asset) => {
   formData.value = {
     id: asset.id,
     code: asset.code,
-    ownerName: asset.ownerName,
+    ownerName: asset.owner_name,
     village: asset.village,
-    landArea: asset.landArea,
-    buildingArea: asset.buildingArea,
-    certificateStatus: asset.certificateStatus,
+    landArea: asset.land_area,
+    buildingArea: asset.building_area,
+    certificateStatus: asset.certificate_status,
     lat: asset.lat.toString(),
     lng: asset.lng.toString(),
     // Form Identitas Kepala Keluarga - empty for existing data
@@ -795,57 +804,52 @@ const editAsset = (asset: Asset) => {
   openModal()
 }
 
-const saveAsset = () => {
+const saveAsset = async () => {
   const lat = parseFloat(formData.value.lat)
   const lng = parseFloat(formData.value.lng)
-  
+
   if (isNaN(lat) || isNaN(lng)) {
     alert('Koordinat tidak valid! Pastikan format latitude dan longitude benar.')
     return
   }
 
   const coordinates = `${lat}, ${lng}`
+  loading.value = true
 
-  if (isEditMode.value && formData.value.id) {
-    // Edit existing asset
-    const index = assets.value.findIndex(a => a.id === formData.value.id)
-    if (index !== -1 && formData.value.id && assets.value[index]) {
-      const currentAsset = assets.value[index]
-      assets.value[index] = {
-        id: formData.value.id,
-        code: currentAsset.code,
-        ownerName: formData.value.ownerName,
-        village: formData.value.village,
-        landArea: formData.value.landArea,
-        buildingArea: formData.value.buildingArea,
-        certificateStatus: formData.value.certificateStatus,
-        coordinates,
-        lat,
-        lng
-      }
-      alert(`Asset ${formData.value.code} berhasil diupdate!`)
-    }
-  } else {
-    // Add new asset
-    const newId = Math.max(...assets.value.map(a => a.id)) + 1
-    assets.value.push({
-      id: newId,
+  try {
+    const assetData = {
       code: formData.value.code,
-      ownerName: formData.value.ownerName,
+      owner_name: formData.value.ownerName,
       village: formData.value.village,
-      landArea: formData.value.landArea,
-      buildingArea: formData.value.buildingArea,
-      certificateStatus: formData.value.certificateStatus,
+      land_area: String(formData.value.landArea),
+      building_area: String(formData.value.buildingArea),
+      certificate_status: formData.value.certificateStatus,
+      lat: formData.value.lat,
+      lng: formData.value.lng,
       coordinates,
-      lat,
-      lng
-    })
-    alert(`Asset ${formData.value.code} berhasil ditambahkan!`)
-  }
+    }
 
-  closeModal()
-  if (showMap.value) {
-    initAssetMap()
+    if (isEditMode.value && formData.value.id) {
+      // Edit existing asset - call API
+      await assetApi.update(formData.value.id, assetData)
+      alert(`Asset ${formData.value.code} berhasil diupdate!`)
+    } else {
+      // Add new asset - call API
+      await assetApi.create(assetData)
+      alert(`Asset ${formData.value.code} berhasil ditambahkan!`)
+    }
+
+    // Refresh data from API
+    await fetchAssets()
+    closeModal()
+    if (showMap.value) {
+      initAssetMap()
+    }
+  } catch (err) {
+    alert(`Gagal menyimpan asset: ${err instanceof Error ? err.message : 'Unknown error'}`)
+    console.error('Error saving asset:', err)
+  } finally {
+    loading.value = false
   }
 }
 
@@ -876,21 +880,37 @@ const closeModal = () => {
   }
 }
 
-const deleteAsset = (asset: Asset) => {
-  if (confirm(`Hapus asset ${asset.code} - ${asset.ownerName}?\n\nData akan dihapus secara permanen.`)) {
-    const index = assets.value.findIndex(a => a.id === asset.id)
-    if (index !== -1) {
-      assets.value.splice(index, 1)
+const deleteAsset = async (asset: Asset) => {
+  if (confirm(`Hapus asset ${asset.code} - ${asset.owner_name}?\n\nData akan dihapus secara permanen.`)) {
+    loading.value = true
+    try {
+      await assetApi.delete(asset.id)
+
+      // Remove from local state
+      const index = assets.value.findIndex(a => a.id === asset.id)
+      if (index !== -1) {
+        assets.value.splice(index, 1)
+      }
+
       alert('Asset berhasil dihapus!')
       if (showMap.value) {
         initAssetMap()
       }
+    } catch (err) {
+      alert(`Gagal menghapus asset: ${err instanceof Error ? err.message : 'Unknown error'}`)
+      console.error('Error deleting asset:', err)
+    } finally {
+      loading.value = false
     }
   }
 }
 
 // Initialize map on mount if showMap is true
-onMounted(() => {
+onMounted(async () => {
+  // Fetch assets from API first
+  await fetchAssets()
+
+  // Initialize map after data is loaded
   if (showMap.value) {
     nextTick(() => {
       initAssetMap()

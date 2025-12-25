@@ -487,11 +487,10 @@
 
 <script setup lang="ts">
 import L from 'leaflet'
-import 'leaflet/dist/leaflet.css' 
+import 'leaflet/dist/leaflet.css'
 import "@geoman-io/leaflet-geoman-free";
 import "@geoman-io/leaflet-geoman-free/dist/leaflet-geoman.css";
 import { ref, computed,onMounted, onUnmounted, watch, nextTick } from 'vue'
-import 'leaflet/dist/leaflet.css'
 
 interface Parcel {
   id: number
@@ -851,16 +850,21 @@ function initMap(){
     rotateMode: false,
   }); 
 }
-function handleGeoJsonUpload(){
-
- const file = event.target.files[0]
+function handleGeoJsonUpload(event: Event) {
+  const target = event.target as HTMLInputElement
+  const file = target.files?.[0]
   if (!file) return
 
   const reader = new FileReader()
 
-  reader.onload = (e) => {
+  reader.onload = (e: ProgressEvent<FileReader>) => {
     try {
-      uploadedGeojson = JSON.parse(e.target.result)
+      const result = e.target?.result
+      if (typeof result !== 'string') {
+        console.error('Invalid result type')
+        return
+      }
+      uploadedGeojson = JSON.parse(result)
       console.log('Hasil JSON:', uploadedGeojson)
 
 
@@ -871,7 +875,7 @@ function handleGeoJsonUpload(){
             color: '#3388ff',
             weight: 2
           },
-          onEachFeature: (feature, layer) => {
+          onEachFeature: (feature: any, layer: any) => {
             layer.on('click', () => {
               // 🔥 reset highlight lama
               if (selectedLayer) {
@@ -892,9 +896,12 @@ function handleGeoJsonUpload(){
               console.log('Selected geometry:', selectedGeometry)
             })
           }
-        }).addTo(map)
-      // 🔥 auto zoom ke data
-      map.fitBounds(geojsonLayer.getBounds())
+        })
+        if (map) {
+          geojsonLayer.addTo(map)
+          // 🔥 auto zoom ke data
+          map.fitBounds(geojsonLayer.getBounds())
+        }
 
     } catch (err) {
       console.error('JSON tidak valid:', err)
