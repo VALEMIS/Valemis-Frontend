@@ -133,6 +133,42 @@ export const stakeholderApi = {
   }),
 }
 
+// Census Survey API
+export const censusApi = {
+  getAll: (params?: Record<string, string>) => {
+    const queryString = params ? new URLSearchParams(params).toString() : ''
+    return apiFetch<ApiResponse<CensusSurvey>>(
+      `/api/valemis/census/${queryString ? `?${queryString}` : ''}`
+    )
+  },
+  getById: (id: number) => apiFetch<CensusSurvey>(`/api/valemis/census/${id}/`),
+  create: (data: Partial<CensusSurvey>) => apiFetch<CensusSurvey>('/api/valemis/census/', {
+    method: 'POST',
+    body: JSON.stringify(data),
+  }),
+  update: (id: number, data: Partial<CensusSurvey>) => apiFetch<CensusSurvey>(`/api/valemis/census/${id}/`, {
+    method: 'PATCH',
+    body: JSON.stringify(data),
+  }),
+  delete: (id: number) => apiFetch<void>(`/api/valemis/census/${id}/`, {
+    method: 'DELETE',
+  }),
+  getStatistics: () => apiFetch<any>('/api/valemis/census/statistics/'),
+  getByVillage: () => apiFetch<any[]>('/api/valemis/census/by_village/'),
+}
+
+// Census Questions API
+export const censusQuestionsApi = {
+  getAll: async () => {
+    const response = await apiFetch<ApiResponse<CensusQuestion>>('/api/valemis/questions/')
+    return response.results
+  },
+  getByCategory: (category?: string) => {
+    const queryString = category ? `?category=${category}` : ''
+    return apiFetch<ApiResponse<CensusQuestion>>(`/api/valemis/questions/by_category/${queryString}`)
+  },
+}
+
 // Types
 export interface Asset {
   id: number
@@ -213,6 +249,74 @@ export interface Stakeholder {
   lng?: string
 }
 
+export interface CensusSurvey {
+  id: number
+  q1_kode_enumerator: string
+  q2_id_unik: string
+  q3_hubungan_responden?: string
+  q4_identifikasi_dampak?: string
+  q5_agama?: string
+  q6_asal_etnis?: string
+  q7_bahasa?: string
+  q8_tempat_asal?: string
+  q9_hubungan_kk?: string
+  q10_jenis_kelamin?: string
+  q11_status_perkawinan?: string
+  q12_bisa_membaca_menulis?: string
+  q13_sedang_sekolah?: string
+  q14_lokasi_sekolah?: string
+  q15_pendidikan_terakhir?: string
+  q16_alasan_berhenti?: string
+  q17_disabilitas?: string
+  q18_kondisi_kesehatan?: string
+  q19_bekerja_12_bulan?: string
+  q20_pekerjaan_utama?: string
+  q21_jenis_pekerjaan?: string
+  q22_lokasi_pekerjaan?: string
+  q23_keterampilan?: string
+  q24_penyakit_umum?: string
+  q25_tempat_pelayanan?: string
+  q26_kecukupan_pangan?: string
+  q27_defisit_pangan?: string
+  q28_penghasilan_tahunan?: number
+  q31_pengeluaran_bulanan?: number
+  q32_rekening_bank?: string
+  q33_tabungan?: string
+  q34_hutang?: string
+  q35_alasan_hutang?: string
+  q36_jenis_proyek?: string
+  q37_lokasi_bisnis?: string
+  q38_kepemilikan_bisnis?: string
+  q39_jenis_bisnis?: string
+  q40_tipe_rumah?: string
+  q41_pelayanan_listrik?: string
+  q42_sumber_air?: string
+  q43_sanitasi?: string
+  q44_karakteristik_khusus?: string
+  q45_pembagian_kerja?: string
+  created_at: string
+  updated_at: string
+  surveyed_by?: string
+  survey_date?: string
+  coordinates?: string
+  village?: string
+  district?: string
+  regency?: string
+  province?: string
+  notes?: string
+}
+
+export interface CensusQuestion {
+  id: number
+  question_number: number
+  question_text: string
+  field_name: string
+  category?: string
+  options: string[]
+  is_required: boolean
+  validation_type?: string
+}
+
 export default {
   asset: assetApi,
   land: landApi,
@@ -220,4 +324,6 @@ export default {
   compliance: complianceApi,
   litigation: litigationApi,
   stakeholder: stakeholderApi,
+  census: censusApi,
+  questions: censusQuestionsApi,
 }

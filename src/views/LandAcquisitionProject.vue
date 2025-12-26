@@ -24,15 +24,13 @@
     <!-- Content -->
     <div class="container-fluid">
       <div class="card">
-        <div class="card-header d-flex justify-content-between">
-          <span>Project List</span>
-          <button
-            class="btn btn-primary btn-sm"
-            @click="openModal"
-          >
+        <div class="card-header">
+          <h5>Project List</h5>
+          <button class="btn btn-primary btn-sm mt-2" @click="openModal">
             + Add Project
           </button>
         </div>
+
 
         <div class="card-body">
           <table class="table table-bordered table-striped">

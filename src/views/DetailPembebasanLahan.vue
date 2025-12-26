@@ -295,7 +295,8 @@ let acquisitionParcelCompute = ref([])
 let parcelModalRef = ref(null)
 let parcelModalInstance = null
 const projects = ref([])
-
+let uploadedGeojson = null
+let selectedGeometry = null
 const fetchProjects = async () => {
   const res = await axios.get(`http://127.0.0.1:8000/api/spatial/LandAcquisitionProject/${projectId}?format=json`)
   projects.value = res.data

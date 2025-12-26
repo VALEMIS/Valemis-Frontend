@@ -69,28 +69,11 @@
           </li>
 
           <!-- 6. Stakeholder Management Module -->
-          <li class="nav-item" :class="{ 'menu-open': route.path.startsWith('/stakeholder-management') }">
-            <a href="#" class="nav-link" :class="{ active: route.path.startsWith('/stakeholder-management') }">
+          <li class="nav-item" :class="{ active: route.path.startsWith('/stakeholder-management') }">
+            <router-link to="/stakeholder-management/advanced" class="nav-link">
               <i class="nav-icon bi bi-people-fill"></i>
-              <p>
-                Stakeholder Management
-                <i class="right fas fa-angle-left"></i>
-              </p>
-            </a>
-            <ul class="nav nav-treeview">
-              <li class="nav-item">
-                <router-link to="/stakeholder-management/basic" class="nav-link" :class="{ active: route.path.includes('/basic') }">
-                  <i class="far fa-circle nav-icon"></i>
-                  <p>Basic Management</p>
-                </router-link>
-              </li>
-              <li class="nav-item">
-                <router-link to="/stakeholder-management/advanced" class="nav-link" :class="{ active: route.path.includes('/advanced') }">
-                  <i class="far fa-circle nav-icon"></i>
-                  <p>Advanced Analytics</p>
-                </router-link>
-              </li>
-            </ul>
+              <p>Stakeholder Management</p>
+            </router-link>
           </li>
         </ul>
       </nav>
