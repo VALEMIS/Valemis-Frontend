@@ -19,6 +19,9 @@
     <div class="app-content">
       <div class="container-fluid">
         <!-- Projects Cards (Paling Atas) -->
+        <button class="btn btn-sm btn-primary me-2" @click="addProject">
+          <i class="bi bi-plus-circle"></i> Tambah Parcel
+        </button>
         <div class="row mb-3">
           <div class="col-md-4" v-for="project in projectSummary" :key="project.name">
             <div class="card border-left-primary">
@@ -516,14 +519,22 @@ interface FormData {
   jumlahBebas: number
   biayaPembebasan: number
 }
+interface FormDataProject {
+  id?: number
+  code: string
+  project: string
+  ownerName: string
+}
 
 const selectedProject = ref<string>('all')
 const selectedStatus = ref<string>('all')
 const parcelModalRef = ref<HTMLElement | null>(null)
+const projectModalRef = ref<HTMLElement | null>(null)
 const historyModalRef = ref<HTMLElement | null>(null)
 
 let selectedGeometry:any = null
 let parcelModalInstance: any = null
+let projectModalInstance: any = null
 let historyModalInstance: any = null
 let map: L.Map | null = null
 let  uploadedGeojson = null
@@ -548,6 +559,11 @@ const formData = ref<FormData>({
   biayaPembebasan: 0
 })
 
+const formDataProject = ref<FormDataProject>({
+  code: '',
+  project: '',
+  ownerName: '',
+})
 // Dummy data - lahan yang terdampak project
 const parcels = ref<Parcel[]>([
   // Project Alpha parcels
@@ -581,10 +597,10 @@ const filteredParcels = computed(() => {
   if (selectedStatus.value !== 'all') {
     result = result.filter(p => p.status === selectedStatus.value)
   }
-  
+  console.log(result)
   return result
 })
-
+console.log(filteredParcels)
 const stats = computed(() => {
   return {
     bebas: filteredParcels.value.filter(p => p.status === 'Bebas').length,
@@ -715,6 +731,15 @@ const addParcel = () => {
   openParcelModal()
 }
 
+const addProject = () => {
+  isEditMode.value = false
+  formDataProject.value = {
+    code: '',
+    project: '',
+    ownerName: '',
+  }
+  openProjectModal()
+}
 const editParcel = (parcel: Parcel) => {
   isEditMode.value = true
   formData.value = {
@@ -816,6 +841,40 @@ const closeParcelModal = () => {
   }
 }
 
+
+const openProjectModal = () => {
+  if (!projectModalRef.value) return
+
+  const Modal = (window as any).bootstrap?.Modal
+  if (!Modal) return
+
+  projectModalInstance = new Modal(projectModalRef.value)
+
+  projectModalRef.value.addEventListener(
+    'shown.bs.modal',
+    () => {
+      if (!map) {
+        initMap()
+      } else {
+        map.invalidateSize()
+      }
+    },
+    { once: true } // penting: jangan dobel
+  )
+
+  projectModalInstance.show()
+}
+
+
+const closeProjectModal = () => {
+  if (projectModalInstance) {
+    projectModalInstance.hide()
+  } else if (projectModalRef.value) {
+    projectModalRef.value.classList.remove('show')
+    projectModalRef.value.style.display = 'none'
+    document.body.classList.remove('modal-open')
+  }
+}
 const openHistoryModal = () => {
   if (historyModalRef.value) {
     const Modal = (window as any).bootstrap?.Modal
