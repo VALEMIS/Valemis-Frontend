@@ -22,28 +22,41 @@
       <div class="container-fluid">
         <!-- Statistics Cards -->
         <div class="row mb-3">
-          <div class="col-lg-3 col-md-6">
+          <div class="col-lg-2 col-md-4">
             <div class="card bg-danger text-white">
               <div class="card-body">
                 <div class="d-flex justify-content-between align-items-center">
                   <div>
-                    <h3 class="mb-0">{{ litigationStats.active }}</h3>
-                    <small>Kasus Aktif</small>
+                    <h5 class="mb-0">{{ litigationStats.negosiasiTahap1 }}</h5>
+                    <small>Tahap 1</small>
                   </div>
-                  <i class="bi bi-exclamation-triangle" style="font-size: 3rem; opacity: 0.3;"></i>
+                  <i class="bi bi-1-circle" style="font-size: 2rem; opacity: 0.3;"></i>
                 </div>
               </div>
             </div>
           </div>
-          <div class="col-lg-3 col-md-6">
+          <div class="col-lg-2 col-md-4">
             <div class="card bg-warning text-dark">
               <div class="card-body">
                 <div class="d-flex justify-content-between align-items-center">
                   <div>
-                    <h3 class="mb-0">{{ litigationStats.underReview }}</h3>
-                    <small>Dalam Proses</small>
+                    <h5 class="mb-0">{{ litigationStats.negosiasiTahap2 }}</h5>
+                    <small>Tahap 2</small>
                   </div>
-                  <i class="bi bi-hourglass-split" style="font-size: 3rem; opacity: 0.3;"></i>
+                  <i class="bi bi-2-circle" style="font-size: 2rem; opacity: 0.3;"></i>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="col-lg-2 col-md-4">
+            <div class="card bg-primary text-white">
+              <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center">
+                  <div>
+                    <h5 class="mb-0">{{ litigationStats.negosiasiTahap3 }}</h5>
+                    <small>Tahap 3</small>
+                  </div>
+                  <i class="bi bi-3-circle" style="font-size: 2rem; opacity: 0.3;"></i>
                 </div>
               </div>
             </div>
@@ -53,10 +66,10 @@
               <div class="card-body">
                 <div class="d-flex justify-content-between align-items-center">
                   <div>
-                    <h3 class="mb-0">{{ litigationStats.resolved }}</h3>
-                    <small>Selesai</small>
+                    <h5 class="mb-0">{{ litigationStats.putusanClear }}</h5>
+                    <small>Putusan Clear</small>
                   </div>
-                  <i class="bi bi-check-circle" style="font-size: 3rem; opacity: 0.3;"></i>
+                  <i class="bi bi-check-circle" style="font-size: 2rem; opacity: 0.3;"></i>
                 </div>
               </div>
             </div>
@@ -66,10 +79,10 @@
               <div class="card-body">
                 <div class="d-flex justify-content-between align-items-center">
                   <div>
-                    <h3 class="mb-0">{{ totalClaims }}</h3>
-                    <small>Total Kasus</small>
+                    <h5 class="mb-0">{{ litigationStats.putusanPengadilan }}</h5>
+                    <small>Putusan Pengadilan</small>
                   </div>
-                  <i class="bi bi-folder" style="font-size: 3rem; opacity: 0.3;"></i>
+                  <i class="bi bi-gavel" style="font-size: 2rem; opacity: 0.3;"></i>
                 </div>
               </div>
             </div>
@@ -84,10 +97,11 @@
                 <label class="form-label"><strong><i class="bi bi-funnel"></i> Filter Status</strong></label>
                 <select v-model="selectedStatus" class="form-select">
                   <option value="all">Semua Status</option>
-                  <option value="Active">Aktif</option>
-                  <option value="Under Review">Dalam Proses</option>
-                  <option value="Resolved">Selesai</option>
-                  <option value="Dismissed">Ditolak</option>
+                  <option value="Negosiasi Tahap 1">Negosiasi Tahap 1</option>
+                  <option value="Negosiasi Tahap 2">Negosiasi Tahap 2</option>
+                  <option value="Negosiasi Tahap 3">Negosiasi Tahap 3</option>
+                  <option value="Putusan Clear">Putusan Clear</option>
+                  <option value="Putusan Pengadilan">Putusan Pengadilan</option>
                 </select>
               </div>
             </div>
@@ -335,10 +349,11 @@
                   <label class="form-label"><strong>Status</strong> <span class="text-danger">*</span></label>
                   <select class="form-select" v-model="formData.status" required>
                     <option value="">Pilih Status</option>
-                    <option value="Active">Aktif</option>
-                    <option value="Under Review">Dalam Proses</option>
-                    <option value="Resolved">Selesai</option>
-                    <option value="Dismissed">Ditolak</option>
+                    <option value="Negosiasi Tahap 1">Negosiasi Tahap 1</option>
+                    <option value="Negosiasi Tahap 2">Negosiasi Tahap 2</option>
+                    <option value="Negosiasi Tahap 3">Negosiasi Tahap 3</option>
+                    <option value="Putusan Clear">Putusan Clear</option>
+                    <option value="Putusan Pengadilan">Putusan Pengadilan</option>
                   </select>
                 </div>
                 <div class="col-md-4 mb-3">
@@ -384,20 +399,28 @@
                   <p class="text-muted mb-0"><small>Kasus {{ selectedCase.caseCode }} dibuka untuk {{ selectedCase.claimant }}</small></p>
                 </div>
               </div>
-              <div class="timeline-item">
+              <div class="timeline-item" v-if="selectedCase.status.includes('Negosiasi')">
                 <div class="timeline-marker bg-warning"></div>
                 <div class="timeline-content">
-                  <h6>Verifikasi Dokumen</h6>
+                  <h6>{{ selectedCase.status }}</h6>
                   <p class="mb-0"><small>{{ selectedCase.startDate }}</small></p>
-                  <p class="text-muted mb-0"><small>Dokumen klaim sedang diverifikasi oleh tim legal</small></p>
+                  <p class="text-muted mb-0"><small>Proses negosiasi sedang berlangsung</small></p>
                 </div>
               </div>
-              <div class="timeline-item" v-if="selectedCase.status === 'Resolved'">
+              <div class="timeline-item" v-if="selectedCase.status === 'Putusan Clear'">
                 <div class="timeline-marker bg-success"></div>
                 <div class="timeline-content">
-                  <h6>Kasus Selesai</h6>
+                  <h6>Putusan Clear</h6>
                   <p class="mb-0"><small>{{ selectedCase.startDate }}</small></p>
-                  <p class="text-muted mb-0"><small>Kasus telah diselesaikan dengan kesepakatan</small></p>
+                  <p class="text-muted mb-0"><small>Kasus diselesaikan dengan keputusan clear/bisa diselesaikan secara kekeluargaan</small></p>
+                </div>
+              </div>
+              <div class="timeline-item" v-if="selectedCase.status === 'Putusan Pengadilan'">
+                <div class="timeline-marker bg-info"></div>
+                <div class="timeline-content">
+                  <h6>Putusan Pengadilan</h6>
+                  <p class="mb-0"><small>{{ selectedCase.startDate }}</small></p>
+                  <p class="text-muted mb-0"><small>Kasus diselesaikan melalui putusan pengadilan</small></p>
                 </div>
               </div>
             </div>
@@ -456,16 +479,16 @@ const formData = ref<FormData>({
 })
 
 const litigations = ref<Litigation[]>([
-  { id: 1, caseCode: 'LIT-2025-001', landCode: 'LND-VALE-001', caseType: 'Land Ownership', claimant: 'Ahmad Kusuma', description: 'Klaim kepemilikan lahan oleh warga lokal dengan bukti sertifikat lama', startDate: '2025-01-15', status: 'Active', priority: 'High' },
-  { id: 2, caseCode: 'LIT-2025-002', landCode: 'LND-ACQ-001', caseType: 'Compensation Claim', claimant: 'Siti Rahayu', description: 'Klaim kompensasi tambahan untuk pembebasan lahan', startDate: '2025-02-10', status: 'Under Review', priority: 'Medium' },
-  { id: 3, caseCode: 'LIT-2025-003', landCode: 'LND-VALE-002', caseType: 'Boundary Dispute', claimant: 'Budi Santoso', description: 'Sengketa batas lahan dengan area operasional Vale', startDate: '2025-01-20', status: 'Active', priority: 'High' },
-  { id: 4, caseCode: 'LIT-2024-015', landCode: 'LND-ACQ-002', caseType: 'Compensation Claim', claimant: 'Dewi Lestari', description: 'Klaim kompensasi untuk kerusakan tanaman', startDate: '2024-11-05', status: 'Resolved', priority: 'Low' },
-  { id: 5, caseCode: 'LIT-2025-004', landCode: 'LND-IUPK-001', caseType: 'Environmental Claim', claimant: 'Kelompok Tani Sorowako', description: 'Klaim dampak lingkungan terhadap area pertanian', startDate: '2025-03-01', status: 'Under Review', priority: 'High' },
-  { id: 6, caseCode: 'LIT-2024-020', landCode: 'LND-ACQ-003', caseType: 'Boundary Dispute', claimant: 'Hendra Wijaya', description: 'Perbedaan batas kepemilikan dengan area jalan akses', startDate: '2024-12-10', status: 'Resolved', priority: 'Medium' },
-  { id: 7, caseCode: 'LIT-2025-005', landCode: 'LND-VALE-003', caseType: 'Land Ownership', claimant: 'Keluarga Marzuki', description: 'Klaim kepemilikan berdasarkan warisan keluarga', startDate: '2025-02-28', status: 'Active', priority: 'High' },
-  { id: 8, caseCode: 'LIT-2025-006', landCode: 'LND-OPS-001', caseType: 'Others', claimant: 'Yusuf Rahman', description: 'Klaim akses jalan yang terblokir operasional', startDate: '2025-03-15', status: 'Under Review', priority: 'Low' },
-  { id: 9, caseCode: 'LIT-2024-018', landCode: 'LND-ACQ-004', caseType: 'Compensation Claim', claimant: 'Nina Fitriani', description: 'Klaim kompensasi untuk relokasi rumah', startDate: '2024-11-20', status: 'Dismissed', priority: 'Medium' },
-  { id: 10, caseCode: 'LIT-2025-007', landCode: 'LND-PPKH-001', caseType: 'Environmental Claim', claimant: 'LSM Lingkungan Luwu', description: 'Klaim dampak terhadap area konservasi', startDate: '2025-03-20', status: 'Active', priority: 'High' },
+  { id: 1, caseCode: 'LIT-2025-001', landCode: 'LND-VALE-001', caseType: 'Land Ownership', claimant: 'Ahmad Kusuma', description: 'Klaim kepemilikan lahan oleh warga lokal dengan bukti sertifikat lama', startDate: '2025-01-15', status: 'Negosiasi Tahap 1', priority: 'High' },
+  { id: 2, caseCode: 'LIT-2025-002', landCode: 'LND-ACQ-001', caseType: 'Compensation Claim', claimant: 'Siti Rahayu', description: 'Klaim kompensasi tambahan untuk pembebasan lahan', startDate: '2025-02-10', status: 'Negosiasi Tahap 2', priority: 'Medium' },
+  { id: 3, caseCode: 'LIT-2025-003', landCode: 'LND-VALE-002', caseType: 'Boundary Dispute', claimant: 'Budi Santoso', description: 'Sengketa batas lahan dengan area operasional Vale', startDate: '2025-01-20', status: 'Negosiasi Tahap 1', priority: 'High' },
+  { id: 4, caseCode: 'LIT-2024-015', landCode: 'LND-ACQ-002', caseType: 'Compensation Claim', claimant: 'Dewi Lestari', description: 'Klaim kompensasi untuk kerusakan tanaman', startDate: '2024-11-05', status: 'Putusan Clear', priority: 'Low' },
+  { id: 5, caseCode: 'LIT-2025-004', landCode: 'LND-IUPK-001', caseType: 'Environmental Claim', claimant: 'Kelompok Tani Sorowako', description: 'Klaim dampak lingkungan terhadap area pertanian', startDate: '2025-03-01', status: 'Negosiasi Tahap 3', priority: 'High' },
+  { id: 6, caseCode: 'LIT-2024-020', landCode: 'LND-ACQ-003', caseType: 'Boundary Dispute', claimant: 'Hendra Wijaya', description: 'Perbedaan batas kepemilikan dengan area jalan akses', startDate: '2024-12-10', status: 'Putusan Clear', priority: 'Medium' },
+  { id: 7, caseCode: 'LIT-2025-005', landCode: 'LND-VALE-003', caseType: 'Land Ownership', claimant: 'Keluarga Marzuki', description: 'Klaim kepemilikan berdasarkan warisan keluarga', startDate: '2025-02-28', status: 'Negosiasi Tahap 2', priority: 'High' },
+  { id: 8, caseCode: 'LIT-2025-006', landCode: 'LND-OPS-001', caseType: 'Others', claimant: 'Yusuf Rahman', description: 'Klaim akses jalan yang terblokir operasional', startDate: '2025-03-15', status: 'Negosiasi Tahap 1', priority: 'Low' },
+  { id: 9, caseCode: 'LIT-2024-018', landCode: 'LND-ACQ-004', caseType: 'Compensation Claim', claimant: 'Nina Fitriani', description: 'Klaim kompensasi untuk relokasi rumah', startDate: '2024-11-20', status: 'Putusan Pengadilan', priority: 'Medium' },
+  { id: 10, caseCode: 'LIT-2025-007', landCode: 'LND-PPKH-001', caseType: 'Environmental Claim', claimant: 'LSM Lingkungan Luwu', description: 'Klaim dampak terhadap area konservasi', startDate: '2025-03-20', status: 'Negosiasi Tahap 3', priority: 'High' },
 ])
 
 const filteredLitigations = computed(() => {
@@ -482,13 +505,13 @@ const filteredLitigations = computed(() => {
   return result
 })
 
-const totalClaims = computed(() => litigations.value.length)
-
 const litigationStats = computed(() => {
   return {
-    active: litigations.value.filter(l => l.status === 'Active').length,
-    underReview: litigations.value.filter(l => l.status === 'Under Review').length,
-    resolved: litigations.value.filter(l => l.status === 'Resolved').length
+    negosiasiTahap1: litigations.value.filter(l => l.status === 'Negosiasi Tahap 1').length,
+    negosiasiTahap2: litigations.value.filter(l => l.status === 'Negosiasi Tahap 2').length,
+    negosiasiTahap3: litigations.value.filter(l => l.status === 'Negosiasi Tahap 3').length,
+    putusanClear: litigations.value.filter(l => l.status === 'Putusan Clear').length,
+    putusanPengadilan: litigations.value.filter(l => l.status === 'Putusan Pengadilan').length
   }
 })
 
@@ -499,24 +522,25 @@ const caseTypeBreakdown = computed(() => {
     return {
       name: type,
       total: items.length,
-      active: items.filter(l => l.status === 'Active').length,
-      resolved: items.filter(l => l.status === 'Resolved').length
+      active: items.filter(l => ['Negosiasi Tahap 1', 'Negosiasi Tahap 2', 'Negosiasi Tahap 3'].includes(l.status)).length,
+      resolved: items.filter(l => ['Putusan Clear', 'Putusan Pengadilan'].includes(l.status)).length
     }
   }).filter(t => t.total > 0)
 })
 
 const highPriorityCases = computed(() => {
   return litigations.value
-    .filter(l => l.priority === 'High' && l.status !== 'Resolved')
+    .filter(l => l.priority === 'High' && !['Putusan Clear', 'Putusan Pengadilan'].includes(l.status))
     .slice(0, 5)
 })
 
 const getStatusClass = (status: string): string => {
   switch (status) {
-    case 'Active': return 'bg-danger'
-    case 'Under Review': return 'bg-warning'
-    case 'Resolved': return 'bg-success'
-    case 'Dismissed': return 'bg-secondary'
+    case 'Negosiasi Tahap 1': return 'bg-danger'
+    case 'Negosiasi Tahap 2': return 'bg-warning'
+    case 'Negosiasi Tahap 3': return 'bg-primary'
+    case 'Putusan Clear': return 'bg-success'
+    case 'Putusan Pengadilan': return 'bg-info'
     default: return 'bg-secondary'
   }
 }

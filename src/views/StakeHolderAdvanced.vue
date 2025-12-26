@@ -184,13 +184,23 @@
                 </a>
               </li>
               <li class="nav-item">
-                <a 
-                  class="nav-link" 
+                <a
+                  class="nav-link"
                   :class="{ active: activeTab === 'network' }"
                   @click="activeTab = 'network'"
                   href="javascript:void(0)"
                 >
                   <i class="bi bi-diagram-2"></i> Network/Relasi & Dokumen
+                </a>
+              </li>
+              <li class="nav-item">
+                <a
+                  class="nav-link"
+                  :class="{ active: activeTab === 'sentiment' }"
+                  @click="activeTab = 'sentiment'"
+                  href="javascript:void(0)"
+                >
+                  <i class="bi bi-twitter-x"></i> Sentimen Sosial Media
                 </a>
               </li>
             </ul>
@@ -213,8 +223,8 @@
                       <th>Nama</th>
                       <th>Jenis</th>
                       <th>Peran</th>
-                      <th>Pengaruh</th>
-                      <th>Kepentingan</th>
+                      <th>Arah Sikap</th>
+                      <th>Aktivitas</th>
                       <th>Klasifikasi</th>
                       <th>Aksi</th>
                     </tr>
@@ -229,13 +239,14 @@
                       <td>{{ sh.jenis_stakeholder }}</td>
                       <td>{{ sh.peran_di_proyek }}</td>
                       <td>
-                        <span class="badge" :class="getBadgeInfluence(sh.level_pengaruh)">
-                          {{ sh.level_pengaruh }}/5
+                        <span class="badge" :class="getBadgeArahSikap(sh.arah_sikap ?? 0)">
+                          {{ getArahSikapLabel(sh.arah_sikap ?? 0) }}
                         </span>
+                        <small class="text-muted d-block">({{ sh.arah_sikap ?? 0 }})</small>
                       </td>
                       <td>
-                        <span class="badge" :class="getBadgeInterest(sh.level_kepentingan)">
-                          {{ sh.level_kepentingan }}/5
+                        <span class="badge" :class="getBadgeAktivitas(sh.level_aktivitas ?? 2)">
+                          Level {{ sh.level_aktivitas ?? 2 }}
                         </span>
                       </td>
                       <td>
@@ -598,6 +609,159 @@
                     </template>
                   </tbody>
                 </table>
+              </div>
+            </div>
+
+            <!-- Tab 6: Sentimen Sosial Media -->
+            <div v-show="activeTab === 'sentiment'">
+              <div class="d-flex justify-content-between align-items-center mb-3">
+                <h5><i class="bi bi-twitter-x"></i> Analisis Sentimen Media Sosial (X/Twitter)</h5>
+              </div>
+
+              <!-- Search Form -->
+              <div class="card mb-4">
+                <div class="card-body">
+                  <div class="row mb-3">
+                    <div class="col-md-6">
+                      <label class="form-label">Pilih Stakeholder</label>
+                      <select class="form-select" v-model="sentimentForm.stakeholder_id">
+                        <option value="">Pilih Stakeholder</option>
+                        <option v-for="sh in stakeholders" :key="sh.id" :value="sh.id">
+                          {{ sh.nama_lengkap }} ({{ sh.nama_panggilan }})
+                        </option>
+                      </select>
+                    </div>
+                    <div class="col-md-6">
+                      <label class="form-label">Username / Keyword (Optional)</label>
+                      <div class="input-group">
+                        <span class="input-group-text">@</span>
+                        <input type="text" class="form-control" v-model="sentimentForm.keyword" placeholder="username atau keyword">
+                      </div>
+                    </div>
+                  </div>
+                  <div class="row mb-3">
+                    <div class="col-md-4">
+                      <label class="form-label">Jumlah Tweet</label>
+                      <select class="form-select" v-model.number="sentimentForm.max_tweets">
+                        <option :value="10">10 Tweet</option>
+                        <option :value="20">20 Tweet</option>
+                        <option :value="50">50 Tweet</option>
+                        <option :value="100">100 Tweet</option>
+                      </select>
+                    </div>
+                    <div class="col-md-4">
+                      <label class="form-label">Periode</label>
+                      <select class="form-select" v-model.number="sentimentForm.days">
+                        <option :value="7">7 Hari Terakhir</option>
+                        <option :value="14">14 Hari Terakhir</option>
+                        <option :value="30">30 Hari Terakhir</option>
+                        <option :value="90">90 Hari Terakhir</option>
+                      </select>
+                    </div>
+                    <div class="col-md-4 d-flex align-items-end">
+                      <button class="btn btn-primary w-100" @click="analyzeSentiment" :disabled="isAnalyzing">
+                        <i class="bi bi-search"></i> {{ isAnalyzing ? 'Menganalisis...' : 'Analisis Sentimen' }}
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Loading State -->
+              <div v-if="isAnalyzing" class="text-center py-5">
+                <div class="spinner-border text-primary" role="status">
+                  <span class="visually-hidden">Loading...</span>
+                </div>
+                <p class="mt-3">Mengambil dan menganalisis data dari Twitter/X...</p>
+              </div>
+
+              <!-- Sentiment Results -->
+              <div v-else-if="sentimentResult">
+                <!-- Summary Cards -->
+                <div class="row mb-4">
+                  <div class="col-md-3">
+                    <div class="card text-bg-success">
+                      <div class="card-body text-center">
+                        <h3>{{ sentimentResult.sentiment_distribution?.positive?.percentage || 0 }}%</h3>
+                        <p class="mb-0"><i class="bi bi-emoji-smile"></i> Positive</p>
+                        <small>{{ sentimentResult.sentiment_distribution?.positive?.count || 0 }} tweets</small>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="col-md-3">
+                    <div class="card text-bg-secondary">
+                      <div class="card-body text-center">
+                        <h3>{{ sentimentResult.sentiment_distribution?.neutral?.percentage || 0 }}%</h3>
+                        <p class="mb-0"><i class="bi bi-emoji-neutral"></i> Neutral</p>
+                        <small>{{ sentimentResult.sentiment_distribution?.neutral?.count || 0 }} tweets</small>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="col-md-3">
+                    <div class="card text-bg-danger">
+                      <div class="card-body text-center">
+                        <h3>{{ sentimentResult.sentiment_distribution?.negative?.percentage || 0 }}%</h3>
+                        <p class="mb-0"><i class="bi bi-emoji-frown"></i> Negative</p>
+                        <small>{{ sentimentResult.sentiment_distribution?.negative?.count || 0 }} tweets</small>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="col-md-3">
+                    <div class="card text-bg-info">
+                      <div class="card-body text-center">
+                        <h3>{{ sentimentResult.overall_sentiment || 'N/A' }}</h3>
+                        <p class="mb-0"><i class="bi bi-graph-up-arrow"></i> Overall</p>
+                        <small>Score: {{ sentimentResult.average_score?.toFixed(3) || 0 }}</small>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Conclusion -->
+                <div class="alert alert-info mb-3">
+                  <strong><i class="bi bi-info-circle"></i> Kesimpulan:</strong>
+                  {{ sentimentResult.conclusion || 'Tidak ada kesimpulan' }}
+                </div>
+
+                <!-- Tweets List -->
+                <div class="card">
+                  <div class="card-header">
+                    <h6 class="card-title">Detail Tweet ({{ sentimentResult.tweets?.length || 0 }} tweets)</h6>
+                  </div>
+                  <div class="card-body" style="max-height: 500px; overflow-y: auto;">
+                    <div v-for="tweet in sentimentResult.tweets" :key="tweet.tweet_id" class="mb-3 p-3 border rounded">
+                      <div class="d-flex justify-content-between mb-2">
+                        <span class="badge bg-secondary">@{{ sentimentResult.username }}</span>
+                        <span :class="`badge bg-${getSentimentBadgeClass(tweet.sentiment)}`">
+                          {{ tweet.sentiment }}
+                        </span>
+                      </div>
+                      <p class="mb-2">{{ tweet.text }}</p>
+                      <div class="d-flex justify-content-between text-muted small">
+                        <span>
+                          <i class="bi bi-calendar"></i> {{ formatDate(tweet.created_at) }}
+                        </span>
+                        <span>
+                          <i class="bi bi-heart"></i> {{ tweet.likes_count }} |
+                          <i class="bi bi-arrow-repeat"></i> {{ tweet.retweets_count }} |
+                          <i class="bi bi-chat"></i> {{ tweet.replies_count }}
+                        </span>
+                        <span>
+                          Score: <strong>{{ tweet.score }}</strong>
+                        </span>
+                      </div>
+                      <div v-if="tweet.details" class="mt-2 small text-muted">
+                        Pos: {{ tweet.details.positive }}, Neu: {{ tweet.details.neutral }}, Neg: {{ tweet.details.negative }}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Empty State -->
+              <div v-else class="text-center py-5 text-muted">
+                <i class="bi bi-twitter-x" style="font-size: 4rem;"></i>
+                <p class="mt-3">Pilih stakeholder dan masukkan keyword untuk menganalisis sentimen media sosial</p>
               </div>
             </div>
           </div>
@@ -1147,6 +1311,17 @@ const relationForm = ref({
   keterangan: ''
 })
 
+// Sentiment Analysis
+const sentimentForm = ref({
+  stakeholder_id: null as number | null,
+  keyword: '',
+  max_tweets: 20,
+  days: 7
+})
+
+const isAnalyzing = ref(false)
+const sentimentResult = ref<any>(null)
+
 // Sample data - Master Stakeholder
 const stakeholders = ref([
   {
@@ -1158,6 +1333,8 @@ const stakeholders = ref([
     peran_di_proyek: 'Pemilik Lahan',
     level_pengaruh: 4,
     level_kepentingan: 5,
+    arah_sikap: -2,
+    level_aktivitas: 4,
     klasifikasi_sikap: 'Kontra-Aktif',
     desa: 'Sukamaju',
     telepon: '081234567890'
@@ -1171,6 +1348,8 @@ const stakeholders = ref([
     peran_di_proyek: 'Tokoh Adat',
     level_pengaruh: 5,
     level_kepentingan: 3,
+    arah_sikap: 2,
+    level_aktivitas: 4,
     klasifikasi_sikap: 'Pro-Aktif',
     desa: 'Makmur',
     telepon: '081234567891'
@@ -1184,6 +1363,8 @@ const stakeholders = ref([
     peran_di_proyek: 'Ketua RT',
     level_pengaruh: 3,
     level_kepentingan: 4,
+    arah_sikap: 1,
+    level_aktivitas: 2,
     klasifikasi_sikap: 'Pro-Pasif',
     desa: 'Sukamaju',
     telepon: '081234567892'
@@ -1197,6 +1378,8 @@ const stakeholders = ref([
     peran_di_proyek: 'Petani',
     level_pengaruh: 2,
     level_kepentingan: 5,
+    arah_sikap: -1,
+    level_aktivitas: 1,
     klasifikasi_sikap: 'Kontra-Pasif',
     desa: 'Sejahtera',
     telepon: '081234567893'
@@ -1210,6 +1393,8 @@ const stakeholders = ref([
     peran_di_proyek: 'Tokoh Perempuan',
     level_pengaruh: 4,
     level_kepentingan: 4,
+    arah_sikap: 2,
+    level_aktivitas: 4,
     klasifikasi_sikap: 'Pro-Aktif',
     desa: 'Makmur',
     telepon: '081234567894'
@@ -1733,33 +1918,39 @@ const toggleRelationDocuments = (relationId: number) => {
 // Handle canvas click to show stakeholder details
 const handleCanvasClick = (event: MouseEvent) => {
   if (!networkCanvas.value) return
-  
+
   const canvas = networkCanvas.value
   const rect = canvas.getBoundingClientRect()
-  
+
   // Calculate scale factor for responsive canvas
   const scaleX = canvas.width / rect.width
   const scaleY = canvas.height / rect.height
-  
+
   const clickX = (event.clientX - rect.left) * scaleX
   const clickY = (event.clientY - rect.top) * scaleY
-  
+
   const padding = 50
   const width = canvas.width - padding * 2
   const height = canvas.height - padding * 2
   const nodeRadius = 30
   const textMargin = 70
-  
+
   // Check if click is on any stakeholder node - using same formula as drawNetwork
   for (const sh of stakeholders.value) {
+    // Map arah_sikap (-2 to +2) to X-axis: Negatif (left) to Positif (right)
+    const arahSikap = sh.arah_sikap ?? 0
+    const sentimentNormalized = (arahSikap + 2) / 4
     const usableWidth = width - (nodeRadius * 2) - 20
-    const xPos = padding + nodeRadius + 10 + (sh.level_kepentingan / 5) * usableWidth
-    
+    const xPos = padding + nodeRadius + 10 + sentimentNormalized * usableWidth
+
+    // Map level_aktivitas (1-4) to Y-axis: Pasif (bottom) to Aktif (top)
+    const levelAktivitas = sh.level_aktivitas ?? 2
+    const aktivitasNormalized = (levelAktivitas - 1) / 3
     const usableHeight = height - textMargin
-    const yPos = canvas.height - padding - textMargin - (sh.level_pengaruh / 5) * usableHeight
-    
+    const yPos = canvas.height - padding - textMargin - aktivitasNormalized * usableHeight
+
     const distance = Math.sqrt((clickX - xPos) ** 2 + (clickY - yPos) ** 2)
-    
+
     if (distance <= 30) { // node radius
       selectedStakeholder.value = sh
       // Show modal using Bootstrap 5
@@ -1868,6 +2059,62 @@ const deleteEvidence = (id: number) => {
   }
 }
 
+// Sentiment Analysis Functions
+const getSentimentBadgeClass = (sentiment: string) => {
+  if (sentiment === 'positive') return 'success'
+  if (sentiment === 'negative') return 'danger'
+  return 'secondary'
+}
+
+const analyzeSentiment = async () => {
+  let keyword = sentimentForm.value.keyword
+  if (!keyword && sentimentForm.value.stakeholder_id) {
+    const stakeholder = stakeholders.value.find(s => s.id === sentimentForm.value.stakeholder_id)
+    if (stakeholder) {
+      keyword = stakeholder.nama_lengkap
+    }
+  }
+
+  if (!keyword) {
+    alert('Harap pilih stakeholder atau masukkan username/keyword')
+    return
+  }
+
+  isAnalyzing.value = true
+  sentimentResult.value = null
+
+  try {
+    const response = await fetch("http://127.0.0.1:8000/api/twitter/analyze-account/", {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        username: keyword,
+        max_tweets: sentimentForm.value.max_tweets,
+        days: sentimentForm.value.days
+      })
+    })
+
+    if (!response.ok) {
+      throw new Error('Gagal menganalisis sentimen')
+    }
+
+    const data = await response.json()
+
+    if (data.status === 'success') {
+      sentimentResult.value = data.data
+    } else {
+      throw new Error(data.message || 'Gagal menganalisis sentimen')
+    }
+  } catch (error: any) {
+    console.error('Error analyzing sentiment:', error)
+    alert(`Error: ${error.message}`)
+  } finally {
+    isAnalyzing.value = false
+  }
+}
+
 // Draw network visualization with quadrant matrix and directional arrows
 const drawNetwork = () => {
   if (!networkCanvas.value) return
@@ -1946,18 +2193,23 @@ const drawNetwork = () => {
   // Define node positions based on Activity-Sentiment matrix
   const nodeRadius = 30
   const textMargin = 70 // extra margin for text below nodes
-  
+
   const nodes = stakeholders.value.map(sh => {
-    // Map 1-5 scale to canvas coordinates with margin for text
-    // Sentiment (X-axis): 1 = Negatif (left), 5 = Positif (right)
+    // Map arah_sikap (-2 to +2) to X-axis: Negatif (left) to Positif (right)
+    // Normalize -2 to +2 → 0 to 1
+    const arahSikap = sh.arah_sikap ?? 0
+    const sentimentNormalized = (arahSikap + 2) / 4 // -2 becomes 0, +2 becomes 1
     const usableWidth = width - (nodeRadius * 2) - 20
-    const xPos = padding + nodeRadius + 10 + (sh.level_kepentingan / 5) * usableWidth
-    
-    // Activity (Y-axis): 1 = Pasif (bottom), 5 = Aktif (top - inverted)
-    // Reserve space at bottom for text labels
+    const xPos = padding + nodeRadius + 10 + sentimentNormalized * usableWidth
+
+    // Map level_aktivitas (1-4) to Y-axis: Pasif (bottom) to Aktif (top)
+    // Normalize 1-4 to 0-1
+    const levelAktivitas = sh.level_aktivitas ?? 2
+    // Normalize 1-4 to 0-1
+    const aktivitasNormalized = (levelAktivitas - 1) / 3
     const usableHeight = height - textMargin
-    const yPos = canvas.height - padding - textMargin - (sh.level_pengaruh / 5) * usableHeight
-    
+    const yPos = canvas.height - padding - textMargin - aktivitasNormalized * usableHeight
+
     return {
       x: xPos,
       y: yPos,

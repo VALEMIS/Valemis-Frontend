@@ -27,10 +27,12 @@ import TambahLitigasi from '../views/TambahLitigasi.vue'
 import TambahParcelLitigasi from '../views/TambahParcelLitigasi.vue'
 
 // 6. Stakeholder Management Module
-import StakeHolder from '../views/StakeHolder.vue'
 import StakeHolderAdvanced from '../views/StakeHolderAdvanced.vue'
 import TambahStakeHolder from '../views/TambahStakeHolder.vue'
 import DetailStakeHolder from '../views/DetailStakeHolder.vue'
+
+// 7. Census Survey Module
+import CensusSurvey from '../views/CensusSurvey.vue'
 
 // Legacy - to be deprecated
 import LahanBebas from '../views/LahanBebas.vue'
@@ -124,12 +126,12 @@ const router = createRouter({
     {
       path: '/stakeholder-management',
       name: 'stakeholder-management',
-      redirect: '/stakeholder-management/basic'
+      redirect: '/stakeholder-management/advanced'
     },
     {
       path: '/stakeholder-management/basic',
       name: 'stakeholder-basic',
-      component: StakeHolder
+      redirect: '/stakeholder-management/advanced'
     },
     {
       path: '/stakeholder-management/advanced',
@@ -151,7 +153,14 @@ const router = createRouter({
       name: 'edit-stake-holder',
       component: TambahStakeHolder
     },
-    
+
+    // ===== 7. CENSUS SURVEY MODULE =====
+    {
+      path: '/census-survey',
+      name: 'census-survey',
+      component: CensusSurvey
+    },
+
     // ===== LEGACY ROUTES (For backward compatibility) =====
     {
       path: '/aset-inventori',
@@ -171,7 +180,7 @@ const router = createRouter({
     },
     {
       path: '/stake-holder',
-      redirect: '/stakeholder-management/basic'
+      redirect: '/stakeholder-management/advanced'
     },
     {
       path: '/geospasial/lahan-bebas',
