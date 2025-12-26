@@ -312,11 +312,11 @@
                   <label class="form-label"><strong>Kategori</strong> <span class="text-danger">*</span></label>
                   <select class="form-select" v-model="formData.category" required>
                     <option value="">Pilih Kategori</option>
-                    <option value="Vale Owned">Milik Vale</option>
-                    <option value="Acquired">Acquired/Diakuisisi</option>
-                    <option value="IUPK">IUPK</option>
-                    <option value="PPKH">PPKH</option>
-                    <option value="Operational">Operasional</option>
+                    <option value="0">Milik Vale</option>
+                    <option value="1">Acquired/Diakuisisi</option>
+                    <option value="2">IUPK</option>
+                    <option value="3">PPKH</option>
+                    <option value="4">Operasional</option>
                   </select>
                 </div>
                 <div class="col-md-6 mb-3">
@@ -338,10 +338,10 @@
                   <label class="form-label"><strong>Status Sertifikat</strong> <span class="text-danger">*</span></label>
                   <select class="form-select" v-model="formData.certificate" required>
                     <option value="">Pilih Status</option>
-                    <option value="SHM">SHM (Sertifikat Hak Milik)</option>
-                    <option value="SHGB">SHGB (Hak Guna Bangunan)</option>
-                    <option value="HGU">HGU (Hak Guna Usaha)</option>
-                    <option value="Belum Sertifikat">Belum Sertifikat</option>
+                    <option value="0">SHM (Sertifikat Hak Milik)</option>
+                    <option value="1">SHGB (Hak Guna Bangunan)</option>
+                    <option value="2">HGU (Hak Guna Usaha)</option>
+                    <option value="3">Belum Sertifikat</option>
                   </select>
                 </div>
                 <div class="col-md-6 mb-3">
@@ -356,26 +356,7 @@
               </div>
 
               <div class="row">
-                <div class="col-md-4 mb-3">
-                  <label class="form-label"><strong>Latitude</strong> <span class="text-danger">*</span></label>
-                  <input 
-                    type="text" 
-                    class="form-control" 
-                    v-model="formData.lat" 
-                    placeholder="-2.5650"
-                    required 
-                  />
-                </div>
-                <div class="col-md-4 mb-3">
-                  <label class="form-label"><strong>Longitude</strong> <span class="text-danger">*</span></label>
-                  <input 
-                    type="text" 
-                    class="form-control" 
-                    v-model="formData.lng" 
-                    placeholder="121.3450"
-                    required 
-                  />
-                </div>
+                
                 <div class="col-md-4 mb-3">
                   <label class="form-label"><strong>Tahun Akuisisi</strong></label>
                   <input 
@@ -388,7 +369,9 @@
                   />
                 </div>
               </div>
+              <div id="map" style="height: 400px;width: 100%;">
 
+              </div>
               <div class="mb-3">
                 <label class="form-label"><strong><i class="bi bi-file-earmark-text"></i> Dokumen Lahan</strong></label>
                 <div class="input-group mb-2">
@@ -451,7 +434,12 @@ import L from 'leaflet'
 import 'leaflet/dist/leaflet.css'
 import "@geoman-io/leaflet-geoman-free";
 import "@geoman-io/leaflet-geoman-free/dist/leaflet-geoman.css";
-
+import axios from 'axios';
+import 'leaflet/dist/leaflet.css'
+import "@geoman-io/leaflet-geoman-free";
+import "@geoman-io/leaflet-geoman-free/dist/leaflet-geoman.css";
+import 'bootstrap/dist/js/bootstrap.bundle.min.js'
+import "../utils/drawMap.js"  
 interface Land {
   id: number
   code: string
@@ -461,12 +449,11 @@ interface Land {
   certificate: string
   certificateNo: string
   coordinates: string
-  lat: number
-  lng: number
   acquisitionYear: number | null
   documents: string[]
+  geom:any
 }
-
+import wellknown from "wellknown"
 interface FormData {
   id?: number
   code: string
@@ -489,7 +476,10 @@ const landModalRef = ref<HTMLElement | null>(null)
 const newDocument = ref<string>('')
 let landMap: L.Map | null = null
 let landModalInstance: any = null
+let projects = ref<any[]>([])
 
+let mpwkt
+let map: L.Map | null = null
 const isEditMode = ref<boolean>(false)
 const formData = ref<FormData>({
   code: '',
@@ -504,23 +494,28 @@ const formData = ref<FormData>({
   documents: []
 })
 
-const lands = ref<Land[]>([
-  { id: 1, code: 'LND-VALE-001', locationName: 'Vale Central Mining Area', category: 'Vale Owned', area: 450.5, certificate: 'HGU', certificateNo: 'HGU-001/2015', coordinates: '-2.5650, 121.3450', lat: -2.5650, lng: 121.3450, acquisitionYear: 2015, documents: ['HGU-001-2015.pdf', 'Peta-Kadaster.pdf'] },
-  { id: 2, code: 'LND-VALE-002', locationName: 'Vale North Sector', category: 'Vale Owned', area: 320.8, certificate: 'HGU', certificateNo: 'HGU-002/2016', coordinates: '-2.5500, 121.3500', lat: -2.5500, lng: 121.3500, acquisitionYear: 2016, documents: ['HGU-002-2016.pdf', 'Site-Plan.pdf'] },
-  { id: 3, code: 'LND-VALE-003', locationName: 'Vale South Sector', category: 'Vale Owned', area: 285.3, certificate: 'HGU', certificateNo: 'HGU-003/2017', coordinates: '-2.5800, 121.3400', lat: -2.5800, lng: 121.3400, acquisitionYear: 2017, documents: ['HGU-003-2017.pdf'] },
-  { id: 4, code: 'LND-ACQ-001', locationName: 'Sorowako Expansion Area', category: 'Acquired', area: 125.5, certificate: 'SHM', certificateNo: 'SHM-045/2020', coordinates: '-2.5595, 121.3415', lat: -2.5595, lng: 121.3415, acquisitionYear: 2020, documents: ['SHM-045-2020.pdf', 'Akta-Jual-Beli.pdf', 'PPJB.pdf'] },
-  { id: 5, code: 'LND-ACQ-002', locationName: 'Magani Buffer Zone', category: 'Acquired', area: 98.7, certificate: 'SHM', certificateNo: 'SHM-046/2021', coordinates: '-2.5605, 121.3465', lat: -2.5605, lng: 121.3465, acquisitionYear: 2021, documents: ['SHM-046-2021.pdf', 'Akta-Jual-Beli.pdf'] },
-  { id: 6, code: 'LND-ACQ-003', locationName: 'Wewangriu Access Road', category: 'Acquired', area: 45.2, certificate: 'SHGB', certificateNo: 'SHGB-012/2022', coordinates: '-2.5685, 121.3425', lat: -2.5685, lng: 121.3425, acquisitionYear: 2022, documents: ['SHGB-012-2022.pdf', 'Perjanjian-Kompensasi.pdf'] },
-  { id: 7, code: 'LND-ACQ-004', locationName: 'Nikkel Infrastructure', category: 'Acquired', area: 67.8, certificate: 'SHM', certificateNo: 'SHM-047/2023', coordinates: '-2.5695, 121.3485', lat: -2.5695, lng: 121.3485, acquisitionYear: 2023, documents: ['SHM-047-2023.pdf'] },
-  { id: 8, code: 'LND-IUPK-001', locationName: 'IUPK Block A', category: 'IUPK', area: 550.0, certificate: 'HGU', certificateNo: 'IUPK-A/2010', coordinates: '-2.5400, 121.3300', lat: -2.5400, lng: 121.3300, acquisitionYear: 2010, documents: ['SK-IUPK-A-2010.pdf', 'Peta-Wilayah-Kerja.pdf'] },
-  { id: 9, code: 'LND-IUPK-002', locationName: 'IUPK Block B', category: 'IUPK', area: 475.5, certificate: 'HGU', certificateNo: 'IUPK-B/2011', coordinates: '-2.5450, 121.3600', lat: -2.5450, lng: 121.3600, acquisitionYear: 2011, documents: ['SK-IUPK-B-2011.pdf'] },
-  { id: 10, code: 'LND-IUPK-003', locationName: 'IUPK Block C', category: 'IUPK', area: 390.2, certificate: 'HGU', certificateNo: 'IUPK-C/2012', coordinates: '-2.5700, 121.3300', lat: -2.5700, lng: 121.3300, acquisitionYear: 2012, documents: ['SK-IUPK-C-2012.pdf', 'AMDAL.pdf'] },
-  { id: 11, code: 'LND-PPKH-001', locationName: 'PPKH Conservation Area 1', category: 'PPKH', area: 280.5, certificate: 'HGU', certificateNo: 'PPKH-001/2018', coordinates: '-2.5350, 121.3550', lat: -2.5350, lng: 121.3550, acquisitionYear: 2018, documents: ['SK-PPKH-001-2018.pdf', 'RKL-RPL.pdf'] },
-  { id: 12, code: 'LND-PPKH-002', locationName: 'PPKH Conservation Area 2', category: 'PPKH', area: 315.8, certificate: 'HGU', certificateNo: 'PPKH-002/2019', coordinates: '-2.5750, 121.3550', lat: -2.5750, lng: 121.3550, acquisitionYear: 2019, documents: ['SK-PPKH-002-2019.pdf'] },
-  { id: 13, code: 'LND-OPS-001', locationName: 'Operational Base Camp', category: 'Operational', area: 35.5, certificate: 'SHGB', certificateNo: 'SHGB-020/2020', coordinates: '-2.5600, 121.3450', lat: -2.5600, lng: 121.3450, acquisitionYear: 2020, documents: ['SHGB-020-2020.pdf', 'IMB.pdf'] },
-  { id: 14, code: 'LND-OPS-002', locationName: 'Processing Plant Area', category: 'Operational', area: 120.3, certificate: 'HGU', certificateNo: 'HGU-008/2015', coordinates: '-2.5620, 121.3470', lat: -2.5620, lng: 121.3470, acquisitionYear: 2015, documents: ['HGU-008-2015.pdf', 'Izin-Operasional.pdf', 'UKL-UPL.pdf'] },
-  { id: 15, code: 'LND-OPS-003', locationName: 'Storage & Logistics', category: 'Operational', area: 48.7, certificate: 'SHGB', certificateNo: 'SHGB-021/2021', coordinates: '-2.5680, 121.3480', lat: -2.5680, lng: 121.3480, acquisitionYear: 2021, documents: ['SHGB-021-2021.pdf'] },
-])
+const lands = ref<Land[]>([])
+const fetchProjects = async () => {
+  const res = await axios.get<any[]>(`http://127.0.0.1:8000/api/spatial/LandInventory/?format=json`)
+  projects.value = res.data
+  console.log(res.data)
+  lands.value = res.data.map(e => ({
+    id: e.id_lahan,
+    code: e.kode_lahan,
+    locationName: e.nama_lokasi,
+    category: e.kategori_detail.label || '',
+    area: e.luas || 0,
+    certificate: e.status_detail?.label || '',
+    certificateNo: e.no_sertif || '',
+    acquisitionYear: e.tahun_perolehan || null,
+    documents: e.documents || [],
+    geom: e.id_persil?.geom || null
+  }
+  
+))
+// console.log(lands.value)
+  
+}
 
 const filteredLands = computed(() => {
   let result = lands.value
@@ -578,6 +573,11 @@ const certificateBreakdown = computed(() => {
 })
 
 onMounted(() => {
+  fetchProjects()
+  
+    
+    // map.fitBounds(geojsonLayerProject.getBounds())
+  // }
   console.log('Land Inventory Mounted')
   console.log('Total Lands:', lands.value.length)
   console.log('Lands Data:', lands.value)
@@ -613,30 +613,51 @@ const initLandMap = () => {
     attribution: '© OpenStreetMap contributors',
     maxZoom: 19
   }).addTo(landMap)
-
-  filteredLands.value.forEach(land => {
-    const color = getCategoryColor(land.category)
-    
-    const landIcon = L.divIcon({
-      className: 'custom-land-marker',
-      html: `<div style="background: ${color}; width: 20px; height: 20px; border-radius: 4px; border: 3px solid white; box-shadow: 0 2px 4px rgba(0,0,0,0.3);"></div>`,
-      iconSize: [20, 20],
-      iconAnchor: [10, 10]
-    })
-
-    const marker = L.marker([land.lat, land.lng], { icon: landIcon }).addTo(landMap!)
-    
-    marker.bindPopup(`
-      <div style="min-width: 250px;">
-        <h6><strong>${land.locationName}</strong></h6>
-        <p class="mb-1"><small><strong>Kode:</strong> ${land.code}</small></p>
-        <p class="mb-1"><small><strong>Kategori:</strong> ${land.category}</small></p>
-        <p class="mb-1"><small><strong>Luas:</strong> ${land.area.toLocaleString()} Ha</small></p>
-        <p class="mb-1"><small><strong>Sertifikat:</strong> ${land.certificate} - ${land.certificateNo}</small></p>
-        <p class="mb-0"><small><strong>Tahun Akuisisi:</strong> ${land.acquisitionYear || '-'}</small></p>
-      </div>
-    `)
+  let geojsonLayerProject
+  // if (lands.value.length>0) {
+  lands.value.forEach((e)=>{
+    if (e.geom!=null){
+      console.log(wellknown.parse(e.geom))
+      L.geoJSON(wellknown.parse(e.geom)).addTo(landMap)
+    }
   })
+  // filteredLands.value.forEach(land => {
+  //   const color = getCategoryColor(land.category)
+    
+  //   const landIcon = L.divIcon({
+  //     className: 'custom-land-marker',
+  //     html: `<div style="background: ${color}; width: 20px; height: 20px; border-radius: 4px; border: 3px solid white; box-shadow: 0 2px 4px rgba(0,0,0,0.3);"></div>`,
+  //     iconSize: [20, 20],
+  //     iconAnchor: [10, 10]
+  //   })
+
+  //   const marker = L.marker([land.lat, land.lng], { icon: landIcon }).addTo(landMap!)
+    
+    // marker.bindPopup(`
+    //   <div style="min-width: 250px;">
+    //     <h6><strong>${land.locationName}</strong></h6>
+    //     <p class="mb-1"><small><strong>Kode:</strong> ${land.code}</small></p>
+    //     <p class="mb-1"><small><strong>Kategori:</strong> ${land.category}</small></p>
+    //     <p class="mb-1"><small><strong>Luas:</strong> ${land.area.toLocaleString()} Ha</small></p>
+    //     <p class="mb-1"><small><strong>Sertifikat:</strong> ${land.certificate} - ${land.certificateNo}</small></p>
+    //     <p class="mb-0"><small><strong>Tahun Akuisisi:</strong> ${land.acquisitionYear || '-'}</small></p>
+    //   </div>
+    // `)
+  }
+function initMap() {
+  map = L.map("map").setView([-2, 118], 5)
+
+  L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png")
+    .addTo(map)
+
+  map.pm.addControls({
+    position: 'topleft',
+    drawCircleMarker: false,
+    rotateMode: false,
+  })
+
+  mpwkt = new LeafletMultiPolygonWKT(map)
+
 }
 
 const getCategoryColor = (category: string): string => {
@@ -715,55 +736,80 @@ const editLand = (land: Land) => {
   openLandModal()
 }
 
-const saveLand = () => {
-  const lat = parseFloat(formData.value.lat)
-  const lng = parseFloat(formData.value.lng)
-  
-  if (isNaN(lat) || isNaN(lng)) {
-    alert('Koordinat tidak valid!')
-    return
-  }
-
-  const coordinates = `${lat}, ${lng}`
-
-  if (isEditMode.value && formData.value.id) {
-    const index = lands.value.findIndex(l => l.id === formData.value.id)
-    if (index !== -1 && formData.value.id && lands.value[index]) {
-      const currentLand = lands.value[index]
-      lands.value[index] = {
-        id: formData.value.id,
-        code: currentLand.code,
-        locationName: formData.value.locationName,
-        category: formData.value.category,
-        area: formData.value.area,
-        certificate: formData.value.certificate,
-        certificateNo: formData.value.certificateNo,
-        coordinates,
-        lat,
-        lng,
-        acquisitionYear: formData.value.acquisitionYear,
-        documents: formData.value.documents
-      }
-      alert(`Lahan ${formData.value.code} berhasil diupdate!`)
+const saveLand = async () => {
+  const wkt = (mpwkt as any).toWKT()
+   var uploadData = {
+        "kode_lahan": formData.value.code,
+        "nama_lokasi": formData.value.locationName,
+        "kategori": formData.value.category,
+        "status": formData.value.certificate,
+        "no_sertif": formData.value.certificateNo,
+        "id_persil": {
+            "geom": wkt
+        }
     }
-  } else {
-    const newId = Math.max(...lands.value.map(l => l.id)) + 1
-    lands.value.push({
-      id: newId,
-      code: formData.value.code,
-      locationName: formData.value.locationName,
-      category: formData.value.category,
-      area: formData.value.area,
-      certificate: formData.value.certificate,
-      certificateNo: formData.value.certificateNo,
-      coordinates,
-      lat,
-      lng,
-      acquisitionYear: formData.value.acquisitionYear,
-      documents: formData.value.documents
-    })
+    await axios.post('http://127.0.0.1:8000/api/spatial/LandInventory/', uploadData)
     alert(`Lahan ${formData.value.code} berhasil ditambahkan!`)
-  }
+  // const lat = parseFloat(formData.value.lat)
+  // const lng = parseFloat(formData.value.lng)
+  
+  // if (isNaN(lat) || isNaN(lng)) {
+  //   alert('Koordinat tidak valid!')
+  //   return
+  // }
+
+  // const coordinates = `${lat}, ${lng}`
+
+  // if (isEditMode.value && formData.value.id) {
+  //   const index = lands.value.findIndex(l => l.id === formData.value.id)
+  //   if (index !== -1 && formData.value.id && lands.value[index]) {
+  //     const currentLand = lands.value[index]
+  //     lands.value[index] = {
+  //       id: formData.value.id,
+  //       code: currentLand.code,
+  //       locationName: formData.value.locationName,
+  //       category: formData.value.category,
+  //       area: formData.value.area,
+  //       certificate: formData.value.certificate,
+  //       certificateNo: formData.value.certificateNo,
+  //       coordinates,
+  //       lat,
+  //       lng,
+  //       acquisitionYear: formData.value.acquisitionYear,
+  //       documents: formData.value.documents
+  //     }
+  //     alert(`Lahan ${formData.value.code} berhasil diupdate!`)
+  //   }
+  // } else {
+  //   const wkt = (mpwkt as any).toWKT()
+  //   // const newId = Math.max(...lands.value.map(l => l.id)) + 1
+  //   // lands.value.push({
+  //   //   id: newId,
+  //   //   code: formData.value.code,
+  //   //   locationName: formData.value.locationName,
+  //   //   category: formData.value.category,
+  //   //   area: formData.value.area,
+  //   //   certificate: formData.value.certificate,
+  //   //   certificateNo: formData.value.certificateNo,
+  //   //   coordinates,
+  //   //   lat,
+  //   //   lng,
+  //   //   acquisitionYear: formData.value.acquisitionYear,
+  //   //   documents: formData.value.documents
+  //   // })
+  //   var uploadData = {
+  //       "kode_lahan": formData.value.code,
+  //       "nama_lokasi": formData.value.locationName,
+  //       "kategori": formData.value.category,
+  //       "status": formData.value.certificate,
+  //       "no_sertif": formData.value.certificateNo,
+  //       "id_persil": {
+  //           "geom": wkt
+  //       }
+  //   }
+  //   await axios.post('http://127.0.0.1:8000/api/spatial/LandInventory/', uploadData)
+  //   alert(`Lahan ${formData.value.code} berhasil ditambahkan!`)
+  // }
 
   closeLandModal()
   if (showMap.value) {
@@ -805,6 +851,17 @@ const openLandModal = () => {
     const Modal = (window as any).bootstrap?.Modal
     if (Modal) {
       landModalInstance = new Modal(landModalRef.value)
+      landModalRef.value.addEventListener(
+        'shown.bs.modal',
+        () => {
+          if (!map) {
+            initMap()
+          } else {
+            map.invalidateSize()
+          }
+        },
+        { once: true } // penting: jangan dobel
+      )
       landModalInstance.show()
     }
   }

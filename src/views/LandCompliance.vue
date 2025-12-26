@@ -21,7 +21,6 @@
         <button 
           @click="analyze" 
           class="btn btn-primary w-100"
-          :disabled="!fileSelected"
         >
           <i class="bi bi-upload me-2"></i>Upload Data
         </button>
@@ -110,7 +109,11 @@
 <script setup lang="ts">
 import { ref, onMounted, computed } from "vue"
 import L from "leaflet"
-
+import 'leaflet/dist/leaflet.css'
+import "@geoman-io/leaflet-geoman-free";
+import "@geoman-io/leaflet-geoman-free/dist/leaflet-geoman.css";
+import 'bootstrap/dist/js/bootstrap.bundle.min.js'
+import "../utils/drawMap.js"
 // import Select from 'primevue/select';
 
 import "leaflet/dist/leaflet.css"
@@ -132,6 +135,7 @@ const fileSelected = computed(() => file.value !== null)
 function handleFile(e: Event) {
   const target = e.target as HTMLInputElement
   file.value = target.files?.[0] || null
+  console.log(file.value)
 }
 
 function initMap() {
@@ -139,6 +143,7 @@ function initMap() {
   if (map.value) {
     L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png").addTo(map.value as any)
   }
+  
 }
 
 function clearLayers() {
@@ -217,6 +222,11 @@ function openForm(){
 }
 onMounted(() => {
   initMap()
+  map.pm.addControls({
+    position: 'topleft',
+    drawCircleMarker: false,
+    rotateMode: false,
+  })
 })
 </script>
 
