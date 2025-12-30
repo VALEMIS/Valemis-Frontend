@@ -877,7 +877,7 @@ const closeLandModal = () => {
 }
 
 const exportData = () => {
-  const headers = ['No', 'Kode Lahan', 'Nama Lokasi', 'Kategori', 'Luas (Ha)', 'Status Sertifikat', 'No. Sertifikat', 'Koordinat', 'Tahun Akuisisi', 'Dokumen']
+  const headers = ['No', 'Kode Lahan', 'Nama Lokasi', 'Kategori', 'Luas (Ha)', 'Status Sertifikat', 'No. Sertifikat', 'Koordinat', 'Tahun Akuisisi', 'Dokumen','geom']
   
   const rows = filteredLands.value.map((land, index) => [
     index + 1,
@@ -889,13 +889,16 @@ const exportData = () => {
     land.certificateNo || '-',
     land.coordinates,
     land.acquisitionYear || '-',
-    land.documents.length > 0 ? land.documents.join('; ') : '-'
+    land.documents.length > 0 ? land.documents.join('; ') : '-',
+    land.geom
   ])
 
   const csvContent = [
-    headers.join(','),
-    ...rows.map(row => row.join(','))
-  ].join('\n')
+    headers.join(';'),
+    ...rows.map(row => row.join(';'))
+  ].join('\n'
+
+  )
 
   const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' })
   const link = document.createElement('a')
