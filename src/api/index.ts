@@ -31,6 +31,26 @@ async function apiFetch<T>(endpoint: string, options?: RequestInit): Promise<T> 
   return response.json()
 }
 
+// Export to CSV function
+async function exportToCsv(endpoint: string, filename: string): Promise<void> {
+  const url = `${API_BASE_URL}${endpoint}`
+  const response = await fetch(url)
+
+  if (!response.ok) {
+    throw new Error(`Export Error: ${response.status} ${response.statusText}`)
+  }
+
+  const blob = await response.blob()
+  const downloadUrl = window.URL.createObjectURL(blob)
+  const link = document.createElement('a')
+  link.href = downloadUrl
+  link.download = filename
+  document.body.appendChild(link)
+  link.click()
+  document.body.removeChild(link)
+  window.URL.revokeObjectURL(downloadUrl)
+}
+
 // Asset Inventory API
 export const assetApi = {
   getAll: () => apiFetch<ApiResponse<Asset>>('/api/valemis/assets/'),
@@ -46,6 +66,26 @@ export const assetApi = {
   delete: (id: number) => apiFetch<void>(`/api/valemis/assets/${id}/`, {
     method: 'DELETE',
   }),
+  exportCsv: () => exportToCsv('/api/valemis/assets/export_csv/', 'asset_inventory.csv'),
+}
+
+// Asset Inventory Detail API
+export const assetDetailApi = {
+  getAll: () => apiFetch<ApiResponse<AssetDetail>>('/api/valemis/asset-details/'),
+  getById: (id: number) => apiFetch<AssetDetail>(`/api/valemis/asset-details/${id}/`),
+  getByType: (assetType: string) => apiFetch<AssetDetail[]>(`/api/valemis/asset-details/by-type/${assetType}/`),
+  create: (data: Partial<AssetDetail>) => apiFetch<AssetDetail>('/api/valemis/asset-details/', {
+    method: 'POST',
+    body: JSON.stringify(data),
+  }),
+  update: (id: number, data: Partial<AssetDetail>) => apiFetch<AssetDetail>(`/api/valemis/asset-details/${id}/`, {
+    method: 'PATCH',
+    body: JSON.stringify(data),
+  }),
+  delete: (id: number) => apiFetch<void>(`/api/valemis/asset-details/${id}/`, {
+    method: 'DELETE',
+  }),
+  exportCsv: () => exportToCsv('/api/valemis/asset-details/export_csv/', 'asset_inventory_detail.csv'),
 }
 
 // Land Inventory API
@@ -63,6 +103,7 @@ export const landApi = {
   delete: (id: number) => apiFetch<void>(`/api/valemis/lands/${id}/`, {
     method: 'DELETE',
   }),
+  exportCsv: () => exportToCsv('/api/valemis/lands/export_csv/', 'land_inventory.csv'),
 }
 
 // Land Acquisition API
@@ -80,6 +121,7 @@ export const acquisitionApi = {
   delete: (id: number) => apiFetch<void>(`/api/valemis/acquisitions/${id}/`, {
     method: 'DELETE',
   }),
+  exportCsv: () => exportToCsv('/api/valemis/acquisitions/export_csv/', 'land_acquisition.csv'),
 }
 
 // Land Compliance API
@@ -97,6 +139,7 @@ export const complianceApi = {
   delete: (id: number) => apiFetch<void>(`/api/valemis/compliances/${id}/`, {
     method: 'DELETE',
   }),
+  exportCsv: () => exportToCsv('/api/valemis/compliances/export_csv/', 'land_compliance.csv'),
 }
 
 // Litigation API
@@ -114,6 +157,7 @@ export const litigationApi = {
   delete: (id: number) => apiFetch<void>(`/api/valemis/litigations/${id}/`, {
     method: 'DELETE',
   }),
+  exportCsv: () => exportToCsv('/api/valemis/litigations/export_csv/', 'litigation.csv'),
 }
 
 // Stakeholder API
@@ -131,6 +175,7 @@ export const stakeholderApi = {
   delete: (id: number) => apiFetch<void>(`/api/valemis/stakeholders/${id}/`, {
     method: 'DELETE',
   }),
+  exportCsv: () => exportToCsv('/api/valemis/stakeholders/export_csv/', 'stakeholders.csv'),
 }
 
 // Census Survey API
@@ -319,6 +364,7 @@ export interface CensusQuestion {
 
 export default {
   asset: assetApi,
+  assetDetail: assetDetailApi,
   land: landApi,
   acquisition: acquisitionApi,
   compliance: complianceApi,
@@ -326,4 +372,57 @@ export default {
   stakeholder: stakeholderApi,
   census: censusApi,
   questions: censusQuestionsApi,
+}
+
+// Asset Detail interface for AssetInventoryDetail (Inventaris Aset)
+export interface AssetDetail {
+  id: number
+  asset_inventory?: number
+  rumah_tangga_no?: string
+  id_aset?: string
+  asset_type: 'Tanah' | 'Tanaman' | 'Pohon' | 'Bangunan' | 'Sumber Daya Alam'
+  // Tanah fields
+  jenis_tanah?: string
+  terdaftar_di?: string
+  luas_m2?: number
+  status_pemilik?: string
+  pemilik_sebelumnya?: string
+  tenurial?: string
+  catatan_tanah?: string
+  // Tanaman fields
+  jenis_tanaman?: string
+  usia_tanaman?: number
+  kondisi_tanaman?: string
+  sumber_air_tanaman?: string
+  gambar_tanaman?: string
+  // Pohon fields
+  jenis_pohon?: string
+  jumlah_pohon?: number
+  luas_pohon?: number
+  produktif?: string
+  dewasa?: string
+  produksi_per_tahun?: string
+  kondisi_pohon?: string
+  gambar1_pohon?: string
+  gambar2_pohon?: string
+  gambar3_pohon?: string
+  // Bangunan fields
+  jenis_bangunan?: string
+  luas_bangunan?: number
+  permanen_sementara?: string
+  primer_sekunder?: string
+  bahan_utama?: string
+  sanitarian?: string
+  pasokan_listrik?: string
+  persediaan_air?: string
+  gambar1_bangunan?: string
+  gambar2_bangunan?: string
+  gambar3_bangunan?: string
+  gambar4_bangunan?: string
+  // Sumber Daya Alam fields
+  jenis_sumber_daya_alam?: string
+  produktivitas_per_tahun?: string
+  luas_sda?: number
+  created_at: string
+  updated_at: string
 }

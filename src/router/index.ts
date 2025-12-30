@@ -7,7 +7,6 @@ import Dashboard from "../views/Dashboard.vue";
 import AsetInventori from "../views/AsetInventori.vue";
 
 // 2. Land Acquisition/Compensation Module
-import PembebasanLahan from "../views/PembebasanLahan.vue";
 import TambahPembebasanLahan from "../views/TambahPembebasanLahan.vue";
 import DetailPembebasanLahan from "../views/DetailPembebasanLahan.vue";
 import TambahPemilikLahan from "../views/TambahPemilikLahan.vue";
