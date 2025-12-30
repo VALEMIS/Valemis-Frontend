@@ -430,6 +430,7 @@
 
 <script setup lang="ts">
 import { ref, computed, onMounted, onUnmounted, watch, nextTick } from 'vue'
+import { landApi } from '../api/index'
 import L from 'leaflet'
 import 'leaflet/dist/leaflet.css'
 import "@geoman-io/leaflet-geoman-free";
@@ -876,43 +877,14 @@ const closeLandModal = () => {
   }
 }
 
-const exportData = () => {
-  const headers = ['No', 'Kode Lahan', 'Nama Lokasi', 'Kategori', 'Luas (Ha)', 'Status Sertifikat', 'No. Sertifikat', 'Koordinat', 'Tahun Akuisisi', 'Dokumen','geom']
-  
-  const rows = filteredLands.value.map((land, index) => [
-    index + 1,
-    land.code,
-    land.locationName,
-    land.category,
-    land.area,
-    land.certificate,
-    land.certificateNo || '-',
-    land.coordinates,
-    land.acquisitionYear || '-',
-    land.documents.length > 0 ? land.documents.join('; ') : '-',
-    land.geom
-  ])
-
-  const csvContent = [
-    headers.join(';'),
-    ...rows.map(row => row.join(';'))
-  ].join('\n'
-
-  )
-
-  const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' })
-  const link = document.createElement('a')
-  const url = URL.createObjectURL(blob)
-  
-  link.setAttribute('href', url)
-  link.setAttribute('download', `land_inventory_${new Date().toISOString().split('T')[0]}.csv`)
-  link.style.visibility = 'hidden'
-  
-  document.body.appendChild(link)
-  link.click()
-  document.body.removeChild(link)
-  
-  alert('Data berhasil di-export!')
+const exportData = async () => {
+  try {
+    await landApi.exportCsv()
+    alert('Data berhasil didownload dalam format CSV!')
+  } catch (err) {
+    alert('Gagal mendownload data: ' + (err instanceof Error ? err.message : 'Unknown error'))
+    console.error('Export error:', err)
+  }
 }
 
 // Initialize map on mount if showMap is true

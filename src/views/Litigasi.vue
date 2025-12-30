@@ -433,6 +433,7 @@
 
 <script setup lang="ts">
 import { ref, computed } from 'vue'
+import { litigationApi } from '../api/index'
 
 interface Litigation {
   id: number
@@ -667,39 +668,14 @@ const openTimelineModal = () => {
   }
 }
 
-const exportData = () => {
-  const headers = ['No', 'Kode Kasus', 'Kode Lahan', 'Jenis Kasus', 'Penggugat', 'Deskripsi', 'Tanggal Mulai', 'Status', 'Prioritas']
-  
-  const rows = filteredLitigations.value.map((l, index) => [
-    index + 1,
-    l.caseCode,
-    l.landCode,
-    l.caseType,
-    l.claimant,
-    l.description,
-    l.startDate,
-    l.status,
-    l.priority
-  ])
-
-  const csvContent = [
-    headers.join(','),
-    ...rows.map(row => row.join(','))
-  ].join('\n')
-
-  const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' })
-  const link = document.createElement('a')
-  const url = URL.createObjectURL(blob)
-  
-  link.setAttribute('href', url)
-  link.setAttribute('download', `land_litigation_${new Date().toISOString().split('T')[0]}.csv`)
-  link.style.visibility = 'hidden'
-  
-  document.body.appendChild(link)
-  link.click()
-  document.body.removeChild(link)
-  
-  alert('Data berhasil di-export!')
+const exportData = async () => {
+  try {
+    await litigationApi.exportCsv()
+    alert('Data berhasil didownload dalam format CSV!')
+  } catch (err) {
+    alert('Gagal mendownload data: ' + (err instanceof Error ? err.message : 'Unknown error'))
+    console.error('Export error:', err)
+  }
 }
 </script>
 

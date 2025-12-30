@@ -126,14 +126,14 @@
                 <div class="row">
                   <div class="col-md-6">
                     <h5>Informasi Detail</h5>
-                    <table class="table table-sm table-bordered">
-                      <tbody>
-                        <tr v-for="(value, key) in selectedItem.details" :key="key">
-                          <td class="fw-bold" style="width: 40%;">{{ key }}</td>
-                          <td>{{ value }}</td>
-                        </tr>
-                      </tbody>
-                    </table>
+                    <DataTable :value="Object.entries(selectedItem.details).map(([key, value]) => ({ key, value }))" stripedRows size="small">
+                      <Column field="key" header="Field" style="width: 40%">
+                        <template #body="{ data }">
+                          <strong>{{ data.key }}</strong>
+                        </template>
+                      </Column>
+                      <Column field="value" header="Value"></Column>
+                    </DataTable>
                   </div>
                   <div class="col-md-6">
                     <div v-if="selectedItem.type === 'village'" class="alert alert-info">
@@ -210,6 +210,8 @@
 import { ref, onMounted, onUnmounted } from 'vue'
 import L from 'leaflet'
 import 'leaflet/dist/leaflet.css'
+import DataTable from 'primevue/datatable'
+import Column from 'primevue/column'
 
 interface SelectedItem {
   type: 'village' | 'project' | 'house'

@@ -866,15 +866,6 @@ const openProjectModal = () => {
 }
 
 
-const closeProjectModal = () => {
-  if (projectModalInstance) {
-    projectModalInstance.hide()
-  } else if (projectModalRef.value) {
-    projectModalRef.value.classList.remove('show')
-    projectModalRef.value.style.display = 'none'
-    document.body.classList.remove('modal-open')
-  }
-}
 const openHistoryModal = () => {
   if (historyModalRef.value) {
     const Modal = (window as any).bootstrap?.Modal

@@ -494,6 +494,7 @@ import 'leaflet/dist/leaflet.css'
 import "@geoman-io/leaflet-geoman-free";
 import "@geoman-io/leaflet-geoman-free/dist/leaflet-geoman.css";
 import { ref, computed,onMounted, onUnmounted, watch, nextTick } from 'vue'
+import { acquisitionApi } from '../api/index'
 
 interface Parcel {
   id: number
@@ -866,15 +867,6 @@ const openProjectModal = () => {
 }
 
 
-const closeProjectModal = () => {
-  if (projectModalInstance) {
-    projectModalInstance.hide()
-  } else if (projectModalRef.value) {
-    projectModalRef.value.classList.remove('show')
-    projectModalRef.value.style.display = 'none'
-    document.body.classList.remove('modal-open')
-  }
-}
 const openHistoryModal = () => {
   if (historyModalRef.value) {
     const Modal = (window as any).bootstrap?.Modal
@@ -969,42 +961,14 @@ function handleGeoJsonUpload(event: Event) {
 
   reader.readAsText(file)
 }
-const exportData = () => {
-  // Generate CSV data
-  const headers = ['No', 'Kode Parcel', 'Project', 'Nama Pemilik', 'Desa', 'Luas (m²)', 'Status Negosiasi', 'Jumlah Bebas', 'Biaya Pembebasan', 'Tanggal Negosiasi']
-  
-  const rows = filteredParcels.value.map((parcel, index) => [
-    index + 1,
-    parcel.code,
-    parcel.project,
-    parcel.ownerName,
-    parcel.village,
-    parcel.area,
-    parcel.status,
-    parcel.jumlahBebas,
-    typeof parcel.biayaPembebasan === 'number' ? parcel.biayaPembebasan : 0,
-    parcel.negotiationDate
-  ])
-
-  const csvContent = [
-    headers.join(','),
-    ...rows.map(row => row.join(','))
-  ].join('\n')
-
-  // Create download link
-  const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' })
-  const link = document.createElement('a')
-  const url = URL.createObjectURL(blob)
-  
-  link.setAttribute('href', url)
-  link.setAttribute('download', `land_acquisition_${new Date().toISOString().split('T')[0]}.csv`)
-  link.style.visibility = 'hidden'
-  
-  document.body.appendChild(link)
-  link.click()
-  document.body.removeChild(link)
-  
-  alert('Data berhasil di-export ke CSV!')
+const exportData = async () => {
+  try {
+    await acquisitionApi.exportCsv()
+    alert('Data berhasil didownload dalam format CSV!')
+  } catch (err) {
+    alert('Gagal mendownload data: ' + (err instanceof Error ? err.message : 'Unknown error'))
+    console.error('Export error:', err)
+  }
 }
 
 // Map functions

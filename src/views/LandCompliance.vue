@@ -107,12 +107,12 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, computed } from "vue"
+import { ref, onMounted, onBeforeUnmount, computed } from "vue"
 import L from "leaflet"
 import 'leaflet/dist/leaflet.css'
 import "@geoman-io/leaflet-geoman-free";
 import "@geoman-io/leaflet-geoman-free/dist/leaflet-geoman.css";
-import 'bootstrap/dist/js/bootstrap.bundle.min.js'
+// import 'bootstrap/dist/js/bootstrap.bundle.min.js' // Removed to prevent navigation conflicts
 import "../utils/drawMap.js"
 // import Select from 'primevue/select';
 
@@ -222,11 +222,20 @@ function openForm(){
 }
 onMounted(() => {
   initMap()
-  map.pm.addControls({
+  map.value?.pm.addControls({
     position: 'topleft',
     drawCircleMarker: false,
     rotateMode: false,
   })
+})
+
+// Clean up map instance when navigating away
+onBeforeUnmount(() => {
+  if (map.value) {
+    map.value.remove()
+    map.value = null
+  }
+  layersOnMap.value = []
 })
 </script>
 
