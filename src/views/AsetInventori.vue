@@ -83,46 +83,54 @@
                   </button>
                 </div>
               </div>
-              <div class="card-body table-responsive">
-                <table class="table table-striped table-bordered">
-                  <thead>
-                    <tr>
-                      <th>No</th>
-                      <th>ID Rumah Tangga</th>
-                      <th>Nama Kepala Keluarga</th>
-                      <th>Desa</th>
-                      <th>Jumlah Anggota</th>
-                      <th>Pekerjaan Utama</th>
-                      <th>Koordinat</th>
-                      <th>Aksi</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    <tr v-for="(asset, index) in filteredAssets" :key="asset.id">
-                      <td>{{ index + 1 }}</td>
-                      <td><span class="badge bg-primary">{{ asset.id_rumah_tangga || '-' }}</span></td>
-                      <td><strong>{{ [asset.nama_depan, asset.nama_tengah, asset.nama_belakang].filter(Boolean).join(' ') || '-' }}</strong></td>
-                      <td>{{ asset.desa || '-' }}</td>
-                      <td class="text-center">{{ asset.jumlah_orang_rumah_tangga || '-' }}</td>
-                      <td>{{ asset.pekerjaan_utama || '-' }}</td>
-                      <td><small class="text-muted">{{ asset.koordinat || '-' }}</small></td>
-                      <td class="text-center">
-                        <button class="btn btn-sm btn-primary me-1" @click="viewDetail(asset)" title="Detail">
+              <div class="card-body">
+                <DataTable :value="filteredAssets" stripedRows showGridlines>
+                  <Column header="No">
+                    <template #body="slotProps">
+                      {{ slotProps.index + 1 }}
+                    </template>
+                  </Column>
+                  <Column header="ID Rumah Tangga">
+                    <template #body="slotProps">
+                      <span class="badge bg-primary">{{ slotProps.data.id_rumah_tangga || '-' }}</span>
+                    </template>
+                  </Column>
+                  <Column header="Nama Kepala Keluarga">
+                    <template #body="slotProps">
+                      <strong>{{ [slotProps.data.nama_depan, slotProps.data.nama_tengah, slotProps.data.nama_belakang].filter(Boolean).join(' ') || '-' }}</strong>
+                    </template>
+                  </Column>
+                  <Column header="Desa" field="desa" />
+                  <Column header="Jumlah Anggota" field="jumlah_orang_rumah_tangga">
+                    <template #body="slotProps">
+                      {{ slotProps.data.jumlah_orang_rumah_tangga || '-' }}
+                    </template>
+                  </Column>
+                  <Column header="Pekerjaan Utama" field="pekerjaan_utama" />
+                  <Column header="Koordinat">
+                    <template #body="slotProps">
+                      <small class="text-muted">{{ slotProps.data.koordinat || '-' }}</small>
+                    </template>
+                  </Column>
+                  <Column header="Aksi">
+                    <template #body="slotProps">
+                      <div class="text-center">
+                        <button class="btn btn-sm btn-primary me-1" @click="viewDetail(slotProps.data)" title="Detail">
                           <i class="bi bi-eye-fill"></i>
                         </button>
-                        <button class="btn btn-sm btn-info me-1" @click="viewOnMap(asset)" title="Lihat di Peta">
+                        <button class="btn btn-sm btn-info me-1" @click="viewOnMap(slotProps.data)" title="Lihat di Peta">
                           <i class="bi bi-geo-alt-fill"></i>
                         </button>
-                        <button class="btn btn-sm btn-warning me-1" @click="editAsset(asset)" title="Edit">
+                        <button class="btn btn-sm btn-warning me-1" @click="editAsset(slotProps.data)" title="Edit">
                           <i class="bi bi-pencil-square"></i>
                         </button>
-                        <button class="btn btn-sm btn-danger" @click="deleteAsset(asset)" title="Hapus">
+                        <button class="btn btn-sm btn-danger" @click="deleteAsset(slotProps.data)" title="Hapus">
                           <i class="bi bi-trash"></i>
                         </button>
-                      </td>
-                    </tr>
-                  </tbody>
-                </table>
+                      </div>
+                    </template>
+                  </Column>
+                </DataTable>
               </div>
             </div>
           </div>
@@ -1045,33 +1053,42 @@
           <div class="modal-body" v-if="selectedAsset">
             <!-- Informasi Dasar -->
             <h6 class="fw-bold mb-3">Informasi Dasar</h6>
-            <table class="table table-sm table-bordered mb-4">
-              <tr><td>ID Rumah Tangga</td><td>{{ selectedAsset.id_rumah_tangga || '-' }}</td></tr>
-              <tr><td>Kode Enumerator</td><td>{{ selectedAsset.kode_enumerator || '-' }}</td></tr>
-              <tr><td>Nama Kepala Keluarga</td><td>{{ [selectedAsset.nama_depan, selectedAsset.nama_tengah, selectedAsset.nama_belakang].filter(Boolean).join(' ') || '-' }}</td></tr>
-              <tr><td>Desa</td><td>{{ selectedAsset.desa || '-' }}</td></tr>
-              <tr><td>Kecamatan</td><td>{{ selectedAsset.kecamatan || '-' }}</td></tr>
-              <tr><td>Kabupaten</td><td>{{ selectedAsset.kabupaten || '-' }}</td></tr>
-              <tr><td>Provinsi</td><td>{{ selectedAsset.provinsi || '-' }}</td></tr>
-              <tr><td>Koordinat</td><td>{{ selectedAsset.koordinat || '-' }}</td></tr>
-            </table>
+            <DataTable :value="[
+              { key: 'ID Rumah Tangga', value: selectedAsset.id_rumah_tangga || '-' },
+              { key: 'Kode Enumerator', value: selectedAsset.kode_enumerator || '-' },
+              { key: 'Nama Kepala Keluarga', value: [selectedAsset.nama_depan, selectedAsset.nama_tengah, selectedAsset.nama_belakang].filter(Boolean).join(' ') || '-' },
+              { key: 'Desa', value: selectedAsset.desa || '-' },
+              { key: 'Kecamatan', value: selectedAsset.kecamatan || '-' },
+              { key: 'Kabupaten', value: selectedAsset.kabupaten || '-' },
+              { key: 'Provinsi', value: selectedAsset.provinsi || '-' },
+              { key: 'Koordinat', value: selectedAsset.koordinat || '-' }
+            ]" class="mb-4" showGridlines>
+              <Column header="Field" field="key" />
+              <Column header="Value" field="value" />
+            </DataTable>
 
             <!-- A. Identifikasi Rumah Tangga -->
             <h6 class="fw-bold mb-3">A. Identifikasi Rumah Tangga</h6>
             <div class="row mb-4">
               <div class="col-md-6">
-                <table class="table table-sm table-bordered">
-                  <tr><td>Kode Enumerator</td><td>{{ selectedAsset.kode_enumerator || '-' }}</td></tr>
-                  <tr><td>ID Rumah Tangga</td><td>{{ selectedAsset.id_rumah_tangga || '-' }}</td></tr>
-                  <tr><td>Tanggal</td><td>{{ selectedAsset.tanggal || '-' }}</td></tr>
-                  <tr><td>Kode Foto Survei</td><td>{{ selectedAsset.kode_foto_survei || '-' }}</td></tr>
-                </table>
+                <DataTable :value="[
+                  { key: 'Kode Enumerator', value: selectedAsset.kode_enumerator || '-' },
+                  { key: 'ID Rumah Tangga', value: selectedAsset.id_rumah_tangga || '-' },
+                  { key: 'Tanggal', value: selectedAsset.tanggal || '-' },
+                  { key: 'Kode Foto Survei', value: selectedAsset.kode_foto_survei || '-' }
+                ]" showGridlines>
+                  <Column header="Field" field="key" />
+                  <Column header="Value" field="value" />
+                </DataTable>
               </div>
               <div class="col-md-6">
-                <table class="table table-sm table-bordered">
-                  <tr><td>ID Unik</td><td>{{ selectedAsset.id_unik || '-' }}</td></tr>
-                  <tr><td>Jumlah Orang dalam RT</td><td>{{ selectedAsset.jumlah_orang_rumah_tangga || '-' }}</td></tr>
-                </table>
+                <DataTable :value="[
+                  { key: 'ID Unik', value: selectedAsset.id_unik || '-' },
+                  { key: 'Jumlah Orang dalam RT', value: selectedAsset.jumlah_orang_rumah_tangga || '-' }
+                ]" showGridlines>
+                  <Column header="Field" field="key" />
+                  <Column header="Value" field="value" />
+                </DataTable>
               </div>
             </div>
 
@@ -1079,20 +1096,26 @@
             <h6 class="fw-bold mb-3">B. Identitas Kepala Keluarga</h6>
             <div class="row mb-4">
               <div class="col-md-6">
-                <table class="table table-sm table-bordered">
-                  <tr><td>Nama Lengkap</td><td>{{ [selectedAsset.nama_depan, selectedAsset.nama_tengah, selectedAsset.nama_belakang].filter(Boolean).join(' ') || '-' }}</td></tr>
-                  <tr><td>Nama Ayah</td><td>{{ selectedAsset.nama_ayah || '-' }}</td></tr>
-                  <tr><td>Nama Kakek</td><td>{{ selectedAsset.nama_kakek || '-' }}</td></tr>
-                  <tr><td>Nama Pasangan</td><td>{{ selectedAsset.nama_pasangan || '-' }}</td></tr>
-                </table>
+                <DataTable :value="[
+                  { key: 'Nama Lengkap', value: [selectedAsset.nama_depan, selectedAsset.nama_tengah, selectedAsset.nama_belakang].filter(Boolean).join(' ') || '-' },
+                  { key: 'Nama Ayah', value: selectedAsset.nama_ayah || '-' },
+                  { key: 'Nama Kakek', value: selectedAsset.nama_kakek || '-' },
+                  { key: 'Nama Pasangan', value: selectedAsset.nama_pasangan || '-' }
+                ]" showGridlines>
+                  <Column header="Field" field="key" />
+                  <Column header="Value" field="value" />
+                </DataTable>
               </div>
               <div class="col-md-6">
-                <table class="table table-sm table-bordered">
-                  <tr><td>NIK</td><td>{{ selectedAsset.nik || '-' }}</td></tr>
-                  <tr><td>Nomor Telepon</td><td>{{ selectedAsset.nomor_telepon || '-' }}</td></tr>
-                  <tr><td>Nama Responden</td><td>{{ selectedAsset.nama_responden || '-' }}</td></tr>
-                  <tr><td>Hubungan Responden</td><td>{{ selectedAsset.hubungan_responden_kk || '-' }}</td></tr>
-                </table>
+                <DataTable :value="[
+                  { key: 'NIK', value: selectedAsset.nik || '-' },
+                  { key: 'Nomor Telepon', value: selectedAsset.nomor_telepon || '-' },
+                  { key: 'Nama Responden', value: selectedAsset.nama_responden || '-' },
+                  { key: 'Hubungan Responden', value: selectedAsset.hubungan_responden_kk || '-' }
+                ]" showGridlines>
+                  <Column header="Field" field="key" />
+                  <Column header="Value" field="value" />
+                </DataTable>
               </div>
             </div>
 
@@ -1100,49 +1123,64 @@
             <h6 class="fw-bold mb-3">C. Profil Sosial</h6>
             <div class="row mb-4">
               <div class="col-md-6">
-                <table class="table table-sm table-bordered">
-                  <tr><td>Agama</td><td>{{ selectedAsset.agama || '-' }}</td></tr>
-                  <tr><td v-if="selectedAsset.agama === '97. lainnya'">Agama (Lainnya)</td><td v-if="selectedAsset.agama === '97. lainnya'">{{ selectedAsset.agama_lainnya || '-' }}</td></tr>
-                  <tr><td>Asal Etnis</td><td>{{ selectedAsset.asal_etnis || '-' }}</td></tr>
-                  <tr><td v-if="selectedAsset.asal_etnis_lainnya">Asal Etnis (Lainnya)</td><td v-if="selectedAsset.asal_etnis_lainnya">{{ selectedAsset.asal_etnis_lainnya }}</td></tr>
-                </table>
+                <DataTable :value="[
+                  { key: 'Agama', value: selectedAsset.agama || '-' },
+                  ...(selectedAsset.agama === '97. lainnya' ? [{ key: 'Agama (Lainnya)', value: selectedAsset.agama_lainnya || '-' }] : []),
+                  { key: 'Asal Etnis', value: selectedAsset.asal_etnis || '-' },
+                  ...(selectedAsset.asal_etnis_lainnya ? [{ key: 'Asal Etnis (Lainnya)', value: selectedAsset.asal_etnis_lainnya }] : [])
+                ]" showGridlines>
+                  <Column header="Field" field="key" />
+                  <Column header="Value" field="value" />
+                </DataTable>
               </div>
               <div class="col-md-6">
-                <table class="table table-sm table-bordered">
-                  <tr><td>Bahasa</td><td>{{ selectedAsset.bahasa || '-' }}</td></tr>
-                  <tr><td v-if="selectedAsset.bahasa_lainnya">Bahasa (Lainnya)</td><td v-if="selectedAsset.bahasa_lainnya">{{ selectedAsset.bahasa_lainnya }}</td></tr>
-                  <tr><td>Tempat Asal KK</td><td>{{ selectedAsset.tempat_asal_kk || '-' }}</td></tr>
-                </table>
+                <DataTable :value="[
+                  { key: 'Bahasa', value: selectedAsset.bahasa || '-' },
+                  ...(selectedAsset.bahasa_lainnya ? [{ key: 'Bahasa (Lainnya)', value: selectedAsset.bahasa_lainnya }] : []),
+                  { key: 'Tempat Asal KK', value: selectedAsset.tempat_asal_kk || '-' }
+                ]" showGridlines>
+                  <Column header="Field" field="key" />
+                  <Column header="Value" field="value" />
+                </DataTable>
               </div>
             </div>
 
             <!-- D. Demografi -->
             <h6 class="fw-bold mb-3">D. Demografi</h6>
-            <table class="table table-sm table-bordered mb-4">
-              <tr><td>Jenis Kelamin</td><td>{{ selectedAsset.jenis_kelamin || '-' }}</td></tr>
-              <tr><td>Usia</td><td>{{ selectedAsset.usia || '-' }}</td></tr>
-              <tr><td>Status Perkawinan</td><td>{{ selectedAsset.status_perkawinan || '-' }}</td></tr>
-              <tr><td>Pendidikan Terakhir</td><td>{{ selectedAsset.pendidikan_terakhir || '-' }}</td></tr>
-              <tr><td>Bekerja 12 Bulan</td><td>{{ selectedAsset.bekerja_12_bulan || '-' }}</td></tr>
-              <tr><td>Disabilitas</td><td>{{ selectedAsset.disabilitas || '-' }}</td></tr>
-            </table>
+            <DataTable :value="[
+              { key: 'Jenis Kelamin', value: selectedAsset.jenis_kelamin || '-' },
+              { key: 'Usia', value: selectedAsset.usia || '-' },
+              { key: 'Status Perkawinan', value: selectedAsset.status_perkawinan || '-' },
+              { key: 'Pendidikan Terakhir', value: selectedAsset.pendidikan_terakhir || '-' },
+              { key: 'Bekerja 12 Bulan', value: selectedAsset.bekerja_12_bulan || '-' },
+              { key: 'Disabilitas', value: selectedAsset.disabilitas || '-' }
+            ]" class="mb-4" showGridlines>
+              <Column header="Field" field="key" />
+              <Column header="Value" field="value" />
+            </DataTable>
 
             <!-- E. Pekerjaan Utama -->
             <h6 class="fw-bold mb-3">E. Pekerjaan Utama</h6>
             <div class="row mb-4">
               <div class="col-md-6">
-                <table class="table table-sm table-bordered">
-                  <tr><td>Pekerjaan Utama</td><td>{{ selectedAsset.pekerjaan_utama || '-' }}</td></tr>
-                  <tr><td v-if="selectedAsset.pekerjaan_utama_lainnya">Pekerjaan (Lainnya)</td><td v-if="selectedAsset.pekerjaan_utama_lainnya">{{ selectedAsset.pekerjaan_utama_lainnya }}</td></tr>
-                  <tr><td>Jenis Pekerjaan</td><td>{{ selectedAsset.jenis_pekerjaan || '-' }}</td></tr>
-                  <tr><td>Lokasi (Lainnya)</td><td>{{ selectedAsset.lokasi_pekerjaan_lainnya || '-' }}</td></tr>
-                </table>
+                <DataTable :value="[
+                  { key: 'Pekerjaan Utama', value: selectedAsset.pekerjaan_utama || '-' },
+                  ...(selectedAsset.pekerjaan_utama_lainnya ? [{ key: 'Pekerjaan (Lainnya)', value: selectedAsset.pekerjaan_utama_lainnya }] : []),
+                  { key: 'Jenis Pekerjaan', value: selectedAsset.jenis_pekerjaan || '-' },
+                  { key: 'Lokasi (Lainnya)', value: selectedAsset.lokasi_pekerjaan_lainnya || '-' }
+                ]" showGridlines>
+                  <Column header="Field" field="key" />
+                  <Column header="Value" field="value" />
+                </DataTable>
               </div>
               <div class="col-md-6">
-                <table class="table table-sm table-bordered">
-                  <tr><td>Jumlah Bulan Bekerja</td><td>{{ selectedAsset.jumlah_bulan_bekerja || '-' }} bulan/tahun</td></tr>
-                  <tr><td>Penghasilan per Bulan</td><td>{{ selectedAsset.penghasilan_per_bulan ? formatRupiah(selectedAsset.penghasilan_per_bulan) : '-' }}</td></tr>
-                </table>
+                <DataTable :value="[
+                  { key: 'Jumlah Bulan Bekerja', value: (selectedAsset.jumlah_bulan_bekerja || '-') + ' bulan/tahun' },
+                  { key: 'Penghasilan per Bulan', value: selectedAsset.penghasilan_per_bulan ? formatRupiah(selectedAsset.penghasilan_per_bulan) : '-' }
+                ]" showGridlines>
+                  <Column header="Field" field="key" />
+                  <Column header="Value" field="value" />
+                </DataTable>
               </div>
             </div>
 
@@ -1150,18 +1188,24 @@
             <h6 class="fw-bold mb-3">F. Pekerjaan Sekunder</h6>
             <div class="row mb-4">
               <div class="col-md-6">
-                <table class="table table-sm table-bordered">
-                  <tr><td>Pekerjaan Sekunder</td><td>{{ selectedAsset.pekerjaan_sekunder || '-' }}</td></tr>
-                  <tr><td v-if="selectedAsset.pekerjaan_sekunder_lainnya">Pekerjaan (Lainnya)</td><td v-if="selectedAsset.pekerjaan_sekunder_lainnya">{{ selectedAsset.pekerjaan_sekunder_lainnya }}</td></tr>
-                  <tr><td>Lokasi Sekunder</td><td>{{ selectedAsset.lokasi_pekerjaan_sekunder || '-' }}</td></tr>
-                  <tr><td v-if="selectedAsset.lokasi_pekerjaan_sekunder_lainnya">Lokasi (Lainnya)</td><td v-if="selectedAsset.lokasi_pekerjaan_sekunder_lainnya">{{ selectedAsset.lokasi_pekerjaan_sekunder_lainnya }}</td></tr>
-                </table>
+                <DataTable :value="[
+                  { key: 'Pekerjaan Sekunder', value: selectedAsset.pekerjaan_sekunder || '-' },
+                  ...(selectedAsset.pekerjaan_sekunder_lainnya ? [{ key: 'Pekerjaan (Lainnya)', value: selectedAsset.pekerjaan_sekunder_lainnya }] : []),
+                  { key: 'Lokasi Sekunder', value: selectedAsset.lokasi_pekerjaan_sekunder || '-' },
+                  ...(selectedAsset.lokasi_pekerjaan_sekunder_lainnya ? [{ key: 'Lokasi (Lainnya)', value: selectedAsset.lokasi_pekerjaan_sekunder_lainnya }] : [])
+                ]" showGridlines>
+                  <Column header="Field" field="key" />
+                  <Column header="Value" field="value" />
+                </DataTable>
               </div>
               <div class="col-md-6">
-                <table class="table table-sm table-bordered">
-                  <tr><td>Jumlah Bulan Bekerja</td><td>{{ selectedAsset.jumlah_bulan_bekerja_sekunder || '-' }} bulan/tahun</td></tr>
-                  <tr><td>Penghasilan Sekunder</td><td>{{ selectedAsset.penghasilan_sekunder_per_bulan ? formatRupiah(selectedAsset.penghasilan_sekunder_per_bulan) : '-' }}</td></tr>
-                </table>
+                <DataTable :value="[
+                  { key: 'Jumlah Bulan Bekerja', value: (selectedAsset.jumlah_bulan_bekerja_sekunder || '-') + ' bulan/tahun' },
+                  { key: 'Penghasilan Sekunder', value: selectedAsset.penghasilan_sekunder_per_bulan ? formatRupiah(selectedAsset.penghasilan_sekunder_per_bulan) : '-' }
+                ]" showGridlines>
+                  <Column header="Field" field="key" />
+                  <Column header="Value" field="value" />
+                </DataTable>
               </div>
             </div>
 
@@ -1169,45 +1213,60 @@
             <h6 class="fw-bold mb-3">G. Keuangan</h6>
             <div class="row mb-4">
               <div class="col-md-6">
-                <table class="table table-sm table-bordered">
-                  <tr><td>Penghasilan Tahunan</td><td>{{ selectedAsset.penghasilan_tahunan ? formatRupiah(selectedAsset.penghasilan_tahunan) : '-' }}</td></tr>
-                  <tr><td>Pengeluaran Bulanan</td><td>{{ selectedAsset.pengeluaran_bulanan ? formatRupiah(selectedAsset.pengeluaran_bulanan) : '-' }}</td></tr>
-                  <tr><td>Rekening Bank</td><td>{{ selectedAsset.rekening_bank || '-' }}</td></tr>
-                </table>
+                <DataTable :value="[
+                  { key: 'Penghasilan Tahunan', value: selectedAsset.penghasilan_tahunan ? formatRupiah(selectedAsset.penghasilan_tahunan) : '-' },
+                  { key: 'Pengeluaran Bulanan', value: selectedAsset.pengeluaran_bulanan ? formatRupiah(selectedAsset.pengeluaran_bulanan) : '-' },
+                  { key: 'Rekening Bank', value: selectedAsset.rekening_bank || '-' }
+                ]" showGridlines>
+                  <Column header="Field" field="key" />
+                  <Column header="Value" field="value" />
+                </DataTable>
               </div>
               <div class="col-md-6">
-                <table class="table table-sm table-bordered">
-                  <tr><td v-if="selectedAsset.tabungan_lainnya">Tabungan (Lainnya)</td><td v-if="selectedAsset.tabungan_lainnya">{{ selectedAsset.tabungan_lainnya }}</td></tr>
-                  <tr><td v-if="selectedAsset.hutang_lainnya">Hutang (Lainnya)</td><td v-if="selectedAsset.hutang_lainnya">{{ selectedAsset.hutang_lainnya }}</td></tr>
-                </table>
+                <DataTable :value="[
+                  ...(selectedAsset.tabungan_lainnya ? [{ key: 'Tabungan (Lainnya)', value: selectedAsset.tabungan_lainnya }] : []),
+                  ...(selectedAsset.hutang_lainnya ? [{ key: 'Hutang (Lainnya)', value: selectedAsset.hutang_lainnya }] : [])
+                ]" showGridlines>
+                  <Column header="Field" field="key" />
+                  <Column header="Value" field="value" />
+                </DataTable>
               </div>
             </div>
 
             <!-- H. Dampak Pembebasan Lahan -->
             <h6 class="fw-bold mb-3">H. Dampak Pembebasan Lahan</h6>
-            <table class="table table-sm table-bordered mb-4">
-              <tr><td>Pernah Dampak Proyek Lain</td><td>{{ selectedAsset.pernah_dampak_proyek === '1' ? 'Ya' : selectedAsset.pernah_dampak_proyek === '2' ? 'Tidak' : '-' }}</td></tr>
-              <tr><td v-if="selectedAsset.jenis_proyek_lainnya">Jenis Proyek (Lainnya)</td><td v-if="selectedAsset.jenis_proyek_lainnya">{{ selectedAsset.jenis_proyek_lainnya }}</td></tr>
-              <tr><td v-if="selectedAsset.luas_lahan_dibebaskan">Luas Lahan Dibebaskan</td><td v-if="selectedAsset.luas_lahan_dibebaskan">{{ selectedAsset.luas_lahan_dibebaskan }} m²</td></tr>
-              <tr><td>Pernah Pengungsi</td><td>{{ selectedAsset.pernah_pengungsi === '1' ? 'Ya' : selectedAsset.pernah_pengungsi === '2' ? 'Tidak' : '-' }}</td></tr>
-            </table>
+            <DataTable :value="[
+              { key: 'Pernah Dampak Proyek Lain', value: selectedAsset.pernah_dampak_proyek === '1' ? 'Ya' : selectedAsset.pernah_dampak_proyek === '2' ? 'Tidak' : '-' },
+              ...(selectedAsset.jenis_proyek_lainnya ? [{ key: 'Jenis Proyek (Lainnya)', value: selectedAsset.jenis_proyek_lainnya }] : []),
+              ...(selectedAsset.luas_lahan_dibebaskan ? [{ key: 'Luas Lahan Dibebaskan', value: selectedAsset.luas_lahan_dibebaskan + ' m²' }] : []),
+              { key: 'Pernah Pengungsi', value: selectedAsset.pernah_pengungsi === '1' ? 'Ya' : selectedAsset.pernah_pengungsi === '2' ? 'Tidak' : '-' }
+            ]" class="mb-4" showGridlines>
+              <Column header="Field" field="key" />
+              <Column header="Value" field="value" />
+            </DataTable>
 
             <!-- I. Bisnis/Usaha -->
             <h6 class="fw-bold mb-3">I. Usaha Komersial/Bisnis</h6>
             <div class="row mb-4" v-if="selectedAsset.punya_bisnis === '1'">
               <div class="col-md-6">
-                <table class="table table-sm table-bordered">
-                  <tr><td>Sejak Kapan</td><td>{{ selectedAsset.sejak_kapan_bisnis || '-' }}</td></tr>
-                  <tr><td>Jumlah Pegawai</td><td>{{ selectedAsset.jumlah_pegawai || '-' }}</td></tr>
-                  <tr><td>Pendapatan Rata-rata</td><td>{{ selectedAsset.pendapatan_rata_bisnis ? formatRupiah(selectedAsset.pendapatan_rata_bisnis) : '-' }}</td></tr>
-                  <tr><td v-if="selectedAsset.lokasi_bisnis_lainnya">Lokasi (Lainnya)</td><td v-if="selectedAsset.lokasi_bisnis_lainnya">{{ selectedAsset.lokasi_bisnis_lainnya }}</td></tr>
-                  <tr><td v-if="selectedAsset.kepemilikan_bisnis_lainnya">Kepemilikan (Lainnya)</td><td v-if="selectedAsset.kepemilikan_bisnis_lainnya">{{ selectedAsset.kepemilikan_bisnis_lainnya }}</td></tr>
-                </table>
+                <DataTable :value="[
+                  { key: 'Sejak Kapan', value: selectedAsset.sejak_kapan_bisnis || '-' },
+                  { key: 'Jumlah Pegawai', value: selectedAsset.jumlah_pegawai || '-' },
+                  { key: 'Pendapatan Rata-rata', value: selectedAsset.pendapatan_rata_bisnis ? formatRupiah(selectedAsset.pendapatan_rata_bisnis) : '-' },
+                  ...(selectedAsset.lokasi_bisnis_lainnya ? [{ key: 'Lokasi (Lainnya)', value: selectedAsset.lokasi_bisnis_lainnya }] : []),
+                  ...(selectedAsset.kepemilikan_bisnis_lainnya ? [{ key: 'Kepemilikan (Lainnya)', value: selectedAsset.kepemilikan_bisnis_lainnya }] : [])
+                ]" showGridlines>
+                  <Column header="Field" field="key" />
+                  <Column header="Value" field="value" />
+                </DataTable>
               </div>
               <div class="col-md-6">
-                <table class="table table-sm table-bordered">
-                  <tr><td v-if="selectedAsset.deskripsi_produk_layanan">Deskripsi Produk/Jasa</td><td v-if="selectedAsset.deskripsi_produk_layanan">{{ selectedAsset.deskripsi_produk_layanan }}</td></tr>
-                </table>
+                <DataTable :value="[
+                  ...(selectedAsset.deskripsi_produk_layanan ? [{ key: 'Deskripsi Produk/Jasa', value: selectedAsset.deskripsi_produk_layanan }] : [])
+                ]" showGridlines>
+                  <Column header="Field" field="key" />
+                  <Column header="Value" field="value" />
+                </DataTable>
               </div>
             </div>
 
@@ -1215,28 +1274,37 @@
             <h6 class="fw-bold mb-3">J. Struktur Tempat Tinggal</h6>
             <div class="row mb-4">
               <div class="col-md-6">
-                <table class="table table-sm table-bordered">
-                  <tr><td>Tipe Rumah</td><td>{{ selectedAsset.tipe_rumah || '-' }}</td></tr>
-                  <tr><td v-if="selectedAsset.tipe_rumah_lainnya">Tipe Rumah (Lainnya)</td><td v-if="selectedAsset.tipe_rumah_lainnya">{{ selectedAsset.tipe_rumah_lainnya }}</td></tr>
-                  <tr><td>Sumber Air</td><td>{{ selectedAsset.sumber_air || '-' }}</td></tr>
-                  <tr><td v-if="selectedAsset.sumber_air_lainnya">Sumber Air (Lainnya)</td><td v-if="selectedAsset.sumber_air_lainnya">{{ selectedAsset.sumber_air_lainnya }}</td></tr>
-                </table>
+                <DataTable :value="[
+                  { key: 'Tipe Rumah', value: selectedAsset.tipe_rumah || '-' },
+                  ...(selectedAsset.tipe_rumah_lainnya ? [{ key: 'Tipe Rumah (Lainnya)', value: selectedAsset.tipe_rumah_lainnya }] : []),
+                  { key: 'Sumber Air', value: selectedAsset.sumber_air || '-' },
+                  ...(selectedAsset.sumber_air_lainnya ? [{ key: 'Sumber Air (Lainnya)', value: selectedAsset.sumber_air_lainnya }] : [])
+                ]" showGridlines>
+                  <Column header="Field" field="key" />
+                  <Column header="Value" field="value" />
+                </DataTable>
               </div>
               <div class="col-md-6">
-                <table class="table table-sm table-bordered">
-                  <tr><td>Pelayanan Listrik</td><td>{{ selectedAsset.pelayanan_listrik || '-' }}</td></tr>
-                  <tr><td v-if="selectedAsset.pelayanan_listrik_lainnya">Listrik (Lainnya)</td><td v-if="selectedAsset.pelayanan_listrik_lainnya">{{ selectedAsset.pelayanan_listrik_lainnya }}</td></tr>
-                  <tr><td v-if="selectedAsset.karakteristik_khusus">Karakteristik Khusus</td><td v-if="selectedAsset.karakteristik_khusus">{{ selectedAsset.karakteristik_khusus }}</td></tr>
-                </table>
+                <DataTable :value="[
+                  { key: 'Pelayanan Listrik', value: selectedAsset.pelayanan_listrik || '-' },
+                  ...(selectedAsset.pelayanan_listrik_lainnya ? [{ key: 'Listrik (Lainnya)', value: selectedAsset.pelayanan_listrik_lainnya }] : []),
+                  ...(selectedAsset.karakteristik_khusus ? [{ key: 'Karakteristik Khusus', value: selectedAsset.karakteristik_khusus }] : [])
+                ]" showGridlines>
+                  <Column header="Field" field="key" />
+                  <Column header="Value" field="value" />
+                </DataTable>
               </div>
             </div>
 
             <!-- K. Kesehatan & Pangan -->
             <h6 class="fw-bold mb-3">K. Kesehatan & Pangan</h6>
-            <table class="table table-sm table-bordered mb-4">
-              <tr><td>Kecukupan Pangan</td><td>{{ selectedAsset.kecukupan_pangan || '-' }}</td></tr>
-              <tr><td v-if="selectedAsset.defisit_pangan_lainnya">Defisit Pangan (Lainnya)</td><td v-if="selectedAsset.defisit_pangan_lainnya">{{ selectedAsset.defisit_pangan_lainnya }}</td></tr>
-            </table>
+            <DataTable :value="[
+              { key: 'Kecukupan Pangan', value: selectedAsset.kecukupan_pangan || '-' },
+              ...(selectedAsset.defisit_pangan_lainnya ? [{ key: 'Defisit Pangan (Lainnya)', value: selectedAsset.defisit_pangan_lainnya }] : [])
+            ]" class="mb-4" showGridlines>
+              <Column header="Field" field="key" />
+              <Column header="Value" field="value" />
+            </DataTable>
           </div>
           <div class="modal-footer">
             <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Tutup</button>
@@ -1252,6 +1320,8 @@ import { ref, computed, onMounted, onUnmounted, watch, nextTick } from 'vue'
 import L from 'leaflet'
 import 'leaflet/dist/leaflet.css'
 import { assetApi, censusQuestionsApi } from '../api'
+import DataTable from 'primevue/datatable'
+import Column from 'primevue/column'
 
 interface Asset {
   id: number

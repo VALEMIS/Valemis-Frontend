@@ -12,7 +12,25 @@ import './assets/css/adminlte.css'
 // Import OverlayScrollbars CSS
 import 'overlayscrollbars/overlayscrollbars.css'
 
+// Import PrimeVue
+import PrimeVue from 'primevue/config'
+import Aura from '@primevue/themes/aura'
+import 'primeicons/primeicons.css'
+
+// Import PrimeVue CSS
+import 'primevue/resources/themes/aura-light-blue/theme.css'
+
 const app = createApp(App)
 
 app.use(router)
+app.use(PrimeVue, {
+  theme: {
+    preset: Aura,
+    options: {
+      prefix: 'p',
+      darkModeSelector: '.dark-mode',
+      cssLayer: false
+    }
+  }
+})
 app.mount('#app')
