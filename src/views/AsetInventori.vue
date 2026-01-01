@@ -40,7 +40,8 @@
                 <div class="d-flex justify-content-between align-items-center">
                   <div>
                     <h5 class="mb-0 text-white">{{ filteredAssets.length }} Asset</h5>
-                    <small class="text-white">Total asset untuk {{ selectedVillage === 'all' ? 'semua desa' : selectedVillage }}</small>
+                    <small class="text-white">Total asset untuk {{ selectedVillage === 'all' ? 'semua desa' :
+                      selectedVillage }}</small>
                   </div>
                   <div>
                     <button class="btn btn-light btn-sm" @click="toggleView">
@@ -97,7 +98,8 @@
                   </Column>
                   <Column header="Nama Kepala Keluarga">
                     <template #body="slotProps">
-                      <strong>{{ [slotProps.data.nama_depan, slotProps.data.nama_tengah, slotProps.data.nama_belakang].filter(Boolean).join(' ') || '-' }}</strong>
+                      <strong>{{ [slotProps.data.nama_depan, slotProps.data.nama_tengah,
+                      slotProps.data.nama_belakang].filter(Boolean).join(' ') || '-' }}</strong>
                     </template>
                   </Column>
                   <Column header="Desa" field="desa" />
@@ -118,7 +120,8 @@
                         <button class="btn btn-sm btn-primary me-1" @click="viewDetail(slotProps.data)" title="Detail">
                           <i class="bi bi-eye-fill"></i>
                         </button>
-                        <button class="btn btn-sm btn-info me-1" @click="viewOnMap(slotProps.data)" title="Lihat di Peta">
+                        <button class="btn btn-sm btn-info me-1" @click="viewOnMap(slotProps.data)"
+                          title="Lihat di Peta">
                           <i class="bi bi-geo-alt-fill"></i>
                         </button>
                         <button class="btn btn-sm btn-warning me-1" @click="editAsset(slotProps.data)" title="Edit">
@@ -156,7 +159,8 @@
     </div>
 
     <!-- Add/Edit Modal -->
-    <div class="modal fade" id="assetModal" tabindex="-1" aria-labelledby="assetModalLabel" aria-hidden="true" ref="assetModalRef">
+    <div class="modal fade" id="assetModal" tabindex="-1" aria-labelledby="assetModalLabel" aria-hidden="true"
+      ref="assetModalRef">
       <div class="modal-dialog modal-xl">
         <div class="modal-content">
           <div class="modal-header">
@@ -175,30 +179,46 @@
                 <div class="card-body">
                   <div class="row">
                     <div class="col-md-4 mb-3">
-                      <label class="form-label">1. Kode Enumerator</label>
-                      <input type="text" class="form-control" v-model="formData.kodeEnumerator" placeholder="Kode Enumerator" />
+                      <label class="form-label">Kode Enumerator</label>
+                      <input type="text" class="form-control" v-model="formData.kodeEnumerator"
+                        placeholder="Kode Enumerator" />
                     </div>
                     <div class="col-md-4 mb-3">
-                      <label class="form-label">2. ID Rumah Tangga</label>
-                      <input type="text" class="form-control" v-model="formData.idRumahTangga" placeholder="ID Rumah Tangga" />
+                      <label class="form-label">ID Rumah Tangga</label>
+                      <input type="text" class="form-control" v-model="formData.idRumahTangga"
+                        placeholder="ID Rumah Tangga" />
                     </div>
                     <div class="col-md-4 mb-3">
-                      <label class="form-label">3. Tanggal</label>
+                      <label class="form-label">Tanggal</label>
                       <input type="date" class="form-control" v-model="formData.tanggal" />
                     </div>
                   </div>
                   <div class="row">
                     <div class="col-md-4 mb-3">
-                      <label class="form-label">4. Kode Foto Survei</label>
-                      <input type="text" class="form-control" v-model="formData.kodeFotoSurvei" placeholder="Kode Foto Survei" />
+                      <label class="form-label">Kode Foto Survei</label>
+                      <input type="text" class="form-control" v-model="formData.kodeFotoSurvei"
+                        placeholder="Kode Foto Survei" />
                     </div>
                     <div class="col-md-4 mb-3">
-                      <label class="form-label">5. ID Unik (Entitas Terdampak)</label>
-                      <input type="text" class="form-control" v-model="formData.idUnik" placeholder="ID Unik" />
+                      <label class="form-label">Entitas Terdampak</label>
+                      <select class="form-select" v-model="formData.idUnik">
+                        <option value="Tanah">Tanah</option>
+                        <option value="Rumah">Rumah</option>
+                        <option value="Tanaman/Pohon">Tanaman/Pohon</option>
+                        <option value="Struktur/Asset">Struktur/Asset</option>
+                      </select>
                     </div>
                     <div class="col-md-4 mb-3">
-                      <label class="form-label">6. Koordinat</label>
-                      <input type="text" class="form-control" v-model="formData.koordinat" placeholder="Lat, Lng" />
+                      <label class="form-label">Koordinat</label>
+                      <div class="row g-2">
+                        <div class="col-6">
+                          <input type="text" class="form-control" v-model="formData.latitude" placeholder="Latitude" />
+                        </div>
+                        <div class="col-6">
+                          <input type="text" class="form-control" v-model="formData.longitude"
+                            placeholder="Longitude" />
+                        </div>
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -206,94 +226,56 @@
 
               <!-- B. Informasi Kepala Keluarga -->
               <div class="card mb-3">
-                <div class="card-header bg-light">
-                  <h6 class="mb-0"><strong>Form Identitas Kepala Keluarga</strong></h6>
+                <div class="card-header bg-primary text-white">
+                  <h6 class="mb-0"><strong>B. Informasi Kepala Keluarga</strong></h6>
                 </div>
                 <div class="card-body">
                   <div class="row">
                     <div class="col-md-4 mb-3">
                       <label class="form-label">Nama Depan</label>
-                      <input 
-                        type="text" 
-                        class="form-control" 
-                        v-model="formData.namaDepan" 
-                        placeholder="Nama Depan"
-                      />
+                      <input type="text" class="form-control" v-model="formData.namaDepan" placeholder="Nama Depan" />
                     </div>
                     <div class="col-md-4 mb-3">
                       <label class="form-label">Nama Tengah</label>
-                      <input 
-                        type="text" 
-                        class="form-control" 
-                        v-model="formData.namaTengah" 
-                        placeholder="Nama Tengah"
-                      />
+                      <input type="text" class="form-control" v-model="formData.namaTengah" placeholder="Nama Tengah" />
                     </div>
                     <div class="col-md-4 mb-3">
                       <label class="form-label">Nama Belakang</label>
-                      <input 
-                        type="text" 
-                        class="form-control" 
-                        v-model="formData.namaBelakang" 
-                        placeholder="Nama Belakang"
-                      />
+                      <input type="text" class="form-control" v-model="formData.namaBelakang"
+                        placeholder="Nama Belakang" />
                     </div>
                   </div>
 
                   <div class="row">
                     <div class="col-md-4 mb-3">
                       <label class="form-label">Nama Ayah</label>
-                      <input 
-                        type="text" 
-                        class="form-control" 
-                        v-model="formData.namaAyah" 
-                        placeholder="Nama Ayah"
-                      />
+                      <input type="text" class="form-control" v-model="formData.namaAyah" placeholder="Nama Ayah" />
                     </div>
                     <div class="col-md-4 mb-3">
                       <label class="form-label">Nama Kakek</label>
-                      <input 
-                        type="text" 
-                        class="form-control" 
-                        v-model="formData.namaKakek" 
-                        placeholder="Nama Kakek"
-                      />
+                      <input type="text" class="form-control" v-model="formData.namaKakek" placeholder="Nama Kakek" />
                     </div>
                     <div class="col-md-4 mb-3">
                       <label class="form-label">Nama Pasangan</label>
-                      <input 
-                        type="text" 
-                        class="form-control" 
-                        v-model="formData.namaPasangan" 
-                        placeholder="Nama Pasangan"
-                      />
+                      <input type="text" class="form-control" v-model="formData.namaPasangan"
+                        placeholder="Nama Pasangan" />
                     </div>
                   </div>
 
                   <div class="row">
                     <div class="col-md-4 mb-3">
                       <label class="form-label">Nomor Telepon</label>
-                      <input
-                        type="text"
-                        class="form-control"
-                        v-model="formData.nomorTelepon"
-                        placeholder="0812xxxxxxx"
-                      />
+                      <input type="text" class="form-control" v-model="formData.nomorTelepon"
+                        placeholder="0812xxxxxxx" />
                     </div>
                     <div class="col-md-4 mb-3">
                       <label class="form-label">NIK</label>
-                      <input
-                        type="text"
-                        class="form-control"
-                        v-model="formData.nik"
-                        placeholder="16 digit NIK"
-                        maxlength="16"
-                      />
+                      <input type="text" class="form-control" v-model="formData.nik" placeholder="16 digit NIK"
+                        maxlength="16" />
                     </div>
                     <div class="col-md-4 mb-3">
-                      <label class="form-label">15. Desa</label>
+                      <label class="form-label">Desa</label>
                       <select class="form-select" v-model="formData.desa">
-                        <option value="">Pilih Desa</option>
                         <option value="Desa Sorowako">Desa Sorowako</option>
                         <option value="Desa Magani">Desa Magani</option>
                         <option value="Desa Wewangriu">Desa Wewangriu</option>
@@ -304,348 +286,346 @@
 
                   <div class="row">
                     <div class="col-md-4 mb-3">
-                      <label class="form-label">16. Kecamatan</label>
-                      <input
-                        type="text"
-                        class="form-control"
-                        v-model="formData.kecamatan"
-                        placeholder="Kecamatan"
-                      />
+                      <label class="form-label">Kecamatan</label>
+                      <input type="text" class="form-control" v-model="formData.kecamatan" placeholder="Kecamatan" />
                     </div>
                     <div class="col-md-4 mb-3">
-                      <label class="form-label">17. Kabupaten</label>
-                      <input
-                        type="text"
-                        class="form-control"
-                        v-model="formData.kabupaten"
-                        placeholder="Kabupaten"
-                      />
+                      <label class="form-label">Kabupaten</label>
+                      <input type="text" class="form-control" v-model="formData.kabupaten" placeholder="Kabupaten" />
                     </div>
                     <div class="col-md-4 mb-3">
-                      <label class="form-label">18. Provinsi</label>
-                      <input
-                        type="text"
-                        class="form-control"
-                        v-model="formData.provinsi"
-                        placeholder="Provinsi"
-                      />
+                      <label class="form-label">Provinsi</label>
+                      <input type="text" class="form-control" v-model="formData.provinsi" placeholder="Provinsi" />
                     </div>
                   </div>
 
                   <div class="row">
                     <div class="col-md-6 mb-3">
-                      <label class="form-label">19. Nama Responden</label>
-                      <input
-                        type="text"
-                        class="form-control"
-                        v-model="formData.namaResponden"
-                        placeholder="Jika berbeda dengan Kepala Keluarga"
-                      />
+                      <label class="form-label">Nama Responden</label>
+                      <input type="text" class="form-control" v-model="formData.namaResponden"
+                        placeholder="Jika berbeda dengan Kepala Keluarga" />
                     </div>
                     <div class="col-md-6 mb-3">
-                      <label class="form-label">20. Hubungan Responden dengan KK</label>
-                      <input
-                        type="text"
-                        class="form-control"
-                        v-model="formData.hubunganRespondenKk"
-                        placeholder="Hubungan dengan KK"
-                      />
-                    </div>
-                  </div>
-
-                  <div class="row">
-                    <div class="col-md-4 mb-3">
-                      <label class="form-label">22. Agama</label>
-                      <input
-                        type="text"
-                        class="form-control"
-                        v-model="formData.agama"
-                        placeholder="Agama"
-                      />
-                    </div>
-                    <div class="col-md-4 mb-3">
-                      <label class="form-label">Agama Lainnya</label>
-                      <input
-                        type="text"
-                        class="form-control"
-                        v-model="formData.agamaLainnya"
-                        placeholder="Tentukan"
-                      />
-                    </div>
-                    <div class="col-md-4 mb-3">
-                      <label class="form-label">23. Asal Etnis</label>
-                      <input
-                        type="text"
-                        class="form-control"
-                        v-model="formData.asalEtnis"
-                        placeholder="Asal Etnis"
-                      />
-                    </div>
-                  </div>
-
-                  <div class="row">
-                    <div class="col-md-4 mb-3">
-                      <label class="form-label">Asal Etnis Lainnya</label>
-                      <input
-                        type="text"
-                        class="form-control"
-                        v-model="formData.asalEtnisLainnya"
-                        placeholder="Tentukan"
-                      />
-                    </div>
-                    <div class="col-md-4 mb-3">
-                      <label class="form-label">24. Bahasa</label>
-                      <input
-                        type="text"
-                        class="form-control"
-                        v-model="formData.bahasa"
-                        placeholder="Bahasa"
-                      />
-                    </div>
-                    <div class="col-md-4 mb-3">
-                      <label class="form-label">Bahasa Lainnya</label>
-                      <input
-                        type="text"
-                        class="form-control"
-                        v-model="formData.bahasaLainnya"
-                        placeholder="Tentukan"
-                      />
-                    </div>
-                  </div>
-
-                  <div class="row">
-                    <div class="col-md-6 mb-3">
-                      <label class="form-label">25. Tempat Asal KK</label>
-                      <input
-                        type="text"
-                        class="form-control"
-                        v-model="formData.tempatAsalKk"
-                        placeholder="Tempat Asal KK"
-                      />
-                    </div>
-                    <div class="col-md-6 mb-3">
-                      <label class="form-label">Tentukan Tempat Asal</label>
-                      <input
-                        type="text"
-                        class="form-control"
-                        v-model="formData.tempatAsalTentukan"
-                        placeholder="Tentukan"
-                      />
-                    </div>
-                  </div>
-
-                  <div class="row">
-                    <div class="col-md-4 mb-3">
-                      <label class="form-label">26. Jumlah Orang di Rumah Tangga</label>
-                      <input
-                        type="number"
-                        class="form-control"
-                        v-model.number="formData.jumlahOrangRumahTangga"
-                        placeholder="0"
-                      />
-                    </div>
-                    <div class="col-md-4 mb-3">
-                      <label class="form-label">No. Anggota</label>
-                      <input
-                        type="number"
-                        class="form-control"
-                        v-model.number="formData.noAnggota"
-                        placeholder="0"
-                      />
-                    </div>
-                    <div class="col-md-4 mb-3">
-                      <label class="form-label">27. ID Dampak</label>
-                      <input
-                        type="text"
-                        class="form-control"
-                        v-model="formData.idDampak"
-                        placeholder="ID Dampak"
-                      />
-                    </div>
-                  </div>
-
-                  <div class="row">
-                    <div class="col-md-6 mb-3">
-                      <label class="form-label">28. Nama Depan (Anggota)</label>
-                      <input
-                        type="text"
-                        class="form-control"
-                        v-model="formData.anggotaNamaDepan"
-                        placeholder="Nama Depan"
-                      />
-                    </div>
-                    <div class="col-md-6 mb-3">
-                      <label class="form-label">29. Nama Belakang (Anggota)</label>
-                      <input
-                        type="text"
-                        class="form-control"
-                        v-model="formData.anggotaNamaBelakang"
-                        placeholder="Nama Belakang"
-                      />
-                    </div>
-                  </div>
-
-                  <div class="row">
-                    <div class="col-md-4 mb-3">
-                      <label class="form-label">30. Hubungan dengan KK</label>
-                      <input
-                        type="text"
-                        class="form-control"
-                        v-model="formData.hubunganKk"
-                        placeholder="Hubungan"
-                      />
-                    </div>
-                    <div class="col-md-4 mb-3">
-                      <label class="form-label">31. Jenis Kelamin</label>
-                      <select class="form-select" v-model="formData.jenisKelamin">
-                        <option value="">Pilih</option>
-                        <option value="1">Laki-laki</option>
-                        <option value="2">Perempuan</option>
+                      <label class="form-label">Hubungan Responden dengan KK</label>
+                      <select class="form-select" v-model="formData.hubunganRespondenKk">
+                        <option value="Pasangan">Pasangan</option>
+                        <option value="Anak">Anak</option>
+                        <option value="Menantu">Menantu</option>
+                        <option value="Cucu">Cucu</option>
+                        <option value="Ayah/Ibu">Ayah/Ibu</option>
+                        <option value="Mertua">Mertua</option>
+                        <option value="Saudara">Saudara</option>
+                        <option value="Ipar">Ipar</option>
+                        <option value="Kerabat Lain">Kerabat Lain</option>
+                        <option value="Sepupu">Sepupu</option>
+                        <option value="Bukan Kerabat Lain">Bukan Kerabat Lain</option>
                       </select>
-                    </div>
-                    <div class="col-md-4 mb-3">
-                      <label class="form-label">32. Usia</label>
-                      <input
-                        type="number"
-                        class="form-control"
-                        v-model.number="formData.usia"
-                        placeholder="0"
-                      />
-                    </div>
-                  </div>
-
-                  <div class="row">
-                    <div class="col-md-4 mb-3">
-                      <label class="form-label">33. Status Perkawinan</label>
-                      <input
-                        type="text"
-                        class="form-control"
-                        v-model="formData.statusPerkawinan"
-                        placeholder="Status"
-                      />
-                    </div>
-                    <div class="col-md-4 mb-3">
-                      <label class="form-label">34. Bisa Membaca/Menulis</label>
-                      <select class="form-select" v-model="formData.bisaMembacaMenulis">
-                        <option value="">Pilih</option>
-                        <option value="1">Ya</option>
-                        <option value="2">Tidak</option>
-                      </select>
-                    </div>
-                    <div class="col-md-4 mb-3">
-                      <label class="form-label">35. Sedang Sekolah</label>
-                      <select class="form-select" v-model="formData.sedangSekolah">
-                        <option value="">Pilih</option>
-                        <option value="1">Ya</option>
-                        <option value="2">Tidak</option>
-                      </select>
-                    </div>
-                  </div>
-
-                  <div class="row">
-                    <div class="col-md-4 mb-3">
-                      <label class="form-label">36. Lokasi Sekolah</label>
-                      <input
-                        type="text"
-                        class="form-control"
-                        v-model="formData.lokasiSekolah"
-                        placeholder="Lokasi"
-                      />
-                    </div>
-                    <div class="col-md-4 mb-3">
-                      <label class="form-label">37. Pendidikan Terakhir</label>
-                      <input
-                        type="text"
-                        class="form-control"
-                        v-model="formData.pendidikanTerakhir"
-                        placeholder="Pendidikan"
-                      />
-                    </div>
-                    <div class="col-md-4 mb-3">
-                      <label class="form-label">38. Alasan Penghentian</label>
-                      <input
-                        type="text"
-                        class="form-control"
-                        v-model="formData.alasanPenghentian"
-                        placeholder="Alasan"
-                      />
-                    </div>
-                  </div>
-
-                  <div class="row">
-                    <div class="col-md-6 mb-3">
-                      <label class="form-label">Alasan Penghentian Lainnya</label>
-                      <input
-                        type="text"
-                        class="form-control"
-                        v-model="formData.alasanPenghentianLainnya"
-                        placeholder="Tentukan"
-                      />
-                    </div>
-                    <div class="col-md-6 mb-3">
-                      <label class="form-label">39. Disabilitas</label>
-                      <input
-                        type="text"
-                        class="form-control"
-                        v-model="formData.disabilitas"
-                        placeholder="Disabilitas"
-                      />
-                    </div>
-                  </div>
-
-                  <div class="row">
-                    <div class="col-md-6 mb-3">
-                      <label class="form-label">Disabilitas Lainnya</label>
-                      <input
-                        type="text"
-                        class="form-control"
-                        v-model="formData.disabilitasLainnya"
-                        placeholder="Tentukan"
-                      />
-                    </div>
-                    <div class="col-md-6 mb-3">
-                      <label class="form-label">40. Kondisi Kesehatan Kronis</label>
-                      <textarea
-                        class="form-control"
-                        v-model="formData.kondisiKesehatanKronis"
-                        rows="2"
-                        placeholder="Kondisi kesehatan"
-                      ></textarea>
-                    </div>
-                  </div>
-
-                  <div class="row">
-                    <div class="col-md-12 mb-3">
-                      <label class="form-label">Kesehatan Lainnya</label>
-                      <input
-                        type="text"
-                        class="form-control"
-                        v-model="formData.kesehatanLainnya"
-                        placeholder="Tentukan"
-                      />
                     </div>
                   </div>
                 </div>
               </div>
 
-              <!-- D. Pekerjaan (41-51) -->
+              <!-- C. Profil Dampak -->
+              <div class="card mb-3">
+                <div class="card-header bg-primary text-white">
+                  <h6 class="mb-0"><strong>C. Profil Dampak</strong></h6>
+                </div>
+                <div class="card-body">
+                  <div class="row">
+                    <div class="col-md-6 mb-3">
+                      <label class="form-label">Identifikasi Dampak</label>
+                      <select class="form-select" v-model="formData.identifikasiDampak">
+                        <option value="Perpindahan Fisik">Perpindahan Fisik</option>
+                        <option value="Perpindahan Ekonomi">Perpindahan Ekonomi</option>
+                        <option value="Perpindahan Fisik dan Ekonomi">Perpindahan Fisik dan Ekonomi</option>
+                        <option value="Terkena dampak tidak langsung dari proyek">Terkena dampak tidak langsung dari
+                          proyek
+                        </option>
+                        <option value="Lainnya">Lainnya</option>
+                      </select>
+                    </div>
+                    <div class="col-md-6 mb-3" v-if="formData.identifikasiDampak === 'Lainnya'">
+                      <label class="form-label">Identifikasi Dampak Lainnya</label>
+                      <input type="text" class="form-control" v-model="formData.identifikasiDampakLainnya"
+                        placeholder="Tentukan jenis dampak lainnya" />
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- D. Profil Sosial Rumah Tangga -->
+              <div class="card mb-3">
+                <div class="card-header bg-primary text-white">
+                  <h6 class="mb-0"><strong>D. Profil Sosial Rumah Tangga</strong></h6>
+                </div>
+                <div class="card-body">
+                  <div class="row">
+                    <div class="col-md-4 mb-3">
+                      <label class="form-label">Agama</label>
+                      <select class="form-select" v-model="formData.agama">
+                        <option value="">Pilih Agama</option>
+                        <option value="Islam">Islam</option>
+                        <option value="Kristen">Kristen</option>
+                        <option value="Katolik">Katolik</option>
+                        <option value="Hindu">Hindu</option>
+                        <option value="Buddha">Buddha</option>
+                        <option value="Konghucu">Konghucu</option>
+                        <option value="Lainnya">Lainnya</option>
+                      </select>
+                    </div>
+                    <div class="col-md-4 mb-3" v-if="formData.agama === 'Lainnya'">
+                      <label class="form-label">Agama Lainnya</label>
+                      <input type="text" class="form-control" v-model="formData.agamaLainnya" placeholder="Tentukan" />
+                    </div>
+                    <div class="col-md-4 mb-3">
+                      <label class="form-label">Asal Etnis</label>
+                      <select class="form-select" v-model="formData.asalEtnis">
+                        <option value="">Pilih Asal Etnis</option>
+                        <option value="Bugis">Bugis</option>
+                        <option value="Makassar">Makassar</option>
+                        <option value="Toraja">Toraja</option>
+                        <option value="Mandar">Mandar</option>
+                        <option value="Tolaki">Tolaki</option>
+                        <option value="Moronene">Moronene</option>
+                        <option value="Bau-Bau">Bau-Bau</option>
+                        <option value="Buton">Buton</option>
+                        <option value="Jawa">Jawa</option>
+                        <option value="Sunda">Sunda</option>
+                        <option value="Lainnya">Lainnya</option>
+                      </select>
+                    </div>
+                  </div>
+
+                  <div class="row">
+                    <div class="col-md-4 mb-3" v-if="formData.asalEtnis === 'Lainnya'">
+                      <label class="form-label">Asal Etnis Lainnya</label>
+                      <input type="text" class="form-control" v-model="formData.asalEtnisLainnya"
+                        placeholder="Tentukan" />
+                    </div>
+                    <div class="col-md-4 mb-3">
+                      <label class="form-label">Bahasa</label>
+                      <select class="form-select" v-model="formData.bahasa">
+                        <option value="">Pilih Bahasa</option>
+                        <option value="Indonesia">Indonesia</option>
+                        <option value="Bugis">Bugis</option>
+                        <option value="Makassar">Makassar</option>
+                        <option value="Toraja">Toraja</option>
+                        <option value="Lainnya">Lainnya</option>
+                      </select>
+                    </div>
+                    <div class="col-md-4 mb-3" v-if="formData.bahasa === 'Lainnya'">
+                      <label class="form-label">Bahasa Lainnya</label>
+                      <input type="text" class="form-control" v-model="formData.bahasaLainnya" placeholder="Tentukan" />
+                    </div>
+                  </div>
+
+                  <div class="row">
+                    <div class="col-md-6 mb-3">
+                      <label class="form-label">Tempat Asal Kepala Rumah Tangga</label>
+                      <select class="form-select" v-model="formData.tempatAsalKk">
+                        <option value="">Pilih Tempat Asal</option>
+                        <option value="Desa yang Sama">Desa yang Sama</option>
+                        <option value="Di luar desa">Di luar desa</option>
+                        <option value="Di luar kecamatan">Di luar kecamatan</option>
+                        <option value="Di luar kabupaten">Di luar kabupaten</option>
+                      </select>
+                    </div>
+                    <div class="col-md-6 mb-3"
+                      v-if="formData.tempatAsalKk && formData.tempatAsalKk !== 'Desa yang Sama'">
+                      <label class="form-label">Tentukan Tempat Asal</label>
+                      <input type="text" class="form-control" v-model="formData.tempatAsalTentukan"
+                        placeholder="Tentukan" />
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- E. Household Demography -->
+              <div class="card mb-3">
+                <div class="card-header bg-primary text-white">
+                  <h6 class="mb-0"><strong>E. Household Demography</strong></h6>
+                </div>
+                <div class="card-body">
+                  <div class="row">
+
+                    <div class="row">
+                      <div class="col-md-4 mb-3">
+                        <label class="form-label">Berapa banyak orang yang tinggal di rumah tangga</label>
+                        <input type="number" class="form-control" v-model.number="formData.jumlahOrangRumahTangga"
+                          placeholder="0" />
+                      </div>
+                      <div class="col-md-4 mb-3">
+                        <label class="form-label">No. Anggota</label>
+                        <input type="number" class="form-control" v-model.number="formData.noAnggota" placeholder="0" />
+                      </div>
+                      <div class="col-md-4 mb-3">
+                        <label class="form-label">ID Dampak</label>
+                        <input type="text" class="form-control" v-model="formData.idDampak" placeholder="ID Dampak" />
+                      </div>
+                    </div>
+
+                    <div class="row">
+                      <div class="col-md-6 mb-3">
+                        <label class="form-label">Nama Depan (Anggota)</label>
+                        <input type="text" class="form-control" v-model="formData.anggotaNamaDepan"
+                          placeholder="Nama Depan" />
+                      </div>
+                      <div class="col-md-6 mb-3">
+                        <label class="form-label">Nama Belakang (Anggota)</label>
+                        <input type="text" class="form-control" v-model="formData.anggotaNamaBelakang"
+                          placeholder="Nama Belakang" />
+                      </div>
+                    </div>
+
+                    <div class="row">
+                      <div class="col-md-4 mb-3">
+                        <label class="form-label">Hubungan dengan KK</label>
+                        <select class="form-select" v-model="formData.hubunganKk">
+                          <option value="Pasangan">Pasangan</option>
+                          <option value="Anak">Anak</option>
+                          <option value="Menantu">Menantu</option>
+                          <option value="Cucu">Cucu</option>
+                          <option value="Ayah/Ibu">Ayah/Ibu</option>
+                          <option value="Mertua">Mertua</option>
+                          <option value="Saudara">Saudara</option>
+                          <option value="Ipar">Ipar</option>
+                          <option value="Kerabat Lain">Kerabat Lain</option>
+                          <option value="Sepupu">Sepupu</option>
+                          <option value="Bukan Kerabat Lain">Bukan Kerabat Lain</option>
+                        </select>
+                      </div>
+                      <div class="col-md-4 mb-3">
+                        <label class="form-label">Jenis Kelamin</label>
+                        <select class="form-select" v-model="formData.jenisKelamin">
+                          <option value="">Pilih</option>
+                          <option value="1">Laki-laki</option>
+                          <option value="2">Perempuan</option>
+                        </select>
+                      </div>
+                      <div class="col-md-4 mb-3">
+                        <label class="form-label">Usia</label>
+                        <input type="number" class="form-control" v-model.number="formData.usia" placeholder="0" />
+                      </div>
+                    </div>
+
+                    <div class="row">
+                      <div class="col-md-4 mb-3">
+                        <label class="form-label">Status Perkawinan</label>
+                        <select class="form-select" v-model="formData.statusPerkawinan">
+                          <option value="Pasangan">Menikah</option>
+                          <option value="Anak">Lajang</option>
+                          <option value="Menantu">Dipisahkan</option>
+                          <option value="Cucu">Bercerai</option>
+                          <option value="Cucu">Janda</option>
+                        </select>
+                      </div>
+                      <div class="col-md-4 mb-3">
+                        <label class="form-label">Bisa Membaca/Menulis</label>
+                        <select class="form-select" v-model="formData.bisaMembacaMenulis">
+                          <option value="">Pilih</option>
+                          <option value="1">Ya</option>
+                          <option value="2">Tidak</option>
+                        </select>
+                      </div>
+                      <div class="col-md-4 mb-3">
+                        <label class="form-label">Sedang Sekolah</label>
+                        <select class="form-select" v-model="formData.sedangSekolah">
+                          <option value="">Pilih</option>
+                          <option value="1">Ya</option>
+                          <option value="2">Tidak</option>
+                        </select>
+                      </div>
+                    </div>
+
+                    <div class="row">
+                      <div class="col-md-4 mb-3">
+                        <label class="form-label">Jika sedang sekolah, di mana</label>
+                        <select class="form-select" v-model="formData.lokasiSekolah">
+                          <option value="">Pilih</option>
+                          <option value="Negeri">Negeri</option>
+                          <option value="Komunitas">Komunitas</option>
+                          <option value="Pribadi">Pribadi</option>
+                        </select>
+                      </div>
+                      <div class="col-md-4 mb-3">
+                        <label class="form-label">Tingkat Pendidikan Terakhir selesai</label>
+                        <select class="form-select" v-model="formData.pendidikanTerakhir">
+                          <option value="">Pilih</option>
+                          <option value="Dasar">Dasar</option>
+                          <option value="Menengah">Tingkat Menengah</option>
+                          <option value="Sarjana">Sarjana</option>
+                          <option value="Pascasarjana">Pascasarjana</option>
+                          <option value="Vokasi">Vokasi</option>
+                          <option value="Bukan Usia Sekolah">Bukan Usia Sekolah</option>
+                          <option value="Tidak Ada">Tidak Ada</option>
+                        </select>
+                      </div>
+                      <div class="col-md-4 mb-3">
+                        <label class="form-label">Alasan Penghentian</label>
+                        <input type="text" class="form-control" v-model="formData.alasanPenghentian"
+                          placeholder="Alasan" />
+                      </div>
+                    </div>
+
+                    <div class="row">
+                      <div class="col-md-6 mb-3">
+                        <label class="form-label">Alasan Penghentian Lainnya</label>
+                        <input type="text" class="form-control" v-model="formData.alasanPenghentianLainnya"
+                          placeholder="Tentukan" />
+                      </div>
+                      <div class="col-md-6 mb-3">
+                        <label class="form-label">Disabilitas</label>
+                        <input type="text" class="form-control" v-model="formData.disabilitas"
+                          placeholder="Disabilitas" />
+                      </div>
+                    </div>
+
+                    <div class="row">
+                      <div class="col-md-6 mb-3">
+                        <label class="form-label">Disabilitas Lainnya</label>
+                        <input type="text" class="form-control" v-model="formData.disabilitasLainnya"
+                          placeholder="Tentukan" />
+                      </div>
+                      <div class="col-md-6 mb-3">
+                        <label class="form-label">Kondisi Kesehatan Kronis</label>
+                        <textarea class="form-control" v-model="formData.kondisiKesehatanKronis" rows="2"
+                          placeholder="Kondisi kesehatan"></textarea>
+                      </div>
+                    </div>
+
+                    <div class="row">
+                      <div class="col-md-12 mb-3">
+                        <label class="form-label">Kesehatan Lainnya</label>
+                        <input type="text" class="form-control" v-model="formData.kesehatanLainnya"
+                          placeholder="Tentukan" />
+                      </div>
+                    </div>
+
+                  </div>
+                </div>
+              </div>
+
+              <!-- E. Pekerjaan Utama (41-51) -->
               <div class="card mb-3">
                 <div class="card-header bg-warning text-dark">
-                  <h6 class="mb-0"><strong>D. Pekerjaan Utama</strong></h6>
+                  <h6 class="mb-0"><strong>E. Pekerjaan Utama</strong></h6>
                 </div>
                 <div class="card-body">
                   <div class="row mb-3">
                     <div class="col-md-4">
                       <label class="form-label">41. Bekerja 12 Bulan</label>
-                      <input type="text" class="form-control" v-model="formData.bekerja12Bulan" placeholder="Ya/Tidak" />
+                      <input type="text" class="form-control" v-model="formData.bekerja12Bulan"
+                        placeholder="Ya/Tidak" />
                     </div>
                     <div class="col-md-4">
                       <label class="form-label">42. Pekerjaan Utama</label>
-                      <input type="text" class="form-control" v-model="formData.pekerjaanUtama" placeholder="Pekerjaan" />
+                      <input type="text" class="form-control" v-model="formData.pekerjaanUtama"
+                        placeholder="Pekerjaan" />
                     </div>
                     <div class="col-md-4">
                       <label class="form-label">Pekerjaan Utama (Lainnya)</label>
-                      <input type="text" class="form-control" v-model="formData.pekerjaanUtamaLainnya" placeholder="Tentukan" />
+                      <input type="text" class="form-control" v-model="formData.pekerjaanUtamaLainnya"
+                        placeholder="Tentukan" />
                     </div>
                   </div>
                   <div class="row mb-3">
@@ -659,21 +639,26 @@
                     </div>
                     <div class="col-md-4">
                       <label class="form-label">Lokasi Pekerjaan (Lainnya)</label>
-                      <input type="text" class="form-control" v-model="formData.lokasiPekerjaanLainnya" placeholder="Tentukan" />
+                      <input type="text" class="form-control" v-model="formData.lokasiPekerjaanLainnya"
+                        placeholder="Tentukan" />
                     </div>
                   </div>
                   <div class="row mb-3">
                     <div class="col-md-4">
                       <label class="form-label">45. Jumlah Bulan Bekerja</label>
-                      <input type="number" class="form-control" v-model.number="formData.jumlahBulanBekerja" placeholder="0" />
+                      <input type="number" class="form-control" v-model.number="formData.jumlahBulanBekerja"
+                        placeholder="0" />
                     </div>
                     <div class="col-md-4">
                       <label class="form-label">46. Penghasilan per Bulan</label>
-                      <input type="number" class="form-control" v-model.number="formData.penghasilanPerBulan" placeholder="0" />
+                      <input type="number" class="form-control" v-model.number="formData.penghasilanPerBulan"
+                        placeholder="0" />
                     </div>
                   </div>
                 </div>
               </div>
+
+
 
               <!-- E. Pekerjaan Sekunder (47-50) -->
               <div class="card mb-3">
@@ -684,31 +669,37 @@
                   <div class="row mb-3">
                     <div class="col-md-4">
                       <label class="form-label">47. Pekerjaan Sekunder</label>
-                      <input type="text" class="form-control" v-model="formData.pekerjaanSekunder" placeholder="Pekerjaan sekunder" />
+                      <input type="text" class="form-control" v-model="formData.pekerjaanSekunder"
+                        placeholder="Pekerjaan sekunder" />
                     </div>
                     <div class="col-md-4">
                       <label class="form-label">Pekerjaan Sekunder (Lainnya)</label>
-                      <input type="text" class="form-control" v-model="formData.pekerjaanSekunderLainnya" placeholder="Tentukan" />
+                      <input type="text" class="form-control" v-model="formData.pekerjaanSekunderLainnya"
+                        placeholder="Tentukan" />
                     </div>
                   </div>
                   <div class="row mb-3">
                     <div class="col-md-4">
                       <label class="form-label">48. Lokasi Sekunder</label>
-                      <input type="text" class="form-control" v-model="formData.lokasiPekerjaanSekunder" placeholder="Lokasi" />
+                      <input type="text" class="form-control" v-model="formData.lokasiPekerjaanSekunder"
+                        placeholder="Lokasi" />
                     </div>
                     <div class="col-md-4">
                       <label class="form-label">Lokasi Sekunder (Lainnya)</label>
-                      <input type="text" class="form-control" v-model="formData.lokasiPekerjaanSekunderLainnya" placeholder="Tentukan" />
+                      <input type="text" class="form-control" v-model="formData.lokasiPekerjaanSekunderLainnya"
+                        placeholder="Tentukan" />
                     </div>
                   </div>
                   <div class="row mb-3">
                     <div class="col-md-4">
                       <label class="form-label">49. Jumlah Bulan Sekunder</label>
-                      <input type="number" class="form-control" v-model.number="formData.jumlahBulanBekerjaSekunder" placeholder="0" />
+                      <input type="number" class="form-control" v-model.number="formData.jumlahBulanBekerjaSekunder"
+                        placeholder="0" />
                     </div>
                     <div class="col-md-4">
                       <label class="form-label">50. Penghasilan Sekunder</label>
-                      <input type="number" class="form-control" v-model.number="formData.penghasilanSekunderPerBulan" placeholder="0" />
+                      <input type="number" class="form-control" v-model.number="formData.penghasilanSekunderPerBulan"
+                        placeholder="0" />
                     </div>
                   </div>
                 </div>
@@ -723,11 +714,13 @@
                   <div class="row mb-3">
                     <div class="col-md-6">
                       <label class="form-label">51. Keterampilan/Profesi</label>
-                      <textarea class="form-control" v-model="formData.keterampilan" rows="2" placeholder="Keterampilan"></textarea>
+                      <textarea class="form-control" v-model="formData.keterampilan" rows="2"
+                        placeholder="Keterampilan"></textarea>
                     </div>
                     <div class="col-md-6">
                       <label class="form-label">Keterampilan (Lainnya)</label>
-                      <input type="text" class="form-control" v-model="formData.keterampilanLainnya" placeholder="Tentukan" />
+                      <input type="text" class="form-control" v-model="formData.keterampilanLainnya"
+                        placeholder="Tentukan" />
                     </div>
                   </div>
                 </div>
@@ -742,29 +735,34 @@
                   <div class="row mb-3">
                     <div class="col-md-12">
                       <label class="form-label">55. Penyakit Umum</label>
-                      <textarea class="form-control" v-model="formData.penyakitUmum" rows="2" placeholder="Penyakit umum"></textarea>
+                      <textarea class="form-control" v-model="formData.penyakitUmum" rows="2"
+                        placeholder="Penyakit umum"></textarea>
                     </div>
                   </div>
                   <div class="row mb-3">
                     <div class="col-md-6">
                       <label class="form-label">56. Tempat Pelayanan</label>
-                      <input type="text" class="form-control" v-model="formData.tempatPelayanan" placeholder="Tempat pelayanan kesehatan" />
+                      <input type="text" class="form-control" v-model="formData.tempatPelayanan"
+                        placeholder="Tempat pelayanan kesehatan" />
                     </div>
                     <div class="col-md-6">
                       <label class="form-label">57. Kecukupan Pangan</label>
-                      <input type="text" class="form-control" v-model="formData.kecukupanPangan" placeholder="Kecukupan" />
+                      <input type="text" class="form-control" v-model="formData.kecukupanPangan"
+                        placeholder="Kecukupan" />
                     </div>
                   </div>
                   <div class="row mb-3">
                     <div class="col-md-12">
                       <label class="form-label">58. Defisit Pangan</label>
-                      <textarea class="form-control" v-model="formData.defisitPangan" rows="2" placeholder="Defisit pangan"></textarea>
+                      <textarea class="form-control" v-model="formData.defisitPangan" rows="2"
+                        placeholder="Defisit pangan"></textarea>
                     </div>
                   </div>
                   <div class="row mb-3">
                     <div class="col-md-12">
                       <label class="form-label">Defisit Pangan (Lainnya)</label>
-                      <input type="text" class="form-control" v-model="formData.defisitPanganLainnya" placeholder="Tentukan" />
+                      <input type="text" class="form-control" v-model="formData.defisitPanganLainnya"
+                        placeholder="Tentukan" />
                     </div>
                   </div>
                 </div>
@@ -779,11 +777,13 @@
                   <div class="row mb-3">
                     <div class="col-md-4">
                       <label class="form-label">59. Penghasilan Tahunan</label>
-                      <input type="number" class="form-control" v-model.number="formData.penghasilanTahunan" placeholder="0" />
+                      <input type="number" class="form-control" v-model.number="formData.penghasilanTahunan"
+                        placeholder="0" />
                     </div>
                     <div class="col-md-4">
                       <label class="form-label">60. Pengeluaran Bulanan</label>
-                      <input type="number" class="form-control" v-model.number="formData.pengeluaranBulanan" placeholder="0" />
+                      <input type="number" class="form-control" v-model.number="formData.pengeluaranBulanan"
+                        placeholder="0" />
                     </div>
                     <div class="col-md-4">
                       <label class="form-label">61. Rekening Bank</label>
@@ -803,17 +803,20 @@
                   <div class="row mb-3">
                     <div class="col-md-4">
                       <label class="form-label">64. Tabungan Detail</label>
-                      <input type="text" class="form-control" v-model="formData.tabunganDetail" placeholder="Detail tabungan" />
+                      <input type="text" class="form-control" v-model="formData.tabunganDetail"
+                        placeholder="Detail tabungan" />
                     </div>
                     <div class="col-md-4">
                       <label class="form-label">Tabungan (Lainnya)</label>
-                      <input type="text" class="form-control" v-model="formData.tabunganLainnya" placeholder="Tentukan" />
+                      <input type="text" class="form-control" v-model="formData.tabunganLainnya"
+                        placeholder="Tentukan" />
                     </div>
                   </div>
                   <div class="row mb-3">
                     <div class="col-md-4">
                       <label class="form-label">65. Hutang Detail</label>
-                      <input type="text" class="form-control" v-model="formData.hutangDetail" placeholder="Detail hutang" />
+                      <input type="text" class="form-control" v-model="formData.hutangDetail"
+                        placeholder="Detail hutang" />
                     </div>
                     <div class="col-md-4">
                       <label class="form-label">Hutang (Lainnya)</label>
@@ -823,13 +826,15 @@
                   <div class="row mb-3">
                     <div class="col-md-12">
                       <label class="form-label">66. Alasan Hutang</label>
-                      <textarea class="form-control" v-model="formData.alasanHutang" rows="2" placeholder="Alasan hutang"></textarea>
+                      <textarea class="form-control" v-model="formData.alasanHutang" rows="2"
+                        placeholder="Alasan hutang"></textarea>
                     </div>
                   </div>
                   <div class="row mb-3">
                     <div class="col-md-12">
                       <label class="form-label">Alasan Hutang (Lainnya)</label>
-                      <input type="text" class="form-control" v-model="formData.alasanHutangLainnya" placeholder="Tentukan" />
+                      <input type="text" class="form-control" v-model="formData.alasanHutangLainnya"
+                        placeholder="Tentukan" />
                     </div>
                   </div>
                 </div>
@@ -852,17 +857,20 @@
                     </div>
                     <div class="col-md-4">
                       <label class="form-label">68. Jenis Proyek</label>
-                      <input type="text" class="form-control" v-model="formData.jenisProyek" placeholder="Jenis proyek" />
+                      <input type="text" class="form-control" v-model="formData.jenisProyek"
+                        placeholder="Jenis proyek" />
                     </div>
                     <div class="col-md-4">
                       <label class="form-label">Jenis Proyek (Lainnya)</label>
-                      <input type="text" class="form-control" v-model="formData.jenisProyekLainnya" placeholder="Tentukan" />
+                      <input type="text" class="form-control" v-model="formData.jenisProyekLainnya"
+                        placeholder="Tentukan" />
                     </div>
                   </div>
                   <div class="row mb-3">
                     <div class="col-md-6">
                       <label class="form-label">69. Luas Lahan (m²)</label>
-                      <input type="number" class="form-control" v-model.number="formData.luasLahanDibebaskan" placeholder="0" />
+                      <input type="number" class="form-control" v-model.number="formData.luasLahanDibebaskan"
+                        placeholder="0" />
                     </div>
                     <div class="col-md-6">
                       <label class="form-label">70. Pernah Pengungsi</label>
@@ -897,21 +905,25 @@
                     </div>
                     <div class="col-md-4">
                       <label class="form-label">Lokasi Bisnis (Lainnya)</label>
-                      <input type="text" class="form-control" v-model="formData.lokasiBisnisLainnya" placeholder="Tentukan" />
+                      <input type="text" class="form-control" v-model="formData.lokasiBisnisLainnya"
+                        placeholder="Tentukan" />
                     </div>
                   </div>
                   <div class="row mb-3">
                     <div class="col-md-4">
                       <label class="form-label">73. Kepemilikan Bisnis</label>
-                      <input type="text" class="form-control" v-model="formData.kepemilikanBisnis" placeholder="Kepemilikan" />
+                      <input type="text" class="form-control" v-model="formData.kepemilikanBisnis"
+                        placeholder="Kepemilikan" />
                     </div>
                     <div class="col-md-4">
                       <label class="form-label">Kepemilikan (Lainnya)</label>
-                      <input type="text" class="form-control" v-model="formData.kepemilikanBisnisLainnya" placeholder="Tentukan" />
+                      <input type="text" class="form-control" v-model="formData.kepemilikanBisnisLainnya"
+                        placeholder="Tentukan" />
                     </div>
                     <div class="col-md-4">
                       <label class="form-label">74. Sejak Kapan Bisnis</label>
-                      <input type="text" class="form-control" v-model="formData.sejakKapanBisnis" placeholder="Tahun/Bulan" />
+                      <input type="text" class="form-control" v-model="formData.sejakKapanBisnis"
+                        placeholder="Tahun/Bulan" />
                     </div>
                   </div>
                   <div class="row mb-3">
@@ -921,23 +933,27 @@
                     </div>
                     <div class="col-md-4">
                       <label class="form-label">Jenis Bisnis (Lainnya)</label>
-                      <input type="text" class="form-control" v-model="formData.jenisBisnisLainnya" placeholder="Tentukan" />
+                      <input type="text" class="form-control" v-model="formData.jenisBisnisLainnya"
+                        placeholder="Tentukan" />
                     </div>
                   </div>
                   <div class="row mb-3">
                     <div class="col-md-4">
                       <label class="form-label">76. Jumlah Pegawai</label>
-                      <input type="number" class="form-control" v-model.number="formData.jumlahPegawai" placeholder="0" />
+                      <input type="number" class="form-control" v-model.number="formData.jumlahPegawai"
+                        placeholder="0" />
                     </div>
                     <div class="col-md-4">
                       <label class="form-label">77. Pendapatan Rata Bisnis</label>
-                      <input type="number" class="form-control" v-model.number="formData.pendapatanRataBisnis" placeholder="0" />
+                      <input type="number" class="form-control" v-model.number="formData.pendapatanRataBisnis"
+                        placeholder="0" />
                     </div>
                   </div>
                   <div class="row mb-3">
                     <div class="col-md-12">
                       <label class="form-label">78. Deskripsi Produk</label>
-                      <textarea class="form-control" v-model="formData.deskripsiProdukLayanan" rows="2" placeholder="Deskripsi"></textarea>
+                      <textarea class="form-control" v-model="formData.deskripsiProdukLayanan" rows="2"
+                        placeholder="Deskripsi"></textarea>
                     </div>
                   </div>
                 </div>
@@ -956,17 +972,20 @@
                     </div>
                     <div class="col-md-4">
                       <label class="form-label">Tipe Rumah (Lainnya)</label>
-                      <input type="text" class="form-control" v-model="formData.tipeRumahLainnya" placeholder="Tentukan" />
+                      <input type="text" class="form-control" v-model="formData.tipeRumahLainnya"
+                        placeholder="Tentukan" />
                     </div>
                     <div class="col-md-4">
                       <label class="form-label">80. Pelayanan Listrik</label>
-                      <input type="text" class="form-control" v-model="formData.pelayananListrik" placeholder="Pelayanan" />
+                      <input type="text" class="form-control" v-model="formData.pelayananListrik"
+                        placeholder="Pelayanan" />
                     </div>
                   </div>
                   <div class="row mb-3">
                     <div class="col-md-4">
                       <label class="form-label">Pelayanan Listrik (Lainnya)</label>
-                      <input type="text" class="form-control" v-model="formData.pelayananListrikLainnya" placeholder="Tentukan" />
+                      <input type="text" class="form-control" v-model="formData.pelayananListrikLainnya"
+                        placeholder="Tentukan" />
                     </div>
                     <div class="col-md-4">
                       <label class="form-label">81. Sumber Air</label>
@@ -974,7 +993,8 @@
                     </div>
                     <div class="col-md-4">
                       <label class="form-label">Sumber Air (Lainnya)</label>
-                      <input type="text" class="form-control" v-model="formData.sumberAirLainnya" placeholder="Tentukan" />
+                      <input type="text" class="form-control" v-model="formData.sumberAirLainnya"
+                        placeholder="Tentukan" />
                     </div>
                   </div>
                   <div class="row mb-3">
@@ -984,7 +1004,8 @@
                     </div>
                     <div class="col-md-6">
                       <label class="form-label">83. Karakteristik Khusus</label>
-                      <textarea class="form-control" v-model="formData.karakteristikKhusus" rows="2" placeholder="Karakteristik"></textarea>
+                      <textarea class="form-control" v-model="formData.karakteristikKhusus" rows="2"
+                        placeholder="Karakteristik"></textarea>
                     </div>
                   </div>
                 </div>
@@ -999,11 +1020,13 @@
                   <div class="row mb-3">
                     <div class="col-md-6">
                       <label class="form-label">88. Sumber Informasi</label>
-                      <input type="text" class="form-control" v-model="formData.sumberInformasi" placeholder="Sumber informasi" />
+                      <input type="text" class="form-control" v-model="formData.sumberInformasi"
+                        placeholder="Sumber informasi" />
                     </div>
                     <div class="col-md-6">
                       <label class="form-label">89. Metode Komunikasi</label>
-                      <input type="text" class="form-control" v-model="formData.metodeKomunikasi" placeholder="Metode" />
+                      <input type="text" class="form-control" v-model="formData.metodeKomunikasi"
+                        placeholder="Metode" />
                     </div>
                   </div>
                 </div>
@@ -1018,11 +1041,13 @@
                   <div class="row mb-3">
                     <div class="col-md-6">
                       <label class="form-label">Disurvei oleh</label>
-                      <input type="text" class="form-control" v-model="formData.surveyedBy" placeholder="Nama enumerator" />
+                      <input type="text" class="form-control" v-model="formData.surveyedBy"
+                        placeholder="Nama enumerator" />
                     </div>
                     <div class="col-md-6">
                       <label class="form-label">Catatan</label>
-                      <textarea class="form-control" v-model="formData.notes" rows="2" placeholder="Catatan tambahan"></textarea>
+                      <textarea class="form-control" v-model="formData.notes" rows="2"
+                        placeholder="Catatan tambahan"></textarea>
                     </div>
                   </div>
                 </div>
@@ -1043,11 +1068,13 @@
     </div>
 
     <!-- Detail Modal -->
-    <div class="modal fade" id="detailModal" tabindex="-1" aria-labelledby="detailModalLabel" aria-hidden="true" ref="detailModalRef">
+    <div class="modal fade" id="detailModal" tabindex="-1" aria-labelledby="detailModalLabel" aria-hidden="true"
+      ref="detailModalRef">
       <div class="modal-dialog modal-xl modal-dialog-scrollable">
         <div class="modal-content">
           <div class="modal-header bg-primary text-white">
-            <h5 class="modal-title" id="detailModalLabel">Detail Sensus: {{ selectedAsset?.id_rumah_tangga || '-' }}</h5>
+            <h5 class="modal-title" id="detailModalLabel">Detail Sensus: {{ selectedAsset?.id_rumah_tangga || '-' }}
+            </h5>
             <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
           </div>
           <div class="modal-body" v-if="selectedAsset">
@@ -1334,6 +1361,8 @@ interface Asset {
   kode_foto_survei?: string
   id_unik?: string
   koordinat?: string
+  latitude?: string
+  longitude?: string
   // B. Informasi Kepala Keluarga (7-20)
   nama_depan?: string
   nama_tengah?: string
@@ -1376,6 +1405,9 @@ interface Asset {
   disabilitas_lainnya?: string
   kondisi_kesehatan_kronis?: string
   kesehatan_lainnya?: string
+  // C. Profil Dampak
+  identifikasi_dampak?: string
+  identifikasi_dampak_lainnya?: string
   // D. Pekerjaan (41-56)
   bekerja_12_bulan?: string
   pekerjaan_utama?: string
@@ -1455,6 +1487,8 @@ interface FormData {
   kodeFotoSurvei?: string
   idUnik?: string
   koordinat?: string
+  latitude?: string
+  longitude?: string
   // B. Informasi Kepala Keluarga (7-20)
   namaDepan?: string
   namaTengah?: string
@@ -1497,6 +1531,9 @@ interface FormData {
   disabilitasLainnya?: string
   kondisiKesehatanKronis?: string
   kesehatanLainnya?: string
+  // C. Profil Dampak
+  identifikasiDampak?: string
+  identifikasiDampakLainnya?: string
   // D. Pekerjaan (41-56)
   bekerja12Bulan?: string
   pekerjaanUtama?: string
@@ -1589,6 +1626,8 @@ const formData = ref<FormData>({
   kodeFotoSurvei: '',
   idUnik: '',
   koordinat: '',
+  latitude: '',
+  longitude: '',
   // B. Informasi Kepala Keluarga (7-20)
   namaDepan: '',
   namaTengah: '',
@@ -1631,6 +1670,9 @@ const formData = ref<FormData>({
   disabilitasLainnya: '',
   kondisiKesehatanKronis: '',
   kesehatanLainnya: '',
+  // C. Profil Dampak
+  identifikasiDampak: '',
+  identifikasiDampakLainnya: '',
   // D. Pekerjaan (41-56)
   bekerja12Bulan: '',
   pekerjaanUtama: '',
@@ -1968,11 +2010,11 @@ const initAssetMap = () => {
 
   Object.entries(villagePolygons).forEach(([villageName, coords]) => {
     if (selectedVillage.value === 'all' || selectedVillage.value === villageName) {
-      L.polygon(coords, { 
-        color: '#dc3545', 
-        weight: 2, 
-        fillColor: '#dc3545', 
-        fillOpacity: 0.1 
+      L.polygon(coords, {
+        color: '#dc3545',
+        weight: 2,
+        fillColor: '#dc3545',
+        fillOpacity: 0.1
       }).addTo(assetMap!).bindPopup(`<strong>${villageName}</strong>`)
     }
   })
@@ -2004,6 +2046,8 @@ const addAsset = () => {
     kodeFotoSurvei: '',
     idUnik: '',
     koordinat: '',
+    latitude: '',
+    longitude: '',
     // B. Informasi Kepala Keluarga (7-20)
     namaDepan: '',
     namaTengah: '',
@@ -2046,6 +2090,9 @@ const addAsset = () => {
     disabilitasLainnya: '',
     kondisiKesehatanKronis: '',
     kesehatanLainnya: '',
+    // C. Profil Dampak
+    identifikasiDampak: '',
+    identifikasiDampakLainnya: '',
     // D. Pekerjaan (41-56)
     bekerja12Bulan: '',
     pekerjaanUtama: '',
@@ -2129,6 +2176,8 @@ const editAsset = (asset: Asset) => {
     kodeFotoSurvei: asset.kode_foto_survei || '',
     idUnik: asset.id_unik || '',
     koordinat: asset.koordinat || '',
+    latitude: asset.koordinat ? asset.koordinat.split(',')[0]?.trim() || '' : '',
+    longitude: asset.koordinat ? asset.koordinat.split(',')[1]?.trim() || '' : '',
     // B. Informasi Kepala Keluarga
     namaDepan: asset.nama_depan || '',
     namaTengah: asset.nama_tengah || '',
@@ -2246,7 +2295,9 @@ const saveAsset = async () => {
       tanggal: formData.value.tanggal || undefined,
       kode_foto_survei: formData.value.kodeFotoSurvei || undefined,
       id_unik: formData.value.idUnik || undefined,
-      koordinat: formData.value.koordinat || undefined,
+      koordinat: (formData.value.latitude && formData.value.longitude)
+        ? `${formData.value.latitude}, ${formData.value.longitude}`
+        : formData.value.koordinat || undefined,
       // B. Informasi Kepala Keluarga (7-20)
       nama_depan: formData.value.namaDepan || undefined,
       nama_tengah: formData.value.namaTengah || undefined,
@@ -2464,8 +2515,8 @@ const closeDetail = () => {
   selectedAsset.value = null
 }
 
-// Export closeDetail for Bootstrap modal
-;(window as any).closeAssetDetail = closeDetail
+  // Export closeDetail for Bootstrap modal
+  ; (window as any).closeAssetDetail = closeDetail
 
 const formatRupiah = (value: number): string => {
   return new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 }).format(value)
