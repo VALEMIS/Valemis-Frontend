@@ -562,8 +562,24 @@
                       </div>
                       <div class="col-md-4 mb-3">
                         <label class="form-label">Alasan Penghentian</label>
-                        <input type="text" class="form-control" v-model="formData.alasanPenghentian"
-                          placeholder="Alasan" />
+                        <select class="form-select" v-model="formData.alasanPenghentian">
+                          <option value="">Pilih</option>
+                          <option value="Tidak ada alasan">Tidak Ada Alasan</option>
+                          <option value="Usia">Usia</option>
+                          <option value="Kurangnya sumber daya ekonomi">Kurangnya sumber daya ekonomi</option>
+                          <option value="Gagal">Gagal</option>
+                          <option value="Bekerja">Bekerja</option>
+                          <option value="Takut pada guru">Takut pada guru</option>
+                          <option value="Penyakit atau cacat">Penyakit atau cacat</option>
+                          <option value="Pekerjaan rumah tangga">Pekerjaan rumah tangga</option>
+                          <option value="Keluarga tidak mengizinkan belajar">Keluarga tidak mengizinkan belajar</option>
+                          <option value="Tidak ada lembaga pendidikan">Tidak ada lembaga pendidikan</option>
+                          <option value="Tidak tertarik untuk belajar">Tidak tertarik untuk belajar</option>
+                          <option value="Kehamilan">Kehamilan</option>
+                          <option value="Jarak">Jarak</option>
+                          <option value="Pernikahan">Pernikahan</option>
+                          <option value="Lainnya">Lainnya</option>
+                        </select>
                       </div>
                     </div>
 
@@ -575,8 +591,16 @@
                       </div>
                       <div class="col-md-6 mb-3">
                         <label class="form-label">Disabilitas</label>
-                        <input type="text" class="form-control" v-model="formData.disabilitas"
-                          placeholder="Disabilitas" />
+                        <select class="form-select" v-model="formData.disabilitas">
+                          <option value="">Pilih</option>
+                          <option value="1">Tidak</option>
+                          <option value="2">Tuna Netra</option>
+                          <option value="3">Mobilitas</option>
+                          <option value="4">Tuna Wicara</option>
+                          <option value="5">Disabilitas Mental</option>
+                          <option value="6">Tuna Rungu</option>
+                          <option value="7">Lainnya, tentukan</option>
+                        </select>
                       </div>
                     </div>
 
@@ -588,8 +612,22 @@
                       </div>
                       <div class="col-md-6 mb-3">
                         <label class="form-label">Kondisi Kesehatan Kronis</label>
-                        <textarea class="form-control" v-model="formData.kondisiKesehatanKronis" rows="2"
-                          placeholder="Kondisi kesehatan"></textarea>
+                        <select class="form-select" v-model="formData.kondisiKesehatanKronis">
+                          <option value="">Pilih</option>
+                          <option value="Diabetes">Diabetes</option>
+                          <option value="Kanker">Kanker</option>
+                          <option value="HIV-AIDS">HIV-AIDS</option>
+                          <option value="Anemia">Anemia</option>
+                          <option value="Penyakit pernapasan">Penyakit pernapasan</option>
+                          <option value="Arthritis - nyeri tulang">Arthritis - nyeri tulang</option>
+                          <option value="Diare">Diare</option>
+                          <option value="Gastrointestinal">Gastrointestinal</option>
+                          <option value="Asma">Asma</option>
+                          <option value="Tuberclosis">Tuberclosis</option>
+                          <option value="Tekanan Darah">Tekanan Darah</option>
+                          <option value="Tidak ada">Tidak ada</option>
+                          <option value="Lainnya, tentukan">Lainnya, tentukan</option>
+                        </select>
                       </div>
                     </div>
 
