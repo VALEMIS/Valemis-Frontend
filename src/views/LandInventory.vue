@@ -269,6 +269,18 @@
             </div>
           </div>
         </div>
+        <!-- DATA UPLOAD LAIN LAIN -->
+        <div class="row"> 
+          <div class="row mt-3">
+            <div class="col-md-6">
+              <raster-upload></raster-upload>
+            </div>
+            <div class="col-md-6">
+              <theme-map-upload></theme-map-upload>
+            </div>
+            
+          </div>
+        </div>
       </div>
     </div>
 
@@ -369,37 +381,37 @@
                   />
                 </div>
               </div>
-              <div id="map" style="height: 400px;width: 100%;">
-
-              </div>
-              <div class="mb-3">
+              <div id="maps"  ref="mapContainer" style="height: 400px;"></div>
+              <div class="mb-3 mt-3">
                 <label class="form-label"><strong><i class="bi bi-file-earmark-text"></i> Dokumen Lahan</strong></label>
+
                 <div class="input-group mb-2">
-                  <input 
+                  <!-- <input 
                     type="text" 
                     class="form-control" 
                     v-model="newDocument" 
                     placeholder="Nama file dokumen (contoh: SHM-001-2020.pdf)"
                     @keyup.enter="addDocument"
-                  />
-                  <button 
-                    type="button" 
+                  /> -->
+                  <input 
+                    type="file" 
                     class="btn btn-outline-primary" 
-                    @click="addDocument"
+                    multiple
+                    @change="addDocument"
                   >
-                    <i class="bi bi-plus-circle"></i> Tambah
-                  </button>
+                    <!-- <i class="bi bi-plus-circle"></i> Tambah -->
+                  </input>
                 </div>
-                <div v-if="formData.documents.length > 0" class="border rounded p-2">
+                <div v-if="newDocument.length > 0" class="border rounded p-2">
                   <small class="text-muted d-block mb-2">Daftar Dokumen:</small>
                   <div class="d-flex flex-wrap gap-1">
                     <span 
-                      v-for="(doc, idx) in formData.documents" 
+                      v-for="(doc, idx) in newDocument" 
                       :key="idx"
                       class="badge bg-secondary d-inline-flex align-items-center"
                     >
                       <i class="bi bi-file-earmark-text me-1"></i>
-                      {{ doc }}
+                      {{ doc.name }}
                       <button 
                         type="button" 
                         class="btn-close btn-close-white ms-2" 
@@ -440,7 +452,12 @@ import 'leaflet/dist/leaflet.css'
 import "@geoman-io/leaflet-geoman-free";
 import "@geoman-io/leaflet-geoman-free/dist/leaflet-geoman.css";
 import 'bootstrap/dist/js/bootstrap.bundle.min.js'
+import RasterUpload from '../components/LandInventoryComp/RasterUpload.vue';
+import ThemeMapUpload from '../components/LandInventoryComp/ThemeMapUpload.vue';
 import "../utils/drawMap.js"  
+import { useRoute } from 'vue-router'
+const route = useRoute()
+const projectId = route.params.project_id
 interface Land {
   id: number
   code: string
@@ -471,16 +488,18 @@ interface FormData {
 
 const selectedCategory = ref<string>('all')
 const selectedCertificate = ref<string>('all')
-const showMap = ref<boolean>(true)  // Default to show map first
+const showMap = ref<boolean>(false)  // Default to show map first
 const landMapContainer = ref<HTMLElement | null>(null)
+const mapContainer = ref<HTMLElement | null>(null)
 const landModalRef = ref<HTMLElement | null>(null)
-const newDocument = ref<string>('')
+const newDocument = ref<any[]>([])
 let landMap: L.Map | null = null
+let map: L.Map | null = null
 let landModalInstance: any = null
 let projects = ref<any[]>([])
 
 let mpwkt
-let map: L.Map | null = null
+
 const isEditMode = ref<boolean>(false)
 const formData = ref<FormData>({
   code: '',
@@ -497,7 +516,7 @@ const formData = ref<FormData>({
 
 const lands = ref<Land[]>([])
 const fetchProjects = async () => {
-  const res = await axios.get<any[]>(`http://127.0.0.1:8000/api/spatial/LandInventory/?format=json`)
+  const res = await axios.get<any[]>(`http://127.0.0.1:8000/api/spatial/LandInventory/?id_project=${projectId}`)
   projects.value = res.data
   console.log(res.data)
   lands.value = res.data.map(e => ({
@@ -579,6 +598,7 @@ onMounted(() => {
     
     // map.fitBounds(geojsonLayerProject.getBounds())
   // }
+  initMap()
   console.log('Land Inventory Mounted')
   console.log('Total Lands:', lands.value.length)
   console.log('Lands Data:', lands.value)
@@ -614,6 +634,19 @@ const initLandMap = () => {
     attribution: '© OpenStreetMap contributors',
     maxZoom: 19
   }).addTo(landMap)
+
+  const wmsLayer = L.tileLayer.wms(
+    "http://172.28.83.5:8080/geoserver/raster_valemis/wms",
+    {
+      layers: "	raster_valemis:14134sdfadsfad",
+      format: "image/png",
+      transparent: true,
+      version: "1.1.0"
+    }
+  );
+
+  wmsLayer.addTo(landMap);
+
   let geojsonLayerProject
   // if (lands.value.length>0) {
   lands.value.forEach((e)=>{
@@ -622,31 +655,10 @@ const initLandMap = () => {
       L.geoJSON(wellknown.parse(e.geom)).addTo(landMap)
     }
   })
-  // filteredLands.value.forEach(land => {
-  //   const color = getCategoryColor(land.category)
-    
-  //   const landIcon = L.divIcon({
-  //     className: 'custom-land-marker',
-  //     html: `<div style="background: ${color}; width: 20px; height: 20px; border-radius: 4px; border: 3px solid white; box-shadow: 0 2px 4px rgba(0,0,0,0.3);"></div>`,
-  //     iconSize: [20, 20],
-  //     iconAnchor: [10, 10]
-  //   })
 
-  //   const marker = L.marker([land.lat, land.lng], { icon: landIcon }).addTo(landMap!)
-    
-    // marker.bindPopup(`
-    //   <div style="min-width: 250px;">
-    //     <h6><strong>${land.locationName}</strong></h6>
-    //     <p class="mb-1"><small><strong>Kode:</strong> ${land.code}</small></p>
-    //     <p class="mb-1"><small><strong>Kategori:</strong> ${land.category}</small></p>
-    //     <p class="mb-1"><small><strong>Luas:</strong> ${land.area.toLocaleString()} Ha</small></p>
-    //     <p class="mb-1"><small><strong>Sertifikat:</strong> ${land.certificate} - ${land.certificateNo}</small></p>
-    //     <p class="mb-0"><small><strong>Tahun Akuisisi:</strong> ${land.acquisitionYear || '-'}</small></p>
-    //   </div>
-    // `)
-  }
+}
 function initMap() {
-  map = L.map("map").setView([-2, 118], 5)
+  map = L.map("maps").setView([-2.5650, 121.3450], 12)
 
   L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png")
     .addTo(map)
@@ -745,74 +757,42 @@ const saveLand = async () => {
         "kategori": formData.value.category,
         "status": formData.value.certificate,
         "no_sertif": formData.value.certificateNo,
+        "id_project":projectId,
         "id_persil": {
             "geom": wkt
-        }
+        },
     }
-    await axios.post('http://127.0.0.1:8000/api/spatial/LandInventory/', uploadData)
+    const res = await axios.post(
+    'http://127.0.0.1:8000/api/spatial/LandInventory/',
+      uploadData
+    )
+
+    const landId = res.data.id_lahan
     alert(`Lahan ${formData.value.code} berhasil ditambahkan!`)
-  // const lat = parseFloat(formData.value.lat)
-  // const lng = parseFloat(formData.value.lng)
-  
-  // if (isNaN(lat) || isNaN(lng)) {
-  //   alert('Koordinat tidak valid!')
-  //   return
-  // }
 
-  // const coordinates = `${lat}, ${lng}`
+  if (newDocument.value.length > 0) {
+    const formDataDoc = new FormData()
+    console.log(newDocument)
+    newDocument.value.forEach(async (file: File) => {
+      formDataDoc.append('file', file)
+      formDataDoc.append('nama_dokumen', file.name)
+      formDataDoc.append('id_lahan', landId)
+    
 
-  // if (isEditMode.value && formData.value.id) {
-  //   const index = lands.value.findIndex(l => l.id === formData.value.id)
-  //   if (index !== -1 && formData.value.id && lands.value[index]) {
-  //     const currentLand = lands.value[index]
-  //     lands.value[index] = {
-  //       id: formData.value.id,
-  //       code: currentLand.code,
-  //       locationName: formData.value.locationName,
-  //       category: formData.value.category,
-  //       area: formData.value.area,
-  //       certificate: formData.value.certificate,
-  //       certificateNo: formData.value.certificateNo,
-  //       coordinates,
-  //       lat,
-  //       lng,
-  //       acquisitionYear: formData.value.acquisitionYear,
-  //       documents: formData.value.documents
-  //     }
-  //     alert(`Lahan ${formData.value.code} berhasil diupdate!`)
-  //   }
-  // } else {
-  //   const wkt = (mpwkt as any).toWKT()
-  //   // const newId = Math.max(...lands.value.map(l => l.id)) + 1
-  //   // lands.value.push({
-  //   //   id: newId,
-  //   //   code: formData.value.code,
-  //   //   locationName: formData.value.locationName,
-  //   //   category: formData.value.category,
-  //   //   area: formData.value.area,
-  //   //   certificate: formData.value.certificate,
-  //   //   certificateNo: formData.value.certificateNo,
-  //   //   coordinates,
-  //   //   lat,
-  //   //   lng,
-  //   //   acquisitionYear: formData.value.acquisitionYear,
-  //   //   documents: formData.value.documents
-  //   // })
-  //   var uploadData = {
-  //       "kode_lahan": formData.value.code,
-  //       "nama_lokasi": formData.value.locationName,
-  //       "kategori": formData.value.category,
-  //       "status": formData.value.certificate,
-  //       "no_sertif": formData.value.certificateNo,
-  //       "id_persil": {
-  //           "geom": wkt
-  //       }
-  //   }
-  //   await axios.post('http://127.0.0.1:8000/api/spatial/LandInventory/', uploadData)
-  //   alert(`Lahan ${formData.value.code} berhasil ditambahkan!`)
-  // }
-
+    await axios.post(
+      'http://127.0.0.1:8000/api/spatial/LandInventoryDocument/',
+      formDataDoc,
+      {
+        headers: {
+          'Content-Type': 'multipart/form-data'
+        }
+      }
+    )
+    })
+  }
   closeLandModal()
+
+
   if (showMap.value) {
     initLandMap()
   }
@@ -831,12 +811,13 @@ const deleteLand = (land: Land) => {
   }
 }
 
-const addDocument = () => {
-  if (newDocument.value.trim()) {
-    formData.value.documents.push(newDocument.value.trim())
-    newDocument.value = ''
-  }
+function addDocument(event:any) {
+  const files:any = Array.from(event.target.files)
+  
+  newDocument.value.push(...files)
+  console.log(files,newDocument)
 }
+
 
 const removeDocument = (index: number) => {
   formData.value.documents.splice(index, 1)
@@ -848,6 +829,7 @@ const viewDocuments = (land: Land) => {
 }
 
 const openLandModal = () => {
+  
   if (landModalRef.value) {
     const Modal = (window as any).bootstrap?.Modal
     if (Modal) {
@@ -892,6 +874,7 @@ onMounted(() => {
   if (showMap.value) {
     nextTick(() => {
       initLandMap()
+      initMap()
     })
   }
 })

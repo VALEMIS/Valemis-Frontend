@@ -10,7 +10,7 @@ import AsetInventori from "../views/AsetInventori.vue";
 import TambahPembebasanLahan from "../views/TambahPembebasanLahan.vue";
 import DetailPembebasanLahan from "../views/DetailPembebasanLahan.vue";
 import TambahPemilikLahan from "../views/TambahPemilikLahan.vue";
-import LandAcquisitionProject from "../views/LandAcquisitionProject.vue";
+import Project from "../views/Project.vue";
 // 3. Land Inventory Module
 import LandInventory from "../views/LandInventory.vue";
 import PendataanGeospatialLahanBebas from "../views/PendataanGeospatialLahanBebas.vue";
@@ -57,32 +57,32 @@ const router = createRouter({
     {
       path: "/land-acquisition",
       name: "land-acquisition",
-      component: LandAcquisitionProject,
+      component: Project,
     },
-    {
-      path: "/land-acquisition-project",
-      name: "land-acquisition-project",
-      component: LandAcquisitionProject,
-    },
-    {
-      path: "/land-acquisition/tambah",
-      name: "tambah-land-acquisition",
-      component: TambahPembebasanLahan,
-    },
+    // {
+    //   path: "/land-acquisition-project",
+    //   name: "land-acquisition-project",
+    //   component: Project,
+    // },
+    // {
+    //   path: "/land-acquisition/tambah",
+    //   name: "tambah-land-acquisition",
+    //   component: TambahPembebasanLahan,
+    // },
     {
       path: "/land-acquisition/detail/:id",
       name: "detail-land-acquisition",
       component: DetailPembebasanLahan,
     },
-    {
-      path: "/land-acquisition/tambah-pemilik",
-      name: "tambah-pemilik-lahan",
-      component: TambahPemilikLahan,
-    },
+    // {
+    //   path: "/land-acquisition/tambah-pemilik",
+    //   name: "tambah-pemilik-lahan",
+    //   component: TambahPemilikLahan,
+    // },
 
     // ===== 3. LAND INVENTORY MODULE =====
     {
-      path: "/land-inventory",
+      path: "/land-inventory/:project_id",
       name: "land-inventory",
       component: LandInventory,
     },

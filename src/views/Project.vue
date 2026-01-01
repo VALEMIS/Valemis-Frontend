@@ -5,7 +5,7 @@
       <div class="container-fluid">
         <div class="row">
           <div class="col-sm-6">
-            <h3 class="mb-0">Land Acquisition</h3>
+            <h3 class="mb-0">Vale Projects</h3>
           </div>
           <div class="col-sm-6">
             <ol class="breadcrumb float-sm-end">
@@ -14,15 +14,26 @@
                   <i class="bi bi-house-fill"></i>
                 </router-link>
               </li>
-              <li class="breadcrumb-item active">Land Acquisition</li>
+              <li class="breadcrumb-item active">Project</li>
             </ol>
           </div>
         </div>
       </div>
     </div>
-
+    <div class="container-fluid">      
+      <div class="card">
+        <div class="card-header">
+          <h5>Peta Project Vale</h5>
+        </div>
+        <div class="card-body">
+          <div id="mapProject" style="height: 600px;"></div>
+        </div>
+      </div>
+    </div>
+    
+    
     <!-- Content -->
-    <div class="container-fluid">
+    <div class="container-fluid mt-3">
       <div class="card">
         <div class="card-header">
           <h5>Project List</h5>
@@ -60,12 +71,6 @@
                         <button class="btn btn-sm btn-warning" @click="router.push(`/land-acquisition/detail/${item.id_project}`)"  title="Open Project">
                             <i class="bi bi-arrow-right"></i>
                         </button>
-                        <!-- <button class="btn btn-sm btn-warning" @click="editParcel(parcel)" title="Edit">
-                            <i class="bi bi-pencil-square"></i>
-                        </button> -->
-                        <!-- <button class="btn btn-sm btn-info" @click="viewHistory(parcel)" title="Lihat History">
-                            <i class="bi bi-clock-history"></i>
-                        </button> -->
                     </div>
                 </td>
               </tr>
@@ -121,7 +126,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue'
+import { ref, onMounted,watch } from 'vue'
 import axios from 'axios'
 import { Modal } from 'bootstrap'
 import L from 'leaflet'
@@ -131,6 +136,7 @@ import "@geoman-io/leaflet-geoman-free/dist/leaflet-geoman.css";
 import 'bootstrap/dist/js/bootstrap.bundle.min.js'
 import "../utils/drawMap.js"
 import router from '../router/index.js'
+import wellknown from "wellknown"
 
 const projects = ref([])
 let mpwkt
@@ -138,15 +144,15 @@ const modalRef = ref(null)
 const uploadGeometry = null
 let modalInstance = null
 let map = null
+let projectMap = null
 
 const form = ref({
   nama_project: '',
   owner_project: '',
-  acquisitions:[]
 })
 
 const fetchProjects = async () => {
-  const res = await axios.get('http://127.0.0.1:8000/api/spatial/LandAcquisitionProject/?format=json')
+  const res = await axios.get('http://127.0.0.1:8000/api/spatial/Project/?format=json')
   projects.value = res.data
 }
 
@@ -172,20 +178,20 @@ const closeModal = () => {
 
 const submitProject = async () => {
   const wkt = mpwkt.toWKT()
-  form.value.id_persil = {geom:wkt}
-  await axios.post('http://127.0.0.1:8000/api/spatial/LandAcquisitionProject/?format=json', form.value)
+  form.value.geom = wkt
+  await axios.post('http://127.0.0.1:8000/api/spatial/Project/?format=json', form.value)
 
   // reset form
   form.value = {
     "nama_project": "",
     "owner_project": "",
-    "acquisitions": []
     }
     // console.log(form.value)
   closeModal()
   fetchProjects()
 }
 
+// const fetchMap
 
 function initMap() {
   map = L.map("map").setView([-2, 118], 5)
@@ -202,10 +208,80 @@ function initMap() {
   mpwkt = new LeafletMultiPolygonWKT(map)
 }
 
+function randomMapColor() {
+  const hue = Math.floor(Math.random() * 360)
+  const saturation = 70
+  const lightness = 50
+
+  return `hsl(${hue}, ${saturation}%, ${lightness}%)`
+}
+
+function initProjectMap(){
+  projectMap = L.map("mapProject").setView([-2, 118], 5)
+
+  L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png")
+    .addTo(projectMap)
+    let geojsonLayerProject
+  // if (lands.value.length>0) 
+  // console.log(projects.value.id_persil.geom)
+  // console.log(projects.value)
+  L.tileLayer.wms(
+    "http://172.28.83.5:8080/geoserver/vector_valemis/wms",
+    {
+      layers: "	vector_valemis:tbl_project",
+      format: "image/png",
+      transparent: true,
+      version: "1.1.0"
+    }
+  ).addTo(projectMap)
+  const features = []
+  // projects.value.forEach((e)=>{
+  //   // console.log(wellknown.parse(e.id_persil?.geom))
+  //   if (e.id_persil?.geom!=null){
+  //     const wkt = e.id_persil?.geom
+  //   if (!wkt) return
+
+  //   const geojson = wellknown.parse(wkt)
+
+  //   // 🔥 inject properties manual
+  //   geojson.properties = {
+  //     id_project: e.id_project,
+  //     nama_project: e.nama_project,
+  //     owner: e.owner_project
+  //   }
+
+  //   features.push(geojson)
+  //   L.geoJSON(features,{
+  //     style: {
+  //       color: '#ff7800',
+  //       weight: 2,
+  //       fillOpacity: 0.4
+  //     },
+  //     onEachFeature: (feature, layer) => {
+  //       if (!feature.properties) return
+
+  //       const props = feature.properties
+
+  //        let html = `
+  //           <b>${props.nama_project}</b><br/>
+  //           Owner: ${props.owner}<br/>
+  //           ID: ${props.id_project}
+  //         `
+
+  //         layer.bindPopup(html)
+  //         layer.setStyle({
+  //           color: randomMapColor(),
+  //         })
+  //     }
+  //   }).addTo(projectMap)
+  //   }
+  // })
+}
 
 
-onMounted(() => {
+onMounted(async () => {
   modalInstance = new Modal(modalRef.value)
-  fetchProjects()
+  await fetchProjects()
+  initProjectMap()
 })
 </script>

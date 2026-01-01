@@ -35,15 +35,15 @@
                   <tbody>
                     <tr>
                       <th width="40%">Project Id</th>
-                      <td>PRC-001</td>
+                      <td>{{ projects.id_project }}</td>
                     </tr>
                     <tr>
                       <th>Nama Project</th>
-                      <td>Budi Santoso</td>
+                      <td>{{ projects.nama_project }}</td>
                     </tr>
                     <tr>
                       <th>Owner Project</th>
-                      <td>Budi Santoso</td>
+                      <td>{{projects.owner_project}}</td>
                     </tr>
                     
                     <tr>
@@ -294,22 +294,19 @@ let acquisitionParcel = ref([])
 let acquisitionParcelCompute = ref([])
 let parcelModalRef = ref(null)
 let parcelModalInstance = null
+const acquisition = ref([])
 const projects = ref([])
 let uploadedGeojson = null
 let selectedGeometry = null
-const fetchProjects = async () => {
-  const res = await axios.get(`http://127.0.0.1:8000/api/spatial/LandAcquisitionProject/${projectId}?format=json`)
-  projects.value = res.data
-  
-  
-  // acquisitionParcel = computed(()=>{
-  //   acquisitionParcelCompute.value = projects.value.acquisitions
-  //   return acquisitionParcelCompute
-  // })
+const fetchAcquisition = async () => {
+  const res = await axios.get(`http://127.0.0.1:8000/api/spatial/LandAcquisition/?id_project=${projectId}`)
+  acquisition.value = res.data
+  const resProject = await axios.get(`http://127.0.0.1:8000/api/spatial/Project/${projectId}`)
+  projects.value = resProject.data
 
-  acquisitionParcel.value = res.data.acquisitions || []// acquisitionParcel = res.data.acquisitions
-  console.log(acquisitionParcel)
+  acquisitionParcel.value = res.data || []// acquisitionParcel = res.data.acquisitions
 }
+
 
 const formData = {
       code: "",
@@ -446,31 +443,10 @@ async function saveParcel(){
   }
   await axios.post('http://127.0.0.1:8000/api/spatial/LandAcquisition/', uploadData)
 }
-// onMounted(()=>{
-//   if (window.$) {
-//     window.$('#pemilikTable').DataTable({
-//       language: {
-//         search: "Cari:",
-//         lengthMenu: "Tampilkan _MENU_ data per halaman",
-//         info: "Menampilkan _START_ sampai _END_ dari _TOTAL_ data",
-//         infoEmpty: "Menampilkan 0 sampai 0 dari 0 data",
-//         infoFiltered: "(difilter dari _MAX_ total data)",
-//         paginate: {
-//           first: "Pertama",
-//           last: "Terakhir",
-//           next: "Selanjutnya",
-//           previous: "Sebelumnya"
-//         },
-//         zeroRecords: "Tidak ada data yang cocok",
-//         emptyTable: "Tidak ada data tersedia"
-//       }
-//     })
-//   }
-// })
 onMounted(async () => {
   // Initialize DataTable
   
-  await fetchProjects().then(()=>{
+  await fetchAcquisition().then(()=>{
     nextTick(()=>{
       window.$('#pemilikTable').DataTable({
       language: {
@@ -490,16 +466,15 @@ onMounted(async () => {
       }
     })
     })
-  })   // ⬅️ INI KUNCINYA
-  // acquisitionParcel.value = projects.value.acquisitions
+  })
 
-  // console.log(acquisitionParcel)
-  // Initialize map
   const map = L.map('map').setView([-2.5489, 118.0149], 13)
 
   L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
     attribution: '&copy; OpenStreetMap contributors'
   }).addTo(map)
+
+  console.log(projects)
   if (projects.value.id_persil.geom) {
     const geojson = wellknown.parse(projects.value.id_persil.geom)
     const geojsonLayerProject = new L.GeoJSON(geojson).addTo(map)
