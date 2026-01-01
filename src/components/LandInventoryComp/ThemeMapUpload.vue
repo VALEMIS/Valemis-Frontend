@@ -52,16 +52,6 @@
 
           <div class="modal-body">
             <div class="mb-2">
-              <label>Project</label>
-              <select v-model="form.id_project" class="form-select">
-                <option :value="null">-- Pilih Project --</option>
-                <option v-for="p in projects" :key="p.id" :value="p.id">
-                  {{ p.name }}
-                </option>
-              </select>
-            </div>
-
-            <div class="mb-2">
               <label>Judul Peta</label>
               <input v-model="form.nama" class="form-control" required />
             </div>
@@ -90,13 +80,16 @@
   
 </template>
 <script setup>
-import { ref, onMounted,watch } from 'vue'
+import { ref, onMounted,watch,defineProps } from 'vue'
 import axios from 'axios'
 import { Modal } from 'bootstrap'
 import L from 'leaflet'
 import 'leaflet/dist/leaflet.css'
 import shp from 'shpjs'
+const props = defineProps(['id_project'])
+
 const API = 'http://127.0.0.1:8000/api/spatial/LandInventoryThemeMap'
+const API_BYPROJECT = `http://127.0.0.1:8000/api/spatial/LandInventoryThemeMap/?id_project=${props.id_project}`
 const PROJECT_API = 'http://127.0.0.1:8000/api/spatial/Project'
 
 const rasters = ref([])
@@ -110,7 +103,7 @@ let modal
 
 const form = ref({
   id_theme_map:null,
-  id_project: null,
+  id_project: props.id_project,
   nama_map: '',
   shp_path: null
 })
@@ -122,7 +115,7 @@ onMounted(async () => {
 })
 
 async function fetchData() {
-  const res = await axios.get(API)
+  const res = await axios.get(API_BYPROJECT)
   rasters.value = res.data
 }
 
@@ -179,8 +172,8 @@ async function onFile(e) {
 
 async function submit() {
   const fd = new FormData()
-  fd.append('id_project', form.value.id_project ?? '')
-  fd.append('nama_peta', form.value.nama_peta)
+  fd.append('id_project', props.id_project ?? '')
+  fd.append('nama_map', form.value.nama_peta)
 
   if (form.value.shp_path) {
     fd.append('shp_path', form.value.shp_path)
@@ -205,7 +198,7 @@ async function remove(id) {
 function reset() {
   form.value = {
     id_theme_map:null,
-    id_project: null,
+    id_project: props.id_project,
     nama_map: '',
     shp_path: null
   }

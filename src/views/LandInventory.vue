@@ -180,7 +180,7 @@
                       <td class="text-center">{{ land.acquisitionYear || '-' }}</td>
                       <td>
                         <button 
-                          v-if="land.documents.length > 0" 
+                          v-if="land.documents.length >= 0" 
                           class="btn btn-sm btn-outline-secondary"
                           @click="viewDocuments(land)"
                           title="Lihat Dokumen"
@@ -273,10 +273,10 @@
         <div class="row"> 
           <div class="row mt-3">
             <div class="col-md-6">
-              <raster-upload></raster-upload>
+              <raster-upload :id_project="projectId" />
             </div>
             <div class="col-md-6">
-              <theme-map-upload></theme-map-upload>
+              <theme-map-upload :id_project="projectId" />
             </div>
             
           </div>
@@ -437,6 +437,14 @@
         </div>
       </div>
     </div>
+    <DocumentModal
+      :documents="selectedDocuments"
+      :landId="selectedLandId"
+      :show="showDocModal"
+      @close="showDocModal = false"
+      @refresh="refreshFetch()"
+    />
+
   </div>
 </template>
 
@@ -454,10 +462,11 @@ import "@geoman-io/leaflet-geoman-free/dist/leaflet-geoman.css";
 import 'bootstrap/dist/js/bootstrap.bundle.min.js'
 import RasterUpload from '../components/LandInventoryComp/RasterUpload.vue';
 import ThemeMapUpload from '../components/LandInventoryComp/ThemeMapUpload.vue';
+import DocumentModal from '../components/LandInventoryComp/DocumentModal.vue';
 import "../utils/drawMap.js"  
 import { useRoute } from 'vue-router'
 const route = useRoute()
-const projectId = route.params.project_id
+const projectId = route.params.id_project
 interface Land {
   id: number
   code: string
@@ -536,7 +545,9 @@ const fetchProjects = async () => {
 // console.log(lands.value)
   
 }
-
+async function refreshFetch(){
+  await fetchProjects()
+}
 const filteredLands = computed(() => {
   let result = lands.value
   
@@ -630,7 +641,7 @@ const initLandMap = () => {
     drawCircleMarker: false,
     rotateMode: false,
   }); 
-  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+  L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
     attribution: '© OpenStreetMap contributors',
     maxZoom: 19
   }).addTo(landMap)
@@ -638,7 +649,7 @@ const initLandMap = () => {
   const wmsLayer = L.tileLayer.wms(
     "http://172.28.83.5:8080/geoserver/raster_valemis/wms",
     {
-      layers: "	raster_valemis:14134sdfadsfad",
+      layers: "raster_valemis:fotoudara_vale",
       format: "image/png",
       transparent: true,
       version: "1.1.0"
@@ -646,6 +657,60 @@ const initLandMap = () => {
   );
 
   wmsLayer.addTo(landMap);
+
+  const wmsLayerIupk = L.tileLayer.wms(
+    "http://172.28.83.5:8080/geoserver/vector_valemis/wms",
+    {
+      layers: "vector_valemis:IUPK Vale",
+      format: "image/png",
+      transparent: true,
+      version: "1.1.0",
+      styles:"sld_iupk",
+    }
+  );
+
+  wmsLayerIupk.addTo(landMap);
+
+  const wmsLayerProject = L.tileLayer.wms(
+    "http://172.28.83.5:8080/geoserver/vector_valemis/wms",
+    {
+      layers: "vector_valemis:tbl_project",
+      format: "image/png",
+      transparent: true,
+      version: "1.1.0",
+      styles:"sld_project",
+    }
+  );
+
+  wmsLayerProject.addTo(landMap);
+
+  const wmsLayerPersil = L.tileLayer.wms(
+    "http://172.28.83.5:8080/geoserver/vector_valemis/wms",
+    {
+      layers: "vector_valemis:PERSIL",
+      format: "image/png",
+      transparent: true,
+      version: "1.1.0",
+      styles:"sld_persil",
+    }
+  );
+
+  wmsLayerPersil.addTo(landMap);
+
+  const wmsLayerTanaman = L.tileLayer.wms(
+    "http://172.28.83.5:8080/geoserver/vector_valemis/wms",
+    {
+      layers: "vector_valemis:TITIK SURVEY TANAMAN",
+      format: "image/png",
+      transparent: true,
+      version: "1.1.0",
+      styles:"sld_tanaman",
+    }
+  );
+
+  wmsLayerTanaman.addTo(landMap);
+
+  
 
   let geojsonLayerProject
   // if (lands.value.length>0) {
@@ -790,6 +855,7 @@ const saveLand = async () => {
     )
     })
   }
+  await fetchProjects()
   closeLandModal()
 
 
@@ -811,21 +877,15 @@ const deleteLand = (land: Land) => {
   }
 }
 
-function addDocument(event:any) {
-  const files:any = Array.from(event.target.files)
-  
-  newDocument.value.push(...files)
-  console.log(files,newDocument)
-}
-
-
-const removeDocument = (index: number) => {
-  formData.value.documents.splice(index, 1)
-}
+const selectedDocuments = ref([])
+const selectedLandId = ref<number | null>(null)
+const showDocModal = ref(false)
 
 const viewDocuments = (land: Land) => {
-  const docList = land.documents.map((doc, idx) => `${idx + 1}. ${doc}`).join('\n')
-  alert(`Dokumen Lahan: ${land.code}\n\n${docList}`)
+  console.log(selectedDocuments.value,selectedLandId.value,showDocModal.value)
+  selectedDocuments.value = land.documents
+  selectedLandId.value = land.id
+  showDocModal.value = true
 }
 
 const openLandModal = () => {

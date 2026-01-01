@@ -68,7 +68,7 @@
                 <td>{{ item.tanggal_dibuat }}</td>
                 <td>
                     <div class="btn-group" role="group">
-                        <button class="btn btn-sm btn-warning" @click="router.push(`/land-acquisition/detail/${item.id_project}`)"  title="Open Project">
+                        <button class="btn btn-sm btn-warning" @click="router.push(`/project/${item.id_project}`)"  title="Open Project">
                             <i class="bi bi-arrow-right"></i>
                         </button>
                     </div>

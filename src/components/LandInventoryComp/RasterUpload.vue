@@ -60,7 +60,7 @@
           </div>
 
           <div class="modal-body">
-            <div class="mb-2">
+            <!-- <div class="mb-2">
               <label>Project</label>
               <select v-model="form.id_project" class="form-select">
                 <option :value="null">-- Pilih Project --</option>
@@ -68,7 +68,7 @@
                   {{ p.nama_project }} (id : {{ p.id_project }})
                 </option>
               </select>
-            </div>
+            </div> -->
 
             <div class="mb-2">
               <label>Store Name</label>
@@ -101,12 +101,16 @@
   </div>
 </template>
 <script setup>
-import { ref, onMounted } from 'vue'
+import { ref, onMounted,defineProps } from 'vue'
 import axios from 'axios'
 import { Modal } from 'bootstrap'
 
-const API = 'http://127.0.0.1:8000/api/spatial/LandInventoryRaster'
+const props = defineProps(['id_project'])
+
+const API = `http://127.0.0.1:8000/api/spatial/LandInventoryRaster`
+const API_BYPROJECT = `http://127.0.0.1:8000/api/spatial/LandInventoryRaster/?id_project=${props.id_project}`
 const PROJECT_API = 'http://127.0.0.1:8000/api/spatial/Project'
+
 
 const rasters = ref([])
 const projects = ref([])
@@ -116,7 +120,7 @@ let modal
 
 const form = ref({
   id_raster: null,
-  id_project: null,
+  id_project: props.id_project,
   store_name: '',
   nama: '',
   raster_path: null
@@ -129,7 +133,7 @@ onMounted(async () => {
 })
 
 async function fetchData() {
-  const res = await axios.get(API)
+  const res = await axios.get(API_BYPROJECT)
   rasters.value = res.data
 }
 
@@ -166,7 +170,7 @@ function onFile(e) {
 
 async function submit() {
   const fd = new FormData()
-  fd.append('id_project', form.value.id_project ?? '')
+  fd.append('id_project', props.id_project ?? '')
   fd.append('store_name', form.value.store_name)
   fd.append('nama', form.value.nama)
 
@@ -193,7 +197,7 @@ async function remove(id) {
 function reset() {
   form.value = {
     id_raster: null,
-    id_project: null,
+    id_project: props.id_project,
     store_name: '',
     nama: '',
     raster_path: null

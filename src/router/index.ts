@@ -14,7 +14,7 @@ import Project from "../views/Project.vue";
 // 3. Land Inventory Module
 import LandInventory from "../views/LandInventory.vue";
 import PendataanGeospatialLahanBebas from "../views/PendataanGeospatialLahanBebas.vue";
-
+import DetailProject from "../views/DetailProject.vue";
 // 4. Land Compliance Module
 import LandCompliance from "../views/LandCompliance.vue";
 import PengecekanIzinLahan from "../views/PengecekanIzinLahan.vue";
@@ -55,41 +55,24 @@ const router = createRouter({
 
     // ===== 2. LAND ACQUISITION/COMPENSATION MODULE =====
     {
-      path: "/land-acquisition",
-      name: "land-acquisition",
+      path: "/project",
+      name: "project",
       component: Project,
     },
-    // {
-    //   path: "/land-acquisition-project",
-    //   name: "land-acquisition-project",
-    //   component: Project,
-    // },
-    // {
-    //   path: "/land-acquisition/tambah",
-    //   name: "tambah-land-acquisition",
-    //   component: TambahPembebasanLahan,
-    // },
     {
-      path: "/land-acquisition/detail/:id",
+      path: "/project/:id_project",
+      name: "project_detail",
+      component: DetailProject,
+    },
+    {
+      path: "/project/:id_project/land-acquisition",
       name: "detail-land-acquisition",
       component: DetailPembebasanLahan,
     },
-    // {
-    //   path: "/land-acquisition/tambah-pemilik",
-    //   name: "tambah-pemilik-lahan",
-    //   component: TambahPemilikLahan,
-    // },
-
-    // ===== 3. LAND INVENTORY MODULE =====
     {
-      path: "/land-inventory/:project_id",
+      path: "/project/:id_project/land-inventory",
       name: "land-inventory",
       component: LandInventory,
-    },
-    {
-      path: "/land-inventory/geospatial",
-      name: "land-inventory-geospatial",
-      component: PendataanGeospatialLahanBebas,
     },
 
     // ===== 4. LAND COMPLIANCE MODULE =====

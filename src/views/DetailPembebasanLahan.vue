@@ -4,7 +4,7 @@
       <div class="container-fluid">
         <div class="row">
           <div class="col-sm-6">
-            <h3 class="mb-0">Detail Project</h3>
+            <h3 class="mb-0">Detail Land Acquisition</h3>
           </div>
           <div class="col-sm-6">
             <ol class="breadcrumb float-sm-end">
@@ -28,7 +28,7 @@
               </router-link>
             </div>
           </div>
-          <div class="card-body">
+          <!-- <div class="card-body">
             <div class="row">
               <div class="col-md-6">
                 <table class="table table-bordered">
@@ -64,7 +64,10 @@
                 <p>Proses pembebasan lahan sedang dalam tahap negosiasi dengan pemilik lahan.</p>
               </div>
             </div>
-          </div>
+          </div> -->
+          <div class="col-md-12">
+                <div id="map" style="height: 600px;"></div>
+              </div>
         </div>
 
         <div class="card">
@@ -117,7 +120,7 @@
                       type="number" 
                       class="form-control form-control-sm" 
                       v-model="parcel.jumlah_bebas"
-                      @change="updateJumlahBebas(parcel)"
+                      @change="updatejumlah_bebas(parcel)"
                       min="0"
                       :max="parcel.luas"
                       style="width: 100px;"
@@ -144,9 +147,9 @@
                       <button class="btn btn-sm btn-warning" @click="editParcelModal(parcel)" title="Edit">
                         <i class="bi bi-pencil-square"></i>
                       </button>
-                      <!-- <button class="btn btn-sm btn-info" @click="viewHistory(parcel)" title="Lihat History">
-                        <i class="bi bi-clock-history"></i>
-                      </button> -->
+                      <button class="btn btn-sm btn-danger" @click="deleteParcel(parcel.id_parcel)" title="Hapus parcel">
+                        <i class="bi bi-cross"></i>
+                      </button>
                     </div>
                   </td>
                 </tr>
@@ -164,7 +167,7 @@
             <h5 class="modal-title" id="parcelModalLabel">
               {{ isEditMode ? 'Edit Parcel' : 'Tambah Parcel Baru' }}
             </h5>
-            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" ></button>
           </div>
           <div class="modal-body">
             <form @submit.prevent="saveParcel">
@@ -174,7 +177,7 @@
                   <input 
                     type="text" 
                     class="form-control" 
-                    v-model="formData.code" 
+                    v-model="formData.kode_parcel" 
                     placeholder="Contoh: PCL-ALP-001"
                     :disabled="isEditMode"
                     required 
@@ -188,7 +191,7 @@
                   <input 
                     type="text" 
                     class="form-control" 
-                    v-model="formData.ownerName" 
+                    v-model="formData.nama_pemilik" 
                     placeholder="Nama lengkap pemilik lahan"
                     required 
                   />
@@ -198,7 +201,7 @@
                   <input 
                     type="text" 
                     class="form-control" 
-                    v-model="formData.village" 
+                    v-model="formData.desa" 
                     placeholder="Desa XXXXX"
                     required 
                   />
@@ -211,7 +214,7 @@
                   <input 
                     type="number" 
                     class="form-control" 
-                    v-model.number="formData.area" 
+                    v-model.number="formData.luas" 
                     placeholder="Contoh: 500"
                     min="1"
                     required 
@@ -234,10 +237,10 @@
                   <input 
                     type="number" 
                     class="form-control" 
-                    v-model.number="formData.jumlahBebas" 
+                    v-model.number="formData.jumlah_bebas" 
                     placeholder="Luas yang sudah dibebaskan"
                     min="0"
-                    :max="formData.area"
+                    :max="formData.luas"
                   />
                 </div>
                 <div class="col-md-6 mb-3">
@@ -245,7 +248,7 @@
                   <input 
                     type="number" 
                     class="form-control" 
-                    v-model.number="formData.biayaPembebasan" 
+                    v-model.number="formData.biaya_pembebasan" 
                     placeholder="Total biaya pembebasan"
                     min="0"
                   />
@@ -272,7 +275,7 @@
 </template>
 
 <script setup lang="js">
-import { ref, onMounted, computed, nextTick } from 'vue'
+import { ref, onMounted, computed, nextTick, onBeforeUnmount } from 'vue'
 import axios from 'axios'
 import { Modal } from 'bootstrap'
 import L from 'leaflet'
@@ -285,11 +288,12 @@ import router from '../router/index.js'
 import wellknown from "wellknown"
 import { useRoute } from 'vue-router'
 const route = useRoute()
-const isEditMode = false
-const projectId = route.params.id
+const projectId = route.params.id_project
 const uploadGeometry = null
+
 let mpwkt
 let map = null
+let isEditMode = false
 let acquisitionParcel = ref([])
 let acquisitionParcelCompute = ref([])
 let parcelModalRef = ref(null)
@@ -301,26 +305,25 @@ let selectedGeometry = null
 const fetchAcquisition = async () => {
   const res = await axios.get(`http://127.0.0.1:8000/api/spatial/LandAcquisition/?id_project=${projectId}`)
   acquisition.value = res.data
-  const resProject = await axios.get(`http://127.0.0.1:8000/api/spatial/Project/${projectId}`)
-  projects.value = resProject.data
-
+  // const resProject = await axios.get(`http://127.0.0.1:8000/api/spatial/Project/${projectId}`)
+  // projects.value = resProject.data
   acquisitionParcel.value = res.data || []// acquisitionParcel = res.data.acquisitions
 }
 
 
-const formData = {
-      code: "",
-      ownerName: "",
-      village: "",
-      area: null,
+const formData = ref({
+      kode_parcel: "",
+      nama_pemilik: "",
+      desa: "",
+      luas: 0,
       status: "",
-      jumlahBebas: null,
-      biayaPembebasan: null,
-      tanggalNegosiasi: null,
-    }
+      jumlah_bebas: 0,
+      biaya_pembebasan: 0,
+    })
 let  geojsonGeometry=  null
 
 const openParcelModal = () => {
+  isEditMode = false
   if (!parcelModalRef.value) return
 
   const Modal = window.bootstrap?.Modal
@@ -344,22 +347,24 @@ const openParcelModal = () => {
 }
 
 const editParcelModal = (parcel) => {
+  isEditMode = true
   if (!parcelModalRef.value) return
 
   const Modal = window.bootstrap?.Modal
+  
   if (!Modal) return
   formData.value = {
-    id: parcel.id_parcel,
-    code: parcel.kode_parcel,
+    id_parcel: parcel.id_parcel,
+    kode_parcel: parcel.kode_parcel,
     project: parcel.nama_project,
-    ownerName: parcel.nama_pemilik,
-    village: parcel.desa,
-    area: parcel.luas,
+    nama_pemilik: parcel.nama_pemilik,
+    desa: parcel.desa,
+    luas: parcel.luas,
     status: parcel.status,
-    jumlahBebas: parcel.jumlah_bebas,
-    biayaPembebasan: typeof parcel.biaya_pembebasan === 'number' ? parcel.biaya_pembebasan : 0
+    jumlah_bebas: parcel.jumlah_bebas,
+    biaya_pembebasan: typeof parcel.biaya_pembebasan === 'number' ? parcel.biaya_pembebasan : 0
   }
-  console.log(formData.value  )
+  
   parcelModalInstance = new Modal(parcelModalRef.value)
 
   parcelModalRef.value.addEventListener(
@@ -377,6 +382,35 @@ const editParcelModal = (parcel) => {
   parcelModalInstance.show()
 }
 
+onMounted(() => {
+  if (!parcelModalRef.value) return
+
+  parcelModalInstance = new Modal(parcelModalRef.value)
+
+  parcelModalRef.value.addEventListener('hidden.bs.modal', handleHidden)
+})
+
+onBeforeUnmount(() => {
+  parcelModalRef.value?.removeEventListener('hidden.bs.modal', handleHidden)
+})
+
+const handleHidden = () => {
+  closeModal()
+}
+
+const closeModal = () => {
+  formData.value = {
+    kode_parcel: "",
+    nama_pemilik: "",
+    desa: "",
+    luas: 0,
+    status: "",
+    jumlah_bebas: 0,
+    biaya_pembebasan: 0,
+  }
+  isEditMode = !isEditMode
+}
+
 const getStatusClass = (status) => {
   switch (status) {
     case 'Bebas': return 'bg-success'
@@ -386,17 +420,19 @@ const getStatusClass = (status) => {
   }
   
 }
-const updateJumlahBebas = (parcel) => {
-  if (parcel.jumlahBebas > parcel.area) {
-    parcel.jumlahBebas = parcel.area
+
+
+const updatejumlah_bebas = (parcel) => {
+  if (parcel.jumlah_bebas > parcel.luas) {
+    parcel.jumlah_bebas = parcel.luas
     alert('Jumlah bebas tidak boleh melebihi luas area')
   }
 }
 const formatBiaya = (parcel) => {
   // Convert string to number if needed
-  if (typeof parcel.biayaPembebasan === 'string') {
-    const cleaned = parcel.biayaPembebasan.replace(/[^0-9]/g, '')
-    parcel.biayaPembebasan = cleaned ? parseInt(cleaned) : 0
+  if (typeof parcel.biaya_pembebasan === 'string') {
+    const cleaned = parcel.biaya_pembebasan.replace(/[^0-9]/g, '')
+    parcel.biaya_pembebasan = cleaned ? parseInt(cleaned) : 0
   }
 }
 const formatRupiah = (value) => {
@@ -410,42 +446,79 @@ const formatRupiah = (value) => {
 }
 
 
-const markAsBebas = (parcel) => {
-  if (parcel.jumlahBebas === 0 || parcel.biayaPembebasan === 0) {
+const markAsBebas = async (parcelId) => {
+  // console.log(parcel)
+  const parcel = acquisitionParcel.value.find(
+    p => p.id_parcel === parcelId
+  )
+  if (!parcel) return
+
+  
+  if (parcel.jumlah_bebas === 0 || parcel.biaya_pembebasan === 0) {
     alert('Mohon isi Jumlah Bebas dan Biaya Pembebasan terlebih dahulu')
     return
   }
   
-  if (confirm(`Tandai parcel ${parcel.code} sebagai Bebas?`)) {
+  if (confirm(`Tandai parcel ${parcel.kode_parcel} sebagai Bebas?`)) {
     parcel.status = 'Bebas'
     parcel.negotiationDate = new Date().toISOString().split('T')[0] || '-'
     alert('Status berhasil diupdate menjadi Bebas. Negosiasi telah di-clear.')
   }
+  console.log(parcel)
+  await axios.put('http://127.0.0.1:8000/api/spatial/LandAcquisition/'+parcelId+'/', parcel)
 }
 
-async function saveParcel(){
+async function saveParcel() {
   const wkt = mpwkt.toWKT()
-  // var data = formData.value
-  // console.log(data,formData)
-  const uploadData = {
-    "id_project": projectId,
-    "kode_parcel": formData.code,
-    "nama_pemilik": formData.ownerName,
-    "desa": formData.village,
-    "luas": 0,
-    "status": formData.status,
-    "jumlah_bebas": 0,
-    "biaya_pembebasan": 0,
-    "tanggal_negosiasi": null,
-    "id_persil": {
-        "geom": wkt
-    }
+  console.log(formData)
+  const payload = {
+    id_project: projectId,
+    kode_parcel: formData.value.kode_parcel,
+    nama_pemilik: formData.value.nama_pemilik,
+    desa: formData.value.desa,
+    luas: formData.value.luas,
+    status: formData.value.status,
+    jumlah_bebas: formData.value.jumlah_bebas,
+    biaya_pembebasan: formData.value.biaya_pembebasan,
+    geom: wkt
   }
-  await axios.post('http://127.0.0.1:8000/api/spatial/LandAcquisition/', uploadData)
+console.log(payload,isEditMode)
+  if (isEditMode) {
+    // UPDATE
+    await axios.put(
+      `http://127.0.0.1:8000/api/spatial/LandAcquisition/${formData.value.id_parcel}/`,
+      payload
+    )
+  } else {
+    // CREATE
+    await axios.post(
+      'http://127.0.0.1:8000/api/spatial/LandAcquisition/',
+      payload
+    )
+  }
+
+  await fetchAcquisition()
+  
+  const modal = bootstrap.Modal.getInstance(parcelModalRef.value)
+  modal.hide()
+
+  parcelModalRef.value.addEventListener(
+    'hidden.bs.modal',
+    async () => {
+      await fetchAcquisition()
+    },
+    { once: true }
+  )
 }
+async function deleteParcel(parcelId){
+  await axios.delete(`http://127.0.0.1:8000/api/spatial/LandAcquisition/${parcelId}/`)
+  await fetchAcquisition()
+}
+
+
 onMounted(async () => {
   // Initialize DataTable
-  
+
   await fetchAcquisition().then(()=>{
     nextTick(()=>{
       window.$('#pemilikTable').DataTable({
@@ -468,19 +541,54 @@ onMounted(async () => {
     })
   })
 
-  const map = L.map('map').setView([-2.5489, 118.0149], 13)
+  const map = L.map('map')
 
   L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
     attribution: '&copy; OpenStreetMap contributors'
   }).addTo(map)
 
-  console.log(projects)
-  if (projects.value.id_persil.geom) {
-    const geojson = wellknown.parse(projects.value.id_persil.geom)
+  // console.log(acquisitionParcel.value)
+
+  
+  const wmsLayerAcquisition = L.tileLayer.wms(
+    "http://172.28.83.5:8080/geoserver/vector_valemis/wms",
+    {
+      layers: "	vector_valemis:tbl_acquisition",
+      format: "image/png",
+      transparent: true,
+      version: "1.1.0",
+      styles:"Acquisition_style",
+      crs: L.CRS.EPSG4326,
+      tiled:false
+    }
+  );
+
+  wmsLayerAcquisition.addTo(map);
+  var acquisitionLegend = L.control({ position: 'bottomright' });
+
+  acquisitionLegend.onAdd = function () {
+    const div = L.DomUtil.create('div', 'legend');
+    
+    div.innerHTML = `
+    <div class="card p-2">
+      <h6>Acquisition</h6>
+      <img
+        src="http://172.28.83.5:8080/geoserver/vector_valemis/wms?REQUEST=GetLegendGraphic&FORMAT=image/png&LAYER=vector_valemis:tbl_acquisition&STYLE=Acquisition_style&VERSION=1.1.0" alt="Legend"
+      />
+      </div>
+    `;
+
+    return div;
+  };
+
+  acquisitionLegend.addTo(map);
+  const resProject = await axios.get(`http://127.0.0.1:8000/api/spatial/Project/${projectId}`)
+  
+  if (resProject.data.geom) {
+    const geojson = wellknown.parse(resProject.data.geom)
     const geojsonLayerProject = new L.GeoJSON(geojson).addTo(map)
     map.fitBounds(geojsonLayerProject.getBounds())
   }
-  
 })
 
 function initMap() {
@@ -512,7 +620,7 @@ function handleGeoJsonUpload(event) {
         return
       }
       uploadedGeojson = JSON.parse(result)
-      console.log('Hasil JSON:', uploadedGeojson)
+      // console.log('Hasil JSON:', uploadedGeojson)
 
 
       // 🔥 buat layer baru
