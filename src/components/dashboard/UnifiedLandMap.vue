@@ -1,0 +1,403 @@
+<template>
+  <div class="unified-land-map">
+    <!-- Section Header -->
+    <div class="section-header mb-3">
+      <div>
+        <h3 class="text-xl font-semibold m-0 text-secondary">
+          Land Overview
+        </h3>
+        <p class="text-500 text-sm mt-1">Interactive geospatial view</p>
+      </div>
+    </div>
+
+    <!-- Map Container -->
+    <Card class="map-card">
+      <template #content>
+        <!-- Map Toolbar -->
+        <div class="map-toolbar">
+          <div class="flex gap-2">
+            <InputText
+              placeholder="Search location..."
+              class="search-input"
+            >
+              <template #prepend>
+                <i class="bi bi-search"></i>
+              </template>
+            </InputText>
+          </div>
+          <div class="flex gap-2">
+            <Button
+              icon="bi bi-plus-lg"
+              severity="secondary"
+              text
+              rounded
+              size="small"
+              @click="handleZoomIn"
+            />
+            <Button
+              icon="bi bi-dash-lg"
+              severity="secondary"
+              text
+              rounded
+              size="small"
+              @click="handleZoomOut"
+            />
+            <Button
+              label="Layers"
+              icon="bi bi-grid"
+              severity="secondary"
+              text
+              size="small"
+            />
+            <Button
+              label="New Job"
+              icon="bi bi-plus-lg"
+              severity="success"
+              size="small"
+            />
+          </div>
+        </div>
+
+        <div class="flex">
+          <!-- Map Area -->
+          <div class="map-area flex-1">
+            <div id="dashboard-map" class="map-container" ref="mapContainer"></div>
+
+            <!-- Map Loading -->
+            <div v-if="loading" class="map-loading-overlay">
+              <ProgressSpinner strokeWidth="3" />
+              <span class="block mt-2 text-sm">Loading map data...</span>
+            </div>
+
+            <!-- Temperature Badge -->
+            <div class="map-temperature-badge">
+              <i class="bi bi-sun text-warning mr-1"></i>
+              <span class="font-semibold">38°C</span>
+            </div>
+          </div>
+        </div>
+      </template>
+    </Card>
+
+    <!-- Fullscreen Dialog -->
+    <Dialog
+      v-model:visible="fullscreenVisible"
+      :style="{ width: '95vw', height: '90vh' }"
+      :modal="true"
+      :showHeader="false"
+    >
+      <div id="dashboard-map-fullscreen" class="map-container-fullscreen"></div>
+    </Dialog>
+  </div>
+</template>
+
+<script setup lang="ts">
+import { ref, onMounted, onUnmounted, computed } from 'vue'
+import Card from 'primevue/card'
+import Button from 'primevue/button'
+import ProgressSpinner from 'primevue/progressspinner'
+import Dialog from 'primevue/dialog'
+import InputText from 'primevue/inputtext'
+import MapLayerControl from './MapLayerControl.vue'
+import { useDashboardData } from '@/composables/useDashboardData'
+import { useLeafletMap } from '@/composables/useLeafletMap'
+import L from 'leaflet'
+import type { MapLayer, MapFilter } from '@/types/dashboard'
+
+const { mapLayers } = useDashboardData()
+
+const mapContainer = ref<HTMLElement | null>(null)
+const loading = ref(true)
+const fullscreenVisible = ref(false)
+const layerControlCollapsed = ref(false)
+const visibleParcels = ref(245)
+const selectedParcels = ref(0)
+
+// Map filters
+const mapFilters = ref<MapFilter>({
+  desa: [],
+  project: [],
+  status: []
+})
+
+// Map legends (mock data - would come from API)
+const mapLegends = computed(() => [
+  { label: 'Lahan Bebas', color: '#22c55e', count: 180 },
+  { label: 'Dalam Proses', color: '#eab308', count: 52 },
+  { label: 'Sengketa', color: '#ef4444', count: 8 },
+  { label: 'Belum Diproses', color: '#6b7280', count: 5 }
+])
+
+// Initialize map
+let map: L.Map | null = null
+
+onMounted(() => {
+  if (mapContainer.value) {
+    // Initialize Leaflet map
+    map = L.map(mapContainer.value, {
+      center: [-2.5, 121.0],
+      zoom: 10,
+      zoomControl: true
+    })
+
+    // Add tile layer
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      attribution: '© OpenStreetMap contributors'
+    }).addTo(map)
+
+    // Add sample data (in real implementation, this would come from API)
+    addSampleLayers()
+
+    // Simulate loading
+    setTimeout(() => {
+      loading.value = false
+    }, 1500)
+  }
+})
+
+onUnmounted(() => {
+  if (map) {
+    map.remove()
+    map = null
+  }
+})
+
+// Add sample layers
+const addSampleLayers = () => {
+  if (!map) return
+
+  // Sample polygon for Sorowako
+  const sorowakoPolygon = L.polygon([
+    [-2.55, 121.0],
+    [-2.55, 121.1],
+    [-2.45, 121.1],
+    [-2.45, 121.0]
+  ], {
+    color: '#22c55e',
+    fillColor: '#22c55e',
+    fillOpacity: 0.3,
+    weight: 2
+  }).addTo(map)
+
+  sorowakoPolygon.bindPopup(`
+    <div>
+      <h4>Sorowako</h4>
+      <p>Status: Lahan Bebas</p>
+      <p>Parcels: 45</p>
+    </div>
+  `)
+
+  // Sample polygon for Magani
+  const maganiPolygon = L.polygon([
+    [-2.6, 121.15],
+    [-2.6, 121.25],
+    [-2.5, 121.25],
+    [-2.5, 121.15]
+  ], {
+    color: '#eab308',
+    fillColor: '#eab308',
+    fillOpacity: 0.3,
+    weight: 2
+  }).addTo(map)
+
+  maganiPolygon.bindPopup(`
+    <div>
+      <h4>Magani</h4>
+      <p>Status: Dalam Proses</p>
+      <p>Parcels: 32</p>
+    </div>
+  `)
+
+  // Add some markers
+  const marker1 = L.marker([-2.5, 121.05]).addTo(map)
+  marker1.bindPopup('<div><h4>Parcel #1234</h4><p>Status: Bebas</p><p>Owner: John Doe</p></div>')
+
+  const marker2 = L.marker([-2.52, 121.08]).addTo(map)
+  marker2.bindPopup('<div><h4>Parcel #1235</h4><p>Status: Proses</p><p>Owner: Jane Smith</p></div>')
+}
+
+// Handle layer toggle
+const handleToggleLayer = (layerId: string) => {
+  console.log('Toggle layer:', layerId)
+  // In real implementation, show/hide layer on map
+}
+
+// Handle filter update
+const handleUpdateFilter = (type: string, value: any) => {
+  console.log('Update filter:', type, value)
+  // In real implementation, filter map data
+}
+
+// Handle reset filters
+const handleResetFilters = () => {
+  mapFilters.value = {
+    desa: [],
+    project: [],
+    status: []
+  }
+  // In real implementation, reset map to show all data
+}
+
+// Handle fit bounds
+const handleFitBounds = () => {
+  if (map) {
+    map.fitBounds([
+      [-2.6, 120.95],
+      [-2.4, 121.3]
+    ])
+  }
+}
+
+// Handle fullscreen
+const handleFullscreen = () => {
+  fullscreenVisible.value = true
+
+  // Initialize fullscreen map after dialog opens
+  setTimeout(() => {
+    const fullscreenContainer = document.getElementById('dashboard-map-fullscreen')
+    if (fullscreenContainer && !map) {
+      const fullscreenMap = L.map(fullscreenContainer, {
+        center: [-2.5, 121.0],
+        zoom: 10
+      })
+
+      L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(fullscreenMap)
+
+      // Add same layers
+      addSampleLayersToMap(fullscreenMap)
+    }
+  }, 100)
+}
+
+// Handle zoom in
+const handleZoomIn = () => {
+  if (map) {
+    map.zoomIn()
+  }
+}
+
+// Handle zoom out
+const handleZoomOut = () => {
+  if (map) {
+    map.zoomOut()
+  }
+}
+
+// Add sample layers to any map instance
+const addSampleLayersToMap = (targetMap: L.Map) => {
+  // Reuse the same layer logic
+  // In real implementation, this would be a shared function
+}
+
+// Handle export map
+const handleExportMap = () => {
+  if (map) {
+    // In real implementation, export map as image
+    console.log('Exporting map...')
+  }
+}
+</script>
+
+<style scoped>
+.unified-land-map {
+  margin-bottom: 2.5rem;
+}
+
+.map-card {
+  overflow: hidden;
+}
+
+.map-toolbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.75rem;
+  border-bottom: 1px solid #e5e7eb;
+  background: #f9fafb;
+}
+
+.search-input {
+  width: 250px;
+}
+
+.map-area {
+  position: relative;
+  height: 500px;
+}
+
+.map-container {
+  width: 100%;
+  height: 100%;
+  border-radius: 0;
+  z-index: 1;
+}
+
+.map-container-fullscreen {
+  width: 100%;
+  height: 100%;
+}
+
+.map-loading-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(255, 255, 255, 0.9);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  border-radius: 0 0 12px 12px;
+}
+
+.map-temperature-badge {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  background: rgba(255, 255, 255, 0.95);
+  padding: 0.5rem 1rem;
+  border-radius: 20px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  font-size: 0.875rem;
+}
+
+:deep(.p-card) {
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+}
+
+:deep(.p-card-content) {
+  padding: 0;
+}
+
+:deep(.p-card:hover) {
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
+}
+
+:deep(.p-inputtext) {
+  border-radius: 8px;
+  border: 1px solid #e5e7eb;
+  padding: 0.5rem 0.75rem;
+}
+
+@media (max-width: 768px) {
+  .map-toolbar {
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+
+  .search-input {
+    width: 100%;
+  }
+
+  .map-area {
+    height: 400px;
+  }
+}
+</style>
