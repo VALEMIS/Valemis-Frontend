@@ -50,8 +50,8 @@
               </div>
             </li>
             <li class="nav-header">MAIN MODULES</li>
-            <li class="nav-item" :class="{ active: route.path.startsWith('/asset-inventory') }">
-              <router-link to="/asset-inventory" class="nav-link">
+            <li class="nav-item" :class="{ active: route.path.startsWith(`/project/${projectId}/asset-inventory`) }">
+              <router-link :to="`/project/${projectId}/asset-inventory`" class="nav-link">
                 <i class="nav-icon pi pi-box" style="font-size: 1rem;"></i>
                 <p>Asset Inventory</p>
               </router-link>

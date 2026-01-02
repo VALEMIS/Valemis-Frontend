@@ -1382,6 +1382,7 @@
 
 <script setup lang="ts">
 import { ref, computed, onMounted, onUnmounted, watch, nextTick } from 'vue'
+import { useRoute } from 'vue-router'
 import L from 'leaflet'
 import 'leaflet/dist/leaflet.css'
 import { assetApi, censusQuestionsApi } from '../api'
@@ -1784,6 +1785,10 @@ const formData = ref<FormData>({
 // Census questions for dropdowns
 const questions: any[] = []
 
+// Get project ID from route
+const route = useRoute()
+const projectId = computed(() => route.params.id_project as string | undefined)
+
 // API data
 const assets = ref<Asset[]>([])
 const loading = ref<boolean>(false)
@@ -1794,7 +1799,7 @@ const fetchAssets = async () => {
   loading.value = true
   error.value = null
   try {
-    const response = await assetApi.getAll()
+    const response = await assetApi.getAll(projectId.value)
     assets.value = response.results.map((asset: any) => ({
       id: asset.id,
       created_at: asset.created_at,
@@ -2327,6 +2332,8 @@ const saveAsset = async () => {
 
   try {
     const assetData: any = {
+      // Project association
+      id_project: projectId.value,
       // A. Identifikasi Rumah Tangga dan PAP (1-6)
       kode_enumerator: formData.value.kodeEnumerator || undefined,
       id_rumah_tangga: formData.value.idRumahTangga || undefined,

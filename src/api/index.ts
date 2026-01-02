@@ -53,7 +53,10 @@ async function exportToCsv(endpoint: string, filename: string): Promise<void> {
 
 // Asset Inventory API
 export const assetApi = {
-  getAll: () => apiFetch<ApiResponse<Asset>>('/api/valemis/assets/'),
+  getAll: (id_project?: string | string[]) => {
+    const queryString = id_project ? `?id_project=${id_project}` : ''
+    return apiFetch<ApiResponse<Asset>>(`/api/valemis/assets/${queryString}`)
+  },
   getById: (id: number) => apiFetch<Asset>(`/api/valemis/assets/${id}/`),
   create: (data: Partial<Asset>) => apiFetch<Asset>('/api/valemis/assets/', {
     method: 'POST',
