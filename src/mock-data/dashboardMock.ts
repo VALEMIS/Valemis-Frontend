@@ -25,7 +25,7 @@ export const kpiCardsData: KPICard[] = [
     icon: 'bi bi-map',
     iconColor: '#3b82f6',
     trend: { value: 12, isPositive: true },
-    targetRoute: '/land-acquisition'
+    targetRoute: '/project/7/land-acquisition'
   },
   {
     id: 'lahan-bebas',
@@ -35,7 +35,7 @@ export const kpiCardsData: KPICard[] = [
     icon: 'bi bi-check-circle',
     iconColor: '#22c55e',
     progress: 78,
-    targetRoute: '/land-acquisition'
+    targetRoute: '/project/7/land-acquisition'
   },
   {
     id: 'dalam-proses',
@@ -43,7 +43,7 @@ export const kpiCardsData: KPICard[] = [
     value: 52,
     icon: 'bi bi-clock-history',
     iconColor: '#eab308',
-    targetRoute: '/land-acquisition'
+    targetRoute: '/project/7/land-acquisition'
   },
   {
     id: 'sengketa',
@@ -64,7 +64,7 @@ export const kpiCardsData: KPICard[] = [
     icon: 'bi bi-cash-stack',
     iconColor: '#06b6d4',
     trend: { value: 8, isPositive: false },
-    targetRoute: '/land-acquisition'
+    targetRoute: '/project/7/land-acquisition'
   },
   {
     id: 'biaya-m2',
@@ -73,7 +73,7 @@ export const kpiCardsData: KPICard[] = [
     unit: 'IDR/m²',
     icon: 'bi bi-calculator',
     iconColor: '#6b7280',
-    targetRoute: '/land-acquisition'
+    targetRoute: '/project/7/land-acquisition'
   },
 
   // Compliance KPIs
@@ -148,7 +148,7 @@ export const alertsCategoriesData: AlertCategory[] = [
         message: '5 parcels stuck in negotiation for over 90 days',
         count: 5,
         actionLabel: 'View Parcels',
-        actionRoute: '/land-acquisition',
+        actionRoute: '/project/7/land-acquisition',
         timestamp: new Date('2026-01-01'),
         dismissible: false
       },
@@ -191,7 +191,7 @@ export const alertsCategoriesData: AlertCategory[] = [
         message: '4 land certificates expiring within 6 months',
         count: 4,
         actionLabel: 'View Land',
-        actionRoute: '/land-inventory',
+        actionRoute: '/project/7/land-inventory',
         timestamp: new Date('2026-01-01'),
         dismissible: true
       },
@@ -203,7 +203,7 @@ export const alertsCategoriesData: AlertCategory[] = [
         message: '7 parcels in negotiation for over 60 days',
         count: 7,
         actionLabel: 'View Parcels',
-        actionRoute: '/land-acquisition',
+        actionRoute: '/project/7/land-acquisition',
         timestamp: new Date('2026-01-01'),
         dismissible: true
       }
@@ -222,7 +222,7 @@ export const alertsCategoriesData: AlertCategory[] = [
         message: '12 parcels require appraisal before negotiation',
         count: 12,
         actionLabel: 'View Parcels',
-        actionRoute: '/land-acquisition',
+        actionRoute: '/project/7/land-acquisition',
         timestamp: new Date('2026-01-01'),
         dismissible: true
       },
@@ -265,7 +265,7 @@ export const alertsCategoriesData: AlertCategory[] = [
         message: '6 newly acquired parcels this month',
         count: 6,
         actionLabel: 'View Land',
-        actionRoute: '/land-inventory',
+        actionRoute: '/project/7/land-inventory',
         timestamp: new Date('2026-01-01'),
         dismissible: true
       },
@@ -277,7 +277,7 @@ export const alertsCategoriesData: AlertCategory[] = [
         message: '3 households with >10 family members detected',
         count: 3,
         actionLabel: 'View Assets',
-        actionRoute: '/asset-inventory',
+        actionRoute: '/project/7/asset-inventory',
         timestamp: new Date('2026-01-01'),
         dismissible: true
       },

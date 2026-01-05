@@ -1,39 +1,31 @@
 <template>
   <div class="executive-kpi">
     <!-- Section Header -->
-    <div class="flex justify-content-between align-items-center mb-3">
-      <div>
-        <h3 class="text-xl font-semibold m-0 text-secondary">
-          Executive KPI
-        </h3>
-        <p class="text-500 text-sm mt-1">Key performance indicators at a glance</p>
+    <div class="section-header">
+      <div class="header-content">
+        <div class="header-icon">
+          <i class="bi bi-speedometer2"></i>
+        </div>
+        <div>
+          <h3 class="section-title">Key Performance Indicators</h3>
+          <p class="section-subtitle">Real-time metrics at a glance</p>
+        </div>
       </div>
-      <Button
-        icon="bi bi-arrow-clockwise"
-        label="Refresh"
-        severity="secondary"
-        text
-        @click="handleRefresh"
-        :loading="loading"
-      />
+      <button class="refresh-btn" @click="handleRefresh" :disabled="loading">
+        <i class="bi bi-arrow-clockwise" :class="{ 'spinning': loading }"></i>
+        <span>Refresh</span>
+      </button>
     </div>
 
     <!-- KPI Cards Grid -->
-    <div class="kpi-cards-grid">
-      <div
-        v-for="kpi in kpis"
-        :key="kpi.id"
-        class="kpi-card-wrapper"
-      >
-        <KPICard :kpi="kpi" />
-      </div>
+    <div class="kpi-grid">
+      <KPICard v-for="kpi in kpis" :key="kpi.id" :kpi="kpi" class="kpi-item" />
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted } from 'vue'
-import Button from 'primevue/button'
+import { ref } from 'vue'
 import KPICard from './KPICard.vue'
 import { useDashboardData } from '@/composables/useDashboardData'
 
@@ -51,42 +43,142 @@ const handleRefresh = async () => {
     }, 1000)
   }
 }
-
-onMounted(() => {
-  // Initial data load if needed
-})
 </script>
 
 <style scoped>
 .executive-kpi {
-  margin-bottom: 2rem;
+  margin-bottom: 2.5rem;
 }
 
-:deep(.p-button-text) {
-  padding: 0.5rem 1rem;
+.section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
+  padding-bottom: 1rem;
+  border-bottom: 2px solid #f3f4f6;
 }
 
-.kpi-cards-grid {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
+.header-content {
+  display: flex;
+  align-items: center;
   gap: 1rem;
-  margin-top: 1rem;
+}
+
+.header-icon {
+  width: 48px;
+  height: 48px;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-size: 1.5rem;
+  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+}
+
+.section-title {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #111827;
+  margin: 0;
+  background: linear-gradient(135deg, #111827 0%, #374151 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.section-subtitle {
+  font-size: 0.875rem;
+  color: #6b7280;
+  margin: 0.25rem 0 0 0;
+}
+
+.refresh-btn {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1.25rem;
+  background: white;
+  border: 2px solid #e5e7eb;
+  border-radius: 12px;
+  color: #374151;
+  font-weight: 600;
+  font-size: 0.875rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.refresh-btn:hover:not(:disabled) {
+  background: #f9fafb;
+  border-color: #667eea;
+  color: #667eea;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.2);
+}
+
+.refresh-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.refresh-btn i {
+  font-size: 1rem;
+  transition: transform 0.3s ease;
+}
+
+.refresh-btn i.spinning {
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.kpi-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 1.25rem;
+}
+
+@media (min-width: 1400px) {
+  .kpi-grid {
+    grid-template-columns: repeat(4, 1fr);
+  }
 }
 
 @media (max-width: 1200px) {
-  .kpi-cards-grid {
+  .kpi-grid {
     grid-template-columns: repeat(3, 1fr);
   }
 }
 
 @media (max-width: 992px) {
-  .kpi-cards-grid {
+  .kpi-grid {
     grid-template-columns: repeat(2, 1fr);
   }
 }
 
-@media (max-width: 576px) {
-  .kpi-cards-grid {
+@media (max-width: 640px) {
+  .section-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1rem;
+  }
+
+  .refresh-btn {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .kpi-grid {
     grid-template-columns: 1fr;
   }
 }
