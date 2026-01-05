@@ -5,17 +5,137 @@
 
 import { ref, computed } from 'vue'
 import type { DashboardData, KPICard, AlertCategory, MapLayer, ChartConfig } from '@/types/dashboard'
-import { dashboardMockData, kpiCardsData, alertsCategoriesData, mapLayersData } from '@/mock-data/dashboardMock'
+import { dashboardMockData, alertsCategoriesData, mapLayersData } from '@/mock-data/dashboardMock'
+import { useProject } from './useProject'
 
 export function useDashboardData() {
+  // Get project context
+  const { currentProjectId, getProjectRoute } = useProject()
+
   // Reactive state
   const loading = ref(false)
   const error = ref<string | null>(null)
 
-  // Computed properties for each zone
-  const kpis = computed<KPICard[]>(() => kpiCardsData)
+  // Generate KPI cards with dynamic routes
+  const kpis = computed<KPICard[]>(() => {
+    const baseKpis: KPICard[] = [
+      // Acquisition KPIs
+      {
+        id: 'total-parcels',
+        title: 'Total Parcels',
+        value: 245,
+        icon: 'bi bi-map',
+        iconColor: '#3b82f6',
+        trend: { value: 12, isPositive: true },
+        targetRoute: currentProjectId.value ? getProjectRoute('/land-acquisition') : '/project'
+      },
+      {
+        id: 'lahan-bebas',
+        title: '% Lahan Bebas',
+        value: 78,
+        unit: '%',
+        icon: 'bi bi-check-circle',
+        iconColor: '#22c55e',
+        progress: 78,
+        targetRoute: currentProjectId.value ? getProjectRoute('/land-acquisition') : '/project'
+      },
+      {
+        id: 'dalam-proses',
+        title: 'Parcel Dalam Proses',
+        value: 52,
+        icon: 'bi bi-clock-history',
+        iconColor: '#eab308',
+        targetRoute: currentProjectId.value ? getProjectRoute('/land-acquisition') : '/project'
+      },
+      {
+        id: 'sengketa',
+        title: 'Parcel Sengketa',
+        value: 8,
+        icon: 'bi bi-exclamation-triangle',
+        iconColor: '#ef4444',
+        badge: { label: 'High Priority', severity: 'danger' },
+        targetRoute: '/land-litigasi'
+      },
+      // Financial KPIs
+      {
+        id: 'total-biaya',
+        title: 'Total Biaya Pembebasan',
+        value: 45200000000,
+        unit: 'IDR',
+        icon: 'bi bi-cash-stack',
+        iconColor: '#06b6d4',
+        trend: { value: 8, isPositive: false },
+        targetRoute: currentProjectId.value ? getProjectRoute('/land-acquisition') : '/project'
+      },
+      {
+        id: 'biaya-m2',
+        title: 'Rata-rata Biaya/m²',
+        value: 250000,
+        unit: 'IDR/m²',
+        icon: 'bi bi-calculator',
+        iconColor: '#6b7280',
+        targetRoute: currentProjectId.value ? getProjectRoute('/land-acquisition') : '/project'
+      },
+      // Compliance KPIs
+      {
+        id: 'compliance-rate',
+        title: 'Compliance Rate',
+        value: 92,
+        unit: '%',
+        icon: 'bi bi-shield-check',
+        iconColor: '#22c55e',
+        progress: 92,
+        badge: { label: 'Excellent', severity: 'success' },
+        targetRoute: '/land-compliance'
+      },
+      {
+        id: 'permits-expiring',
+        title: 'Permits Expiring Soon',
+        value: 5,
+        icon: 'bi bi-calendar-x',
+        iconColor: '#f97316',
+        badge: { label: '< 30 Days', severity: 'warning' },
+        targetRoute: '/land-compliance'
+      },
+      // Litigation KPIs
+      {
+        id: 'active-cases',
+        title: 'Active Cases',
+        value: 14,
+        icon: 'bi bi-gavel',
+        iconColor: '#8b5cf6',
+        targetRoute: '/land-litigasi'
+      },
+      {
+        id: 'high-priority-cases',
+        title: 'High Priority Cases',
+        value: 3,
+        icon: 'bi bi-fire',
+        iconColor: '#ef4444',
+        badge: { label: 'Critical', severity: 'danger' },
+        targetRoute: '/land-litigasi'
+      }
+    ]
 
-  const alerts = computed<AlertCategory[]>(() => alertsCategoriesData)
+    return baseKpis
+  })
+
+  // Generate alerts with dynamic routes
+  const alerts = computed<AlertCategory[]>(() => {
+    return alertsCategoriesData.map(category => ({
+      ...category,
+      alerts: category.alerts.map(alert => ({
+        ...alert,
+        actionRoute: alert.module === 'acquisition'
+          ? (currentProjectId.value ? getProjectRoute('/land-acquisition') : '/project')
+          : alert.module === 'inventory'
+            ? (currentProjectId.value ? getProjectRoute('/land-inventory') : '/project')
+            : alert.module === 'asset'
+              ? (currentProjectId.value ? getProjectRoute('/asset-inventory') : '/project')
+              : alert.actionRoute
+      }))
+    }))
+  })
 
   const mapLayers = computed<MapLayer[]>(() => mapLayersData)
 

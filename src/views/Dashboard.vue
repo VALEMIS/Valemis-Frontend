@@ -5,18 +5,40 @@
       <div class="container-fluid">
         <div class="row">
           <div class="col-sm-6">
-            <h3 class="mb-0 text-uppercase font-weight-bold">
-              Monitoring Dashboard
-            </h3>
-            <p class="text-500 text-sm mt-1">Real-time overview of all land acquisition activities</p>
+            <div class="header-title-section">
+              <div class="title-icon">
+                <i class="bi bi-speedometer2"></i>
+              </div>
+              <div>
+                <h3 class="page-title">
+                  Monitoring Dashboard
+                </h3>
+                <p class="page-subtitle">Real-time overview of all land acquisition activities</p>
+              </div>
+            </div>
           </div>
           <div class="col-sm-6">
-            <ol class="breadcrumb float-sm-end">
-              <li class="breadcrumb-item">
-                <router-link to="/"><i class="bi bi-house-fill"></i></router-link>
-              </li>
-              <li class="breadcrumb-item active" aria-current="page">Dashboard</li>
-            </ol>
+            <div class="header-actions">
+              <!-- Project Selector -->
+              <div class="project-selector" v-if="projects.length > 0">
+                <label class="selector-label">Active Project:</label>
+                <select v-model="selectedProjectId" @change="handleProjectChange" class="project-select">
+                  <option :value="null">Select Project...</option>
+                  <option v-for="project in projects" :key="project.id" :value="project.id">
+                    {{ project.nama_project }}
+                  </option>
+                </select>
+              </div>
+
+              <ol class="breadcrumb">
+                <li class="breadcrumb-item">
+                  <router-link to="/">
+                    <i class="bi bi-house-fill"></i>
+                  </router-link>
+                </li>
+                <li class="breadcrumb-item active" aria-current="page">Dashboard</li>
+              </ol>
+            </div>
           </div>
         </div>
       </div>
@@ -24,6 +46,28 @@
 
     <div class="app-content">
       <div class="container-fluid">
+        <!-- Project Selection Notice -->
+        <div v-if="!currentProjectId" class="row mb-4">
+          <div class="col-12">
+            <div class="project-notice">
+              <div class="notice-icon">
+                <i class="bi bi-info-circle"></i>
+              </div>
+              <div class="notice-content">
+                <h4 class="notice-title">Select a Project</h4>
+                <p class="notice-message">
+                  Please select a project from the dropdown above to view project-specific data for Asset Inventory,
+                  Land Acquisition, and Land Inventory.
+                </p>
+                <router-link to="/project" class="notice-button">
+                  <i class="bi bi-folder-plus"></i>
+                  Browse Projects
+                </router-link>
+              </div>
+            </div>
+          </div>
+        </div>
+
         <!-- 🟦 ZONE 1: Executive KPI -->
         <ExecutiveKPI />
 
@@ -39,18 +83,21 @@
         <!-- Footer Info -->
         <div class="row mt-4">
           <div class="col-12">
-            <Card class="footer-card">
-              <template #content>
-                <div class="text-center">
-                  <p class="mb-2 text-secondary font-medium">
-                    Dashboard Monitoring - Last updated: {{ lastUpdated }}
+            <div class="footer-card">
+              <div class="footer-content">
+                <div class="footer-icon">
+                  <i class="bi bi-info-circle"></i>
+                </div>
+                <div class="footer-text">
+                  <p class="footer-title">
+                    Dashboard Monitoring
                   </p>
-                  <p class="text-sm text-500 mb-0">
-                    Data is refreshed automatically. Click on any KPI, alert, or chart for detailed analysis.
+                  <p class="footer-subtitle">
+                    Last updated: {{ lastUpdated }} • Data refreshes automatically every 5 minutes
                   </p>
                 </div>
-              </template>
-            </Card>
+              </div>
+            </div>
           </div>
         </div>
       </div>
@@ -59,19 +106,55 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted } from 'vue'
-import Card from 'primevue/card'
+import { ref, onMounted, computed } from 'vue'
+import { useRouter } from 'vue-router'
 import ExecutiveKPI from '@/components/dashboard/ExecutiveKPI.vue'
 import CriticalAlerts from '@/components/dashboard/CriticalAlerts.vue'
 import UnifiedLandMap from '@/components/dashboard/UnifiedLandMap.vue'
 import MonitoringCharts from '@/components/dashboard/MonitoringCharts.vue'
+import { useProject } from '@/composables/useProject'
+
+const router = useRouter()
+const {
+  currentProject,
+  currentProjectId,
+  projects,
+  fetchProjects,
+  setCurrentProject,
+  initializeFromStorage
+} = useProject()
+
+const selectedProjectId = ref<number | null>(null)
 
 const lastUpdated = ref(new Date().toLocaleString('id-ID', {
   dateStyle: 'long',
   timeStyle: 'short'
 }))
 
-onMounted(() => {
+// Handle project selection change
+const handleProjectChange = () => {
+  if (selectedProjectId.value) {
+    const project = projects.value.find(p => p.id === selectedProjectId.value)
+    if (project) {
+      setCurrentProject(project)
+    }
+  } else {
+    setCurrentProject(null)
+  }
+}
+
+onMounted(async () => {
+  // Initialize project from localStorage
+  await initializeFromStorage()
+
+  // Fetch all projects
+  await fetchProjects()
+
+  // Set selected project ID if there's a current project
+  if (currentProject.value) {
+    selectedProjectId.value = currentProject.value.id
+  }
+
   // Update timestamp every minute
   setInterval(() => {
     lastUpdated.value = new Date().toLocaleString('id-ID', {
@@ -85,64 +168,301 @@ onMounted(() => {
 <style scoped>
 .dashboard-container {
   min-height: 100vh;
-  background: #f8f9fa;
+  background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+  background-attachment: fixed;
 }
 
-:deep(.card) {
+.app-content-header {
+  background: white;
+  padding: 2rem 0;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  margin-bottom: 2rem;
+}
+
+.header-title-section {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.title-icon {
+  width: 56px;
+  height: 56px;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  border-radius: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-size: 1.75rem;
+  box-shadow: 0 8px 16px rgba(102, 126, 234, 0.3);
+}
+
+.page-title {
+  font-size: 2rem;
+  font-weight: 800;
+  margin: 0;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  letter-spacing: -0.5px;
+}
+
+.page-subtitle {
+  font-size: 0.95rem;
+  color: #6b7280;
+  margin: 0.375rem 0 0 0;
+  font-weight: 500;
+}
+
+.header-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  align-items: flex-end;
+}
+
+.project-selector {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  background: #f9fafb;
+  padding: 0.75rem 1rem;
   border-radius: 12px;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
-  border: none;
+  border: 2px solid #e5e7eb;
 }
 
-:deep(.card:hover) {
-  box-shadow: 0 4px 16px rgba(0,0,0,0.12);
+.selector-label {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: #374151;
+  margin: 0;
 }
 
-:deep(.card-header) {
-  background-color: white;
-  border-bottom: 1px solid var(--surface-border);
-  border-radius: 12px 12px 0 0;
+.project-select {
+  padding: 0.5rem 1rem;
+  border: 2px solid #e5e7eb;
+  border-radius: 8px;
+  background: white;
+  color: #111827;
+  font-weight: 600;
+  font-size: 0.875rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  min-width: 200px;
 }
 
-:deep(.breadcrumb) {
+.project-select:hover {
+  border-color: #667eea;
+}
+
+.project-select:focus {
+  outline: none;
+  border-color: #667eea;
+  box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+}
+
+.breadcrumb {
   background: transparent;
   margin: 0;
-  padding: 0;
+  padding: 0.75rem 1rem;
+  background: #f9fafb;
+  border-radius: 12px;
 }
 
-:deep(.breadcrumb-item + .breadcrumb-item::before) {
-  content: ">";
-  color: var(--text-secondary);
+.breadcrumb-item {
+  font-size: 0.875rem;
+  font-weight: 500;
 }
 
-.app-content {
-  padding-top: 2rem;
+.breadcrumb-item a {
+  color: #667eea;
+  text-decoration: none;
+  transition: color 0.2s ease;
 }
 
-.app-content > .container-fluid {
-  max-width: 1400px;
+.breadcrumb-item a:hover {
+  color: #764ba2;
 }
 
-.section-header {
+.breadcrumb-item.active {
+  color: #6b7280;
+}
+
+.breadcrumb-item+.breadcrumb-item::before {
+  content: "›";
+  color: #9ca3af;
+  padding: 0 0.5rem;
+}
+
+.project-notice {
+  background: white;
+  border-radius: 16px;
+  padding: 2rem;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  border: 2px solid #e5e7eb;
   display: flex;
-  justify-content: space-between;
+  gap: 1.5rem;
   align-items: center;
 }
 
-.footer-card {
+.notice-icon {
+  width: 64px;
+  height: 64px;
+  background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-size: 2rem;
+  flex-shrink: 0;
+  box-shadow: 0 8px 16px rgba(59, 130, 246, 0.3);
+}
+
+.notice-content {
+  flex: 1;
+}
+
+.notice-title {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: #111827;
+  margin: 0 0 0.5rem 0;
+}
+
+.notice-message {
+  font-size: 1rem;
+  color: #6b7280;
+  margin: 0 0 1rem 0;
+  line-height: 1.6;
+}
+
+.notice-button {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1.5rem;
   background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  border: none;
+  color: white;
+  border-radius: 12px;
+  font-weight: 600;
+  text-decoration: none;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
 }
 
-.footer-card :deep(.p-card-content) {
-  padding: 1.5rem;
-}
-
-.footer-card p {
+.notice-button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(102, 126, 234, 0.4);
   color: white;
 }
 
-.footer-card .text-500 {
-  color: rgba(255, 255, 255, 0.9);
+.app-content {
+  padding: 0 0 2rem 0;
+}
+
+.app-content>.container-fluid {
+  max-width: 1400px;
+}
+
+.footer-card {
+  background: white;
+  border-radius: 16px;
+  padding: 1.5rem;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  border: 2px solid #e5e7eb;
+}
+
+.footer-content {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.footer-icon {
+  width: 48px;
+  height: 48px;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-size: 1.5rem;
+  flex-shrink: 0;
+}
+
+.footer-text {
+  flex: 1;
+}
+
+.footer-title {
+  font-size: 1rem;
+  font-weight: 700;
+  color: #111827;
+  margin: 0 0 0.25rem 0;
+}
+
+.footer-subtitle {
+  font-size: 0.875rem;
+  color: #6b7280;
+  margin: 0;
+}
+
+@media (max-width: 768px) {
+  .app-content-header {
+    padding: 1.5rem 0;
+  }
+
+  .header-title-section {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .title-icon {
+    width: 48px;
+    height: 48px;
+    font-size: 1.5rem;
+  }
+
+  .page-title {
+    font-size: 1.5rem;
+  }
+
+  .page-subtitle {
+    font-size: 0.875rem;
+  }
+
+  .header-actions {
+    align-items: flex-start;
+    width: 100%;
+  }
+
+  .project-selector {
+    flex-direction: column;
+    align-items: flex-start;
+    width: 100%;
+  }
+
+  .project-select {
+    width: 100%;
+  }
+
+  .breadcrumb {
+    margin-top: 0;
+    width: 100%;
+  }
+
+  .project-notice {
+    flex-direction: column;
+    text-align: center;
+  }
+
+  .footer-content {
+    flex-direction: column;
+    text-align: center;
+  }
 }
 </style>
