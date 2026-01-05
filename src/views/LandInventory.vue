@@ -286,7 +286,7 @@
 
     <div class="modal fade" id="landModal" tabindex="-1" ref="landModalRef">
       <div class="modal-dialog modal-lg">
-        <div class="modal-content">
+      <div class="modal-content">
           <div class="modal-header">
             <h5 class="modal-title">
               {{ isEditMode ? 'Edit Lahan' : 'Tambah Lahan Baru' }}
@@ -465,6 +465,10 @@ import ThemeMapUpload from '../components/LandInventoryComp/ThemeMapUpload.vue';
 import DocumentModal from '../components/LandInventoryComp/DocumentModal.vue';
 import "../utils/drawMap.js"  
 import { useRoute } from 'vue-router'
+
+const apiUrl = import.meta.env.VITE_API_SPATIAL_URL
+const gsUrl = import.meta.env.VITE_API_GS_URL
+
 const route = useRoute()
 const projectId = route.params.id_project
 interface Land {
@@ -525,7 +529,7 @@ const formData = ref<FormData>({
 
 const lands = ref<Land[]>([])
 const fetchProjects = async () => {
-  const res = await axios.get<any[]>(`http://127.0.0.1:8000/api/spatial/LandInventory/?id_project=${projectId}`)
+  const res = await axios.get<any[]>(apiUrl+`/LandInventory/?id_project=${projectId}`)
   projects.value = res.data
   console.log(res.data)
   lands.value = res.data.map(e => ({
@@ -647,7 +651,7 @@ const initLandMap = () => {
   }).addTo(landMap)
 
   const wmsLayer = L.tileLayer.wms(
-    "http://172.28.83.5:8080/geoserver/raster_valemis/wms",
+    gsUrl+"/raster_valemis/wms",
     {
       layers: "raster_valemis:fotoudara_vale",
       format: "image/png",
@@ -659,7 +663,7 @@ const initLandMap = () => {
   wmsLayer.addTo(landMap);
 
   const wmsLayerIupk = L.tileLayer.wms(
-    "http://172.28.83.5:8080/geoserver/vector_valemis/wms",
+    gsUrl+"/vector_valemis/wms",
     {
       layers: "vector_valemis:IUPK Vale",
       format: "image/png",
@@ -672,7 +676,7 @@ const initLandMap = () => {
   wmsLayerIupk.addTo(landMap);
 
   const wmsLayerProject = L.tileLayer.wms(
-    "http://172.28.83.5:8080/geoserver/vector_valemis/wms",
+    gsUrl+"/vector_valemis/wms",
     {
       layers: "vector_valemis:tbl_project",
       format: "image/png",
@@ -685,7 +689,7 @@ const initLandMap = () => {
   wmsLayerProject.addTo(landMap);
 
   const wmsLayerPersil = L.tileLayer.wms(
-    "http://172.28.83.5:8080/geoserver/vector_valemis/wms",
+    gsUrl+"/vector_valemis/wms",
     {
       layers: "vector_valemis:PERSIL",
       format: "image/png",
@@ -698,7 +702,7 @@ const initLandMap = () => {
   wmsLayerPersil.addTo(landMap);
 
   const wmsLayerTanaman = L.tileLayer.wms(
-    "http://172.28.83.5:8080/geoserver/vector_valemis/wms",
+    gsUrl+"/vector_valemis/wms",
     {
       layers: "vector_valemis:TITIK SURVEY TANAMAN",
       format: "image/png",
@@ -826,7 +830,7 @@ const saveLand = async () => {
         "geom": wkt
     }
     const res = await axios.post(
-    'http://127.0.0.1:8000/api/spatial/LandInventory/',
+    apiUrl+'/LandInventory/',
       uploadData
     )
 
@@ -843,7 +847,7 @@ const saveLand = async () => {
     
 
     await axios.post(
-      'http://127.0.0.1:8000/api/spatial/LandInventoryDocument/',
+      apiUrl+'/LandInventoryDocument/',
       formDataDoc,
       {
         headers: {

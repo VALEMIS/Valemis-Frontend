@@ -50,6 +50,11 @@ const router = createRouter({
     {
       path: "/asset-inventory",
       name: "asset-inventory",
+      redirect: "/project", // Redirect to project selection if accessed without project
+    },
+    {
+      path: "/project/:id_project/asset-inventory",
+      name: "project-asset-inventory",
       component: AsetInventori,
     },
 

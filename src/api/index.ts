@@ -53,7 +53,10 @@ async function exportToCsv(endpoint: string, filename: string): Promise<void> {
 
 // Asset Inventory API
 export const assetApi = {
-  getAll: () => apiFetch<ApiResponse<Asset>>('/api/valemis/assets/'),
+  getAll: (id_project?: string | string[]) => {
+    const queryString = id_project ? `?id_project=${id_project}` : ''
+    return apiFetch<ApiResponse<Asset>>(`/api/valemis/assets/${queryString}`)
+  },
   getById: (id: number) => apiFetch<Asset>(`/api/valemis/assets/${id}/`),
   create: (data: Partial<Asset>) => apiFetch<Asset>('/api/valemis/assets/', {
     method: 'POST',
@@ -214,6 +217,51 @@ export const censusQuestionsApi = {
   },
 }
 
+// Census LARAP API - Kepala Keluarga
+export const censusKepalaKeluargaApi = {
+  getAll: (params?: Record<string, string>) => {
+    const queryString = params ? new URLSearchParams(params).toString() : ''
+    return apiFetch<ApiResponse<CensusKepalaKeluarga>>(
+      `/api/valemis/census-kepala-keluarga/${queryString ? `?${queryString}` : ''}`
+    )
+  },
+  getById: (id: number) => apiFetch<CensusKepalaKeluarga>(`/api/valemis/census-kepala-keluarga/${id}/`),
+  create: (data: Partial<CensusKepalaKeluarga>) => apiFetch<CensusKepalaKeluarga>('/api/valemis/census-kepala-keluarga/', {
+    method: 'POST',
+    body: JSON.stringify(data),
+  }),
+  update: (id: number, data: Partial<CensusKepalaKeluarga>) => apiFetch<CensusKepalaKeluarga>(`/api/valemis/census-kepala-keluarga/${id}/`, {
+    method: 'PATCH',
+    body: JSON.stringify(data),
+  }),
+  delete: (id: number) => apiFetch<void>(`/api/valemis/census-kepala-keluarga/${id}/`, {
+    method: 'DELETE',
+  }),
+  addIndividu: (kkId: number, data: Partial<CensusIndividu>) => apiFetch<CensusIndividu>(`/api/valemis/census-kepala-keluarga/${kkId}/add-individu/`, {
+    method: 'POST',
+    body: JSON.stringify(data),
+  }),
+  getSummary: () => apiFetch<any>('/api/valemis/census-kepala-keluarga/summary/'),
+}
+
+// Census LARAP API - Individu
+export const censusIndividuApi = {
+  getAll: (params?: Record<string, string>) => {
+    const queryString = params ? new URLSearchParams(params).toString() : ''
+    return apiFetch<ApiResponse<CensusIndividu>>(
+      `/api/valemis/census-individu/${queryString ? `?${queryString}` : ''}`
+    )
+  },
+  getById: (id: number) => apiFetch<CensusIndividu>(`/api/valemis/census-individu/${id}/`),
+  update: (id: number, data: Partial<CensusIndividu>) => apiFetch<CensusIndividu>(`/api/valemis/census-individu/${id}/`, {
+    method: 'PATCH',
+    body: JSON.stringify(data),
+  }),
+  delete: (id: number) => apiFetch<void>(`/api/valemis/census-individu/${id}/`, {
+    method: 'DELETE',
+  }),
+}
+
 // Types
 export interface Asset {
   id: number
@@ -372,6 +420,8 @@ export default {
   stakeholder: stakeholderApi,
   census: censusApi,
   questions: censusQuestionsApi,
+  censusKepalaKeluarga: censusKepalaKeluargaApi,
+  censusIndividu: censusIndividuApi,
 }
 
 // Asset Detail interface for AssetInventoryDetail (Inventaris Aset)
@@ -423,6 +473,126 @@ export interface AssetDetail {
   jenis_sumber_daya_alam?: string
   produktivitas_per_tahun?: string
   luas_sda?: number
+  created_at: string
+  updated_at: string
+}
+
+// Census LARAP Kepala Keluarga interface
+export interface CensusKepalaKeluarga {
+  id: number
+  id_asset: string
+  id_project?: string
+  id_rumah_tangga?: string
+  kode_enumerator?: string
+  tanggal?: string
+  kode_foto_survei?: string
+  entitas_terdampak?: string
+  koordinat?: string
+  nama_depan?: string
+  nama_tengah?: string
+  nama_belakang?: string
+  nama_ayah?: string
+  nama_kakek?: string
+  nama_pasangan?: string
+  nomor_telepon?: string
+  nik?: string
+  desa?: string
+  kecamatan?: string
+  kabupaten?: string
+  provinsi?: string
+  nama_responden?: string
+  hubungan_responden?: string
+  identifikasi_dampak?: string
+  identifikasi_dampak_lainnya?: string
+  agama?: string
+  agama_lainnya?: string
+  asal_etnis?: string
+  asal_etnis_lainnya?: string
+  bahasa?: string
+  bahasa_lainnya?: string
+  tempat_asal_kk?: string
+  tempat_asal_kk_tentukan?: string
+  jumlah_orang_rumah_tangga?: number
+  jenis_kelamin?: string
+  tanggal_lahir?: string
+  usia?: number
+  status_perkawinan?: string
+  bisa_membaca_menulis?: string
+  sedang_sekolah?: string
+  sekolah_dimana?: string
+  pendidikan_terakhir?: string
+  alasan_penghentian?: string
+  alasan_penghentian_lainnya?: string
+  disabilitas?: string
+  disabilitas_lainnya?: string
+  kondisi_kesehatan_kronis?: string
+  kondisi_kesehatan_kronis_lainnya?: string
+  bekerja_12_bulan?: string
+  pekerjaan_utama?: string
+  pekerjaan_utama_lainnya?: string
+  jenis_pekerjaan_utama?: string
+  lokasi_pekerjaan_utama?: string
+  lokasi_pekerjaan_utama_lainnya?: string
+  jumlah_bulan_bekerja?: number
+  penghasilan_per_bulan?: number
+  pekerjaan_sekunder?: string
+  pekerjaan_sekunder_lainnya?: string
+  lokasi_pekerjaan_sekunder?: string
+  lokasi_pekerjaan_sekunder_lainnya?: string
+  jumlah_bulan_bekerja_sekunder?: number
+  penghasilan_sekunder_per_bulan?: number
+  keterampilan?: string
+  keterampilan_lainnya?: string
+  anggota_keluarga?: CensusIndividu[]
+  anggota_keluarga_data?: Partial<CensusIndividu>[]
+  created_at: string
+  updated_at: string
+}
+
+// Census LARAP Individu interface
+export interface CensusIndividu {
+  id: number
+  id_asset: string
+  id_project?: string
+  kepala_keluarga?: number
+  no_urut?: number
+  id_rumah_tangga?: string
+  nama_depan?: string
+  nama_belakang?: string
+  nik?: string
+  hubungan_dengan_kk?: string
+  jenis_kelamin?: string
+  tanggal_lahir?: string
+  usia?: number
+  alamat?: string
+  status_perkawinan?: string
+  bisa_membaca_menulis?: string
+  sedang_sekolah?: string
+  sekolah_dimana?: string
+  pendidikan_terakhir?: string
+  alasan_penghentian?: string
+  alasan_penghentian_lainnya?: string
+  disabilitas?: string
+  disabilitas_lainnya?: string
+  kondisi_kesehatan_kronis?: string
+  kondisi_kesehatan_kronis_lainnya?: string
+  nomor_telepon?: string
+  bekerja_12_bulan?: string
+  pekerjaan_utama?: string
+  pekerjaan_utama_lainnya?: string
+  jenis_pekerjaan_utama?: string
+  lokasi_pekerjaan_utama?: string
+  lokasi_pekerjaan_utama_lainnya?: string
+  jumlah_bulan_bekerja?: number
+  penghasilan_per_bulan?: number
+  pekerjaan_sekunder?: string
+  pekerjaan_sekunder_lainnya?: string
+  lokasi_pekerjaan_sekunder?: string
+  lokasi_pekerjaan_sekunder_lainnya?: string
+  jumlah_bulan_bekerja_sekunder?: number
+  penghasilan_sekunder_per_bulan?: number
+  keterampilan?: string
+  keterampilan_lainnya?: string
   created_at: string
   updated_at: string
 }

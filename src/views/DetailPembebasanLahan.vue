@@ -291,6 +291,9 @@ const route = useRoute()
 const projectId = route.params.id_project
 const uploadGeometry = null
 
+const apiUrl = import.meta.env.VITE_API_SPATIAL_URL
+const gsUrl = import.meta.env.VITE_API_GS_URL
+
 let mpwkt
 let map = null
 let isEditMode = false
@@ -305,9 +308,9 @@ let selectedGeometry = null
 const apiUrl = import.meta.env.VITE_APP_API_SPATIAL_URL;
 const geoserverUrl = import.meta.env.VITE_APP_API_GEOSERVER_URL;
 const fetchAcquisition = async () => {
-  const res = await axios.get(apiUrl+`LandAcquisition/?id_project=${projectId}`)
+  const res = await axios.get(apiUrl+`/LandAcquisition/?id_project=${projectId}`)
   acquisition.value = res.data
-  // const resProject = await axios.get(apiUrl+`Project/${projectId}`)
+  // const resProject = await axios.get(apiUrl+`/Project/${projectId}`)
   // projects.value = resProject.data
   acquisitionParcel.value = res.data || []// acquisitionParcel = res.data.acquisitions
 }
@@ -467,7 +470,7 @@ const markAsBebas = async (parcelId) => {
     alert('Status berhasil diupdate menjadi Bebas. Negosiasi telah di-clear.')
   }
   console.log(parcel)
-  await axios.put(apiUrl+'LandAcquisition/'+parcelId+'/', parcel)
+  await axios.put(apiUrl+'/LandAcquisition/'+parcelId+'/', parcel)
 }
 
 async function saveParcel() {
@@ -488,13 +491,13 @@ console.log(payload,isEditMode)
   if (isEditMode) {
     // UPDATE
     await axios.put(
-      apiUrl+`LandAcquisition/${formData.value.id_parcel}/`,
+      apiUrl+`/LandAcquisition/${formData.value.id_parcel}/`,
       payload
     )
   } else {
     // CREATE
     await axios.post(
-      apiUrl+'LandAcquisition/',
+      apiUrl+'/LandAcquisition/',
       payload
     )
   }
@@ -513,7 +516,7 @@ console.log(payload,isEditMode)
   )
 }
 async function deleteParcel(parcelId){
-  await axios.delete(apiUrl+`LandAcquisition/${parcelId}/`)
+  await axios.delete(apiUrl+`/LandAcquisition/${parcelId}/`)
   await fetchAcquisition()
 }
 
@@ -553,7 +556,7 @@ onMounted(async () => {
 
   
   const wmsLayerAcquisition = L.tileLayer.wms(
-    geoserverUrl+"vector_valemis/wms",
+    gsUrl+"/vector_valemis/wms",
     {
       layers: "	vector_valemis:tbl_acquisition",
       format: "image/png",
@@ -575,7 +578,7 @@ onMounted(async () => {
     <div class="card p-2">
       <h6>Acquisition</h6>
       <img
-        src=geoserverUrl+"vector_valemis/wms?REQUEST=GetLegendGraphic&FORMAT=image/png&LAYER=vector_valemis:tbl_acquisition&STYLE=Acquisition_style&VERSION=1.1.0" alt="Legend"
+        src=gsUrl+"/vector_valemis/wms?REQUEST=GetLegendGraphic&FORMAT=image/png&LAYER=vector_valemis:tbl_acquisition&STYLE=Acquisition_style&VERSION=1.1.0" alt="Legend"
       />
       </div>
     `;
@@ -584,7 +587,7 @@ onMounted(async () => {
   };
 
   acquisitionLegend.addTo(map);
-  const resProject = await axios.get(apiUrl+`Project/${projectId}`)
+  const resProject = await axios.get(apiUrl+`/Project/${projectId}`)
   
   if (resProject.data.geom) {
     const geojson = wellknown.parse(resProject.data.geom)

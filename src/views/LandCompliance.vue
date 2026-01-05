@@ -118,6 +118,9 @@ import "../utils/drawMap.js"
 import shp from "shpjs"
 import "leaflet/dist/leaflet.css"
 
+const apiUrl = import.meta.env.VITE_API_SPATIAL_URL
+const gsUrl = import.meta.env.VITE_API_GS_URL
+
 interface StatRow {
   layer: string
   jumlah_fitur: number
