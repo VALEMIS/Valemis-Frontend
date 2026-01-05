@@ -38,6 +38,15 @@
                 {{ getSeverityLabel(alert.severity) }}
               </span>
             </div>
+
+            <!-- Project Badge (if project-specific) -->
+            <div v-if="alert.project_name" class="project-badge-wrapper">
+              <span class="project-badge">
+                <i class="bi bi-folder"></i>
+                {{ alert.project_name }}
+              </span>
+            </div>
+
             <p class="alert-message">{{ alert.message }}</p>
             <div class="alert-footer">
               <span class="alert-time">
@@ -122,6 +131,8 @@ const formatTime = (date: Date) => {
 
 // Handle alert click
 const handleAlertClick = (alert: any) => {
+  // Use the actionRoute directly from alert data
+  // This route is already properly formatted (e.g., /project/7/asset-inventory or /land-compliance)
   if (alert.actionRoute) {
     router.push(alert.actionRoute)
   }
@@ -336,6 +347,27 @@ const handleAlertClick = (alert: any) => {
   color: #111827;
   margin: 0;
   line-height: 1.4;
+}
+
+.project-badge-wrapper {
+  margin: 0.5rem 0;
+}
+
+.project-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  padding: 0.25rem 0.75rem;
+  background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+  color: white;
+  border-radius: 12px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  box-shadow: 0 2px 4px rgba(59, 130, 246, 0.2);
+}
+
+.project-badge i {
+  font-size: 0.875rem;
 }
 
 .alert-badge {

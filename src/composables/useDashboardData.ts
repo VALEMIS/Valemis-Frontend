@@ -120,22 +120,8 @@ export function useDashboardData() {
     return baseKpis
   })
 
-  // Generate alerts with dynamic routes
-  const alerts = computed<AlertCategory[]>(() => {
-    return alertsCategoriesData.map(category => ({
-      ...category,
-      alerts: category.alerts.map(alert => ({
-        ...alert,
-        actionRoute: alert.module === 'acquisition'
-          ? (currentProjectId.value ? getProjectRoute('/land-acquisition') : '/project')
-          : alert.module === 'inventory'
-            ? (currentProjectId.value ? getProjectRoute('/land-inventory') : '/project')
-            : alert.module === 'asset'
-              ? (currentProjectId.value ? getProjectRoute('/asset-inventory') : '/project')
-              : alert.actionRoute
-      }))
-    }))
-  })
+  // Use alerts directly from mock data (routes are already properly defined)
+  const alerts = computed<AlertCategory[]>(() => alertsCategoriesData)
 
   const mapLayers = computed<MapLayer[]>(() => mapLayersData)
 

@@ -138,19 +138,22 @@ export const alertsCategoriesData: AlertCategory[] = [
         actionLabel: 'View Permits',
         actionRoute: '/land-compliance',
         timestamp: new Date('2026-01-01'),
-        dismissible: false
+        dismissible: false,
+        project_id: null // General module, no project needed
       },
       {
         id: 2,
         severity: 'critical',
         module: 'acquisition',
-        title: 'Overdue Negotiations',
-        message: '5 parcels stuck in negotiation for over 90 days',
+        title: 'Overdue Negotiations - Project Alpha',
+        message: '5 parcels stuck in negotiation for over 90 days in Project Alpha',
         count: 5,
         actionLabel: 'View Parcels',
         actionRoute: '/project/7/land-acquisition',
         timestamp: new Date('2026-01-01'),
-        dismissible: false
+        dismissible: false,
+        project_id: 7, // Specific to Project Alpha (ID: 7)
+        project_name: 'Project Alpha'
       },
       {
         id: 3,
@@ -162,7 +165,8 @@ export const alertsCategoriesData: AlertCategory[] = [
         actionLabel: 'View Cases',
         actionRoute: '/land-litigasi',
         timestamp: new Date('2026-01-01'),
-        dismissible: false
+        dismissible: false,
+        project_id: null // General module
       }
     ]
   },
@@ -181,31 +185,36 @@ export const alertsCategoriesData: AlertCategory[] = [
         actionLabel: 'View Permits',
         actionRoute: '/land-compliance',
         timestamp: new Date('2026-01-01'),
-        dismissible: true
+        dismissible: true,
+        project_id: null
       },
       {
         id: 5,
         severity: 'warning',
         module: 'inventory',
-        title: 'Certificates Expiring',
-        message: '4 land certificates expiring within 6 months',
+        title: 'Certificates Expiring - Project Beta',
+        message: '4 land certificates expiring within 6 months in Project Beta',
         count: 4,
         actionLabel: 'View Land',
-        actionRoute: '/project/7/land-inventory',
+        actionRoute: '/project/8/land-inventory',
         timestamp: new Date('2026-01-01'),
-        dismissible: true
+        dismissible: true,
+        project_id: 8,
+        project_name: 'Project Beta'
       },
       {
         id: 6,
         severity: 'warning',
         module: 'acquisition',
-        title: 'Stalled Negotiations',
-        message: '7 parcels in negotiation for over 60 days',
+        title: 'Stalled Negotiations - Project Alpha',
+        message: '7 parcels in negotiation for over 60 days in Project Alpha',
         count: 7,
         actionLabel: 'View Parcels',
         actionRoute: '/project/7/land-acquisition',
         timestamp: new Date('2026-01-01'),
-        dismissible: true
+        dismissible: true,
+        project_id: 7,
+        project_name: 'Project Alpha'
       }
     ]
   },
@@ -218,13 +227,15 @@ export const alertsCategoriesData: AlertCategory[] = [
         id: 7,
         severity: 'info',
         module: 'acquisition',
-        title: 'Missing Appraisals',
-        message: '12 parcels require appraisal before negotiation',
+        title: 'Missing Appraisals - Project Gamma',
+        message: '12 parcels require appraisal before negotiation in Project Gamma',
         count: 12,
         actionLabel: 'View Parcels',
-        actionRoute: '/project/7/land-acquisition',
+        actionRoute: '/project/9/land-acquisition',
         timestamp: new Date('2026-01-01'),
-        dismissible: true
+        dismissible: true,
+        project_id: 9,
+        project_name: 'Project Gamma'
       },
       {
         id: 8,
@@ -236,7 +247,8 @@ export const alertsCategoriesData: AlertCategory[] = [
         actionLabel: 'View Parcels',
         actionRoute: '/land-compliance',
         timestamp: new Date('2026-01-01'),
-        dismissible: true
+        dismissible: true,
+        project_id: null
       },
       {
         id: 9,
@@ -248,7 +260,8 @@ export const alertsCategoriesData: AlertCategory[] = [
         actionLabel: 'View Cases',
         actionRoute: '/land-litigasi',
         timestamp: new Date('2026-01-01'),
-        dismissible: true
+        dismissible: true,
+        project_id: null
       }
     ]
   },
@@ -261,25 +274,29 @@ export const alertsCategoriesData: AlertCategory[] = [
         id: 10,
         severity: 'monitoring',
         module: 'inventory',
-        title: 'Newly Acquired Land',
-        message: '6 newly acquired parcels this month',
+        title: 'Newly Acquired Land - Project Alpha',
+        message: '6 newly acquired parcels this month in Project Alpha',
         count: 6,
         actionLabel: 'View Land',
         actionRoute: '/project/7/land-inventory',
         timestamp: new Date('2026-01-01'),
-        dismissible: true
+        dismissible: true,
+        project_id: 7,
+        project_name: 'Project Alpha'
       },
       {
         id: 11,
         severity: 'monitoring',
         module: 'asset',
-        title: 'Large Household Assets',
-        message: '3 households with >10 family members detected',
+        title: 'Large Household Assets - Project Beta',
+        message: '3 households with >10 family members detected in Project Beta',
         count: 3,
         actionLabel: 'View Assets',
-        actionRoute: '/project/7/asset-inventory',
+        actionRoute: '/project/8/asset-inventory',
         timestamp: new Date('2026-01-01'),
-        dismissible: true
+        dismissible: true,
+        project_id: 8,
+        project_name: 'Project Beta'
       },
       {
         id: 12,
@@ -291,7 +308,8 @@ export const alertsCategoriesData: AlertCategory[] = [
         actionLabel: 'View Stakeholders',
         actionRoute: '/stakeholder-management',
         timestamp: new Date('2026-01-01'),
-        dismissible: true
+        dismissible: true,
+        project_id: null
       }
     ]
   }
