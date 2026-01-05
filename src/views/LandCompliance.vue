@@ -13,17 +13,17 @@
             type="file" 
             id="fileInput"
             class="form-control" 
-            @change="handleFile"
-            accept=".shp,.geojson,.json,.kml"
+            @change="onFile"
+            accept=".shp,.geojson,.json,.kml,.zip"
           />
         <div class="form-text">Format yang didukung: SHP, GeoJSON, KML</div>
       </div>
-        <button 
+        <!-- <button 
           @click="analyze" 
           class="btn btn-primary w-100"
         >
           <i class="bi bi-upload me-2"></i>Upload Data
-        </button>
+        </button> -->
       </div>   
     </div>
     <div class="card"> 
@@ -107,7 +107,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, onBeforeUnmount, computed } from "vue"
+import { ref, onMounted, onBeforeUnmount, computed,watch } from "vue"
 import L from "leaflet"
 import 'leaflet/dist/leaflet.css'
 import "@geoman-io/leaflet-geoman-free";
@@ -115,7 +115,7 @@ import "@geoman-io/leaflet-geoman-free/dist/leaflet-geoman.css";
 // import 'bootstrap/dist/js/bootstrap.bundle.min.js' // Removed to prevent navigation conflicts
 import "../utils/drawMap.js"
 // import Select from 'primevue/select';
-
+import shp from "shpjs"
 import "leaflet/dist/leaflet.css"
 
 interface StatRow {
@@ -129,7 +129,9 @@ const file = ref<File | null>(null)
 const map = ref<L.Map | null>(null)
 const layersOnMap = ref<any[]>([])
 const stats = ref<StatRow[]>([])
-
+let geojson:any = ref(null)
+let inputLayer = ref<any>()
+const 
 const fileSelected = computed(() => file.value !== null)
 
 function handleFile(e: Event) {
@@ -143,20 +145,31 @@ function initMap() {
   if (map.value) {
     L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png").addTo(map.value as any)
   }
+  watch(geojson, (data) => {
+    if (!data || !map) return
+
+    // inputLayer = new L.GeoJSON(data).addTo(map.value as any)
+    const bounds = inputLayer.getBounds()
+    if (bounds.isValid()) {
+      (map.value as any).fitBounds(bounds, {
+        padding: [20, 20]
+      })
+    }
+  })
   
 }
 
-function clearLayers() {
-  if (!map.value) return
-  layersOnMap.value.forEach(l => map.value!.removeLayer(l))
-  layersOnMap.value = []
-}
+// function clearLayers() {
+//   if (!map.value) return
+//   layersOnMap.value.forEach(l => map.value!.removeLayer(l))
+//   layersOnMap.value = []
+// }
 
-function addGeoJSON(geojson: any, style: any) {
-  if (!geojson || !map.value) return
-  const layer = L.geoJSON(geojson, { style }).addTo(map.value as any)
-  layersOnMap.value.push(layer)
-}
+// function addGeoJSON(geojson: any, style: any) {
+//   if (!geojson || !map.value) return
+//   const layer = L.geoJSON(geojson, { style }).addTo(map.value as any)
+//   layersOnMap.value.push(layer)
+// }
 
 async function analyze() {
   if (!file.value) {
@@ -175,38 +188,30 @@ async function analyze() {
   const data = await res.json()
 
   clearLayers()
-
-
-
   for (const [_name, geo] of Object.entries(data.layers)) {
     addGeoJSON(geo, { color: "blue", weight: 1, opacity: 0.5 })
   }
   addGeoJSON(data.input, { color: "red", weight: 2 })
   stats.value = data.stats
 }
-
-var layerSelection = [
-  {
-    nama : 'IUPK',
-    tahun : 2015
-  },
-  {
-    nama : 'Kawasan Hutan',
-    tahun : 2010
-  },
-  {
-    nama : 'HGB',
-    tahun : 2013
-  },
-  {
-    nama : 'Lahan Bebas',
-    tahun : 2015
-  },
-  {
-    nama : 'Kawasan Hutan',
-    tahun : 2022
-  },
-]
+async function onFile(e:any) {
+  const file = e.target.files[0]
+  
+  if (!file) return
+  const ext = file.name.split(".").slice(-1)[0].toLowerCase()
+  if(ext=="zip"){
+    const buffer = await file.arrayBuffer()
+    geojson.value = await shp(buffer)
+    inputLayer = new L.GeoJSON(geojson.value).addTo(map.value as any)
+  }else if (ext=="geojson"){
+    const buffer = await file.arrayBuffer()
+    const text = new TextDecoder("utf-8").decode(buffer)
+    const geojsonUpload = JSON.parse(text)
+    geojson.value = geojsonUpload
+    inputLayer = new L.GeoJSON(geojson.value).addTo(map.value as any)
+  }
+  console.log(geojson.value)
+}
 function addLayer(){
   const modal = document.getElementById("modal");
   if (modal) {
@@ -227,6 +232,7 @@ onMounted(() => {
     drawCircleMarker: false,
     rotateMode: false,
   })
+
 })
 
 // Clean up map instance when navigating away

@@ -25,7 +25,8 @@
     "vue": "^3.5.25",
     "vue-leaflet": "^0.1.0",
     "vue-router": "^4.6.3",
-    "wellknown": "^0.5.0"
+    "wellknown": "^0.5.0",
+    "wkt-to-gml": "^0.0.2"
   },
   "devDependencies": {
     "@types/leaflet-draw": "^1.0.13",
