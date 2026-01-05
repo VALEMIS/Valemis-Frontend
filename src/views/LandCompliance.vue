@@ -134,7 +134,7 @@ const layersOnMap = ref<any[]>([])
 const stats = ref<StatRow[]>([])
 let geojson:any = ref(null)
 let inputLayer = ref<any>()
-const 
+// const 
 const fileSelected = computed(() => file.value !== null)
 
 function handleFile(e: Event) {

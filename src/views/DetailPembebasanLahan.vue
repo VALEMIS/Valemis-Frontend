@@ -305,8 +305,6 @@ const acquisition = ref([])
 const projects = ref([])
 let uploadedGeojson = null
 let selectedGeometry = null
-const apiUrl = import.meta.env.VITE_APP_API_SPATIAL_URL;
-const geoserverUrl = import.meta.env.VITE_APP_API_GEOSERVER_URL;
 const fetchAcquisition = async () => {
   const res = await axios.get(apiUrl+`/LandAcquisition/?id_project=${projectId}`)
   acquisition.value = res.data
