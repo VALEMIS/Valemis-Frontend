@@ -115,8 +115,10 @@ import "@geoman-io/leaflet-geoman-free/dist/leaflet-geoman.css";
 // import 'bootstrap/dist/js/bootstrap.bundle.min.js' // Removed to prevent navigation conflicts
 import "../utils/drawMap.js"
 // import Select from 'primevue/select';
-
 import "leaflet/dist/leaflet.css"
+
+const apiUrl = import.meta.env.VITE_API_SPATIAL_URL
+const gsUrl = import.meta.env.VITE_API_GS_URL
 
 interface StatRow {
   layer: string
