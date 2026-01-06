@@ -97,31 +97,60 @@
 
         </ul>
       </nav>
+
+      <!-- Tagline at bottom of menu -->
+      <div class="menu-tagline">
+        <img src="/assets/img/Tagline.png" alt="Tagline" class="tagline-img">
+      </div>
     </div>
 
-    <!-- Footer -->
+    <!-- Footer with Account only -->
     <div class="sidebar-footer">
-      <div class="footer-logo">
-        <img src="/assets/img/Logo.png" alt="Logo" class="footer-logo-img">
-      </div>
-      <div class="user-email">
-        admin@valemis.id
+      <div class="account-section">
+        <div class="account-button" @click="toggleAccountMenu">
+          <i class="pi pi-user account-icon"></i>
+          <span class="account-email">admin@valemis.id</span>
+          <i class="pi pi-chevron-down dropdown-icon" :class="{ 'rotate': showAccountMenu }"></i>
+        </div>
+        <transition name="dropdown">
+          <div v-if="showAccountMenu" class="account-dropdown">
+            <button class="logout-button" @click="handleLogout">
+              <i class="pi pi-sign-out"></i>
+              <span>Keluar</span>
+            </button>
+          </div>
+        </transition>
       </div>
     </div>
   </aside>
 </template>
 
 <script setup lang="ts">
-import { useRoute } from 'vue-router'
+import { useRoute, useRouter } from 'vue-router'
 import { computed, watch, ref } from 'vue';
 import axios from 'axios';
 
 const projectMeta = ref<any>(null)
 const loadingProject = ref(false)
+const showAccountMenu = ref(false)
 
 const route = useRoute()
+const router = useRouter()
 
 const projectId = computed(() => route.params.id_project)
+
+const toggleAccountMenu = () => {
+  showAccountMenu.value = !showAccountMenu.value
+}
+
+const handleLogout = () => {
+  // Add your logout logic here
+  console.log('Logging out...')
+  // Example: clear session, redirect to login
+  // router.push('/login')
+  showAccountMenu.value = false
+}
+
 watch(
   projectId,
   async (newId) => {
@@ -208,12 +237,15 @@ watch(
 .sidebar-wrapper {
   flex: 1;
   overflow-y: auto;
-  padding: 16px 0;
+  padding: 16px 0 0 0;
   background: #f8f9fa;
+  display: flex;
+  flex-direction: column;
 }
 
 .sidebar-nav {
   padding: 0;
+  flex: 1;
 }
 
 .nav-menu {
@@ -323,32 +355,124 @@ watch(
   word-break: break-word;
 }
 
-/* Footer Section */
-.sidebar-footer {
-  border-top: 1px solid #e9ecef;
+/* Menu Tagline */
+.menu-tagline {
   padding: 20px;
-  background: #ffffff;
-}
-
-.footer-logo {
   text-align: center;
-  margin-bottom: 16px;
+  background: #f8f9fa;
+  margin-top: auto;
 }
 
-.footer-logo-img {
-  max-width: 120px;
+.menu-tagline .tagline-img {
+  max-width: 200px;
+  width: 100%;
   height: auto;
   object-fit: contain;
 }
 
-.user-email {
-  text-align: center;
+/* Footer Section */
+.sidebar-footer {
+  border-top: 1px solid #e9ecef;
+  padding: 16px 20px;
+  background: #ffffff;
+}
+
+.account-section {
+  position: relative;
+}
+
+.account-button {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px;
+  background: #f8f9fa;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  user-select: none;
+}
+
+.account-button:hover {
+  background: #e9ecef;
+}
+
+.account-icon {
+  font-size: 18px;
+  color: #495057;
+  flex-shrink: 0;
+}
+
+.account-email {
+  flex: 1;
   font-size: 14px;
   color: #212529;
   font-weight: 500;
-  padding: 12px;
-  background: #f8f9fa;
-  border-radius: 6px;
+}
+
+.dropdown-icon {
+  font-size: 12px;
+  color: #6c757d;
+  transition: transform 0.2s ease;
+}
+
+.dropdown-icon.rotate {
+  transform: rotate(180deg);
+}
+
+.account-dropdown {
+  position: absolute;
+  bottom: 100%;
+  left: 0;
+  right: 0;
+  margin-bottom: 8px;
+  background: #ffffff;
+  border: 1px solid #e9ecef;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+}
+
+.logout-button {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 16px;
+  background: transparent;
+  border: none;
+  color: #dc3545;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+}
+
+.logout-button:hover {
+  background: #fff5f5;
+}
+
+.logout-button i {
+  font-size: 16px;
+}
+
+/* Dropdown Animation */
+.dropdown-enter-active,
+.dropdown-leave-active {
+  transition: all 0.2s ease;
+}
+
+.dropdown-enter-from,
+.dropdown-leave-to {
+  opacity: 0;
+  transform: translateY(10px);
+}
+
+.dropdown-enter-to,
+.dropdown-leave-from {
+  opacity: 1;
+  transform: translateY(0);
 }
 
 /* Scrollbar Styling */
