@@ -147,21 +147,22 @@ const handleClick = () => {
 .kpi-card {
   position: relative;
   background: white;
-  border-radius: 16px;
+  border-radius: 12px;
   padding: 1.5rem;
-  border-left: 4px solid;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  border: 1px solid #e5e7eb;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
   cursor: pointer;
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   overflow: hidden;
-  min-height: 160px;
+  min-height: 140px;
   display: flex;
   gap: 1rem;
 }
 
 .kpi-card:hover {
-  transform: translateY(-4px);
-  box-shadow: 0 12px 24px rgba(0, 0, 0, 0.15);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+  border-color: #d1d5db;
 }
 
 .kpi-card:hover .hover-overlay {
@@ -182,9 +183,9 @@ const handleClick = () => {
 
 .kpi-icon {
   flex-shrink: 0;
-  width: 56px;
-  height: 56px;
-  border-radius: 12px;
+  width: 48px;
+  height: 48px;
+  border-radius: 8px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -192,11 +193,11 @@ const handleClick = () => {
 }
 
 .kpi-card:hover .kpi-icon {
-  transform: scale(1.1) rotate(5deg);
+  transform: scale(1.05);
 }
 
 .kpi-icon i {
-  font-size: 1.75rem;
+  font-size: 1.5rem;
 }
 
 .kpi-content {

@@ -141,7 +141,7 @@ const handleAlertClick = (alert: any) => {
 
 <style scoped>
 .critical-alerts {
-  margin-bottom: 2.5rem;
+  margin-bottom: 0;
 }
 
 .section-header {
@@ -236,11 +236,12 @@ const handleAlertClick = (alert: any) => {
   border-radius: 16px;
   padding: 1.5rem;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  border: 1px solid #e5e7eb;
 }
 
 .alerts-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  display: flex;
+  flex-direction: column;
   gap: 1rem;
 }
 

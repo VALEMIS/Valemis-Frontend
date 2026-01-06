@@ -68,17 +68,21 @@
           </div>
         </div>
 
-        <!-- 🟦 ZONE 1: Executive KPI -->
-        <ExecutiveKPI />
-
-        <!-- 🟨 ZONE 2: Critical Alerts -->
-        <CriticalAlerts />
-
-        <!-- 🗺️ ZONE 3: Unified Land Map -->
+        <!-- 🗺️ ZONE 1: Unified Land Map (Top) -->
         <UnifiedLandMap />
 
-        <!-- 📊 ZONE 4: Monitoring Charts -->
-        <MonitoringCharts />
+        <!-- 🟦 ZONE 2: Executive KPI (Below Map) -->
+        <ExecutiveKPI />
+
+        <!-- 📊 ZONE 3: Two-Column Layout (Charts Left, Alerts Right) -->
+        <div class="dashboard-bottom-grid">
+          <div class="charts-column">
+            <MonitoringCharts />
+          </div>
+          <div class="alerts-column">
+            <CriticalAlerts />
+          </div>
+        </div>
 
         <!-- Footer Info -->
         <div class="row mt-4">
@@ -168,7 +172,7 @@ onMounted(async () => {
 <style scoped>
 .dashboard-container {
   min-height: 100vh;
-  background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+  background: #f5f7fa;
   background-attachment: fixed;
 }
 
@@ -186,26 +190,23 @@ onMounted(async () => {
 }
 
 .title-icon {
-  width: 56px;
-  height: 56px;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  border-radius: 16px;
+  width: 48px;
+  height: 48px;
+  background: #3b82f6;
+  border-radius: 12px;
   display: flex;
   align-items: center;
   justify-content: center;
   color: white;
-  font-size: 1.75rem;
-  box-shadow: 0 8px 16px rgba(102, 126, 234, 0.3);
+  font-size: 1.5rem;
+  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.25);
 }
 
 .page-title {
-  font-size: 2rem;
-  font-weight: 800;
+  font-size: 1.75rem;
+  font-weight: 700;
   margin: 0;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
+  color: #111827;
   letter-spacing: -0.5px;
 }
 
@@ -411,6 +412,22 @@ onMounted(async () => {
   margin: 0;
 }
 
+/* Two-Column Bottom Grid */
+.dashboard-bottom-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 2rem;
+  margin-bottom: 2.5rem;
+}
+
+.charts-column {
+  min-width: 0;
+}
+
+.alerts-column {
+  min-width: 0;
+}
+
 @media (max-width: 768px) {
   .app-content-header {
     padding: 1.5rem 0;
@@ -463,6 +480,11 @@ onMounted(async () => {
   .footer-content {
     flex-direction: column;
     text-align: center;
+  }
+
+  .dashboard-bottom-grid {
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
   }
 }
 </style>
