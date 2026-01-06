@@ -107,9 +107,9 @@ import { Modal } from 'bootstrap'
 
 const props = defineProps(['id_project'])
 
-const API = `http://127.0.0.1:8000/api/spatial/LandInventoryRaster`
-const API_BYPROJECT = `http://127.0.0.1:8000/api/spatial/LandInventoryRaster/?id_project=${props.id_project}`
-const PROJECT_API = 'http://127.0.0.1:8000/api/spatial/Project'
+const API = `http://spatial.valemis.id/api/spatial/LandInventoryRaster`
+const API_BYPROJECT = `http://spatial.valemis.id/api/spatial/LandInventoryRaster/?id_project=${props.id_project}`
+const PROJECT_API = 'http://spatial.valemis.id/api/spatial/Project'
 
 
 const rasters = ref([])

@@ -108,7 +108,7 @@
                   <td><small>{{ parcel.nama_project }}</small></td>
                   <td><strong>{{ parcel.nama_pemilik }}</strong></td>
                   <td>{{ parcel.desa }}</td>
-                  <td class="text-end">{{ parcel.luas.toLocaleString() }}</td>
+                  <td class="text-end">{{ parcel.luas }}</td>
                   <td>
                     <span class="badge" :class="getStatusClass(parcel.status)">
                       {{ parcel.status }}
@@ -552,7 +552,18 @@ onMounted(async () => {
 
   // console.log(acquisitionParcel.value)
 
-  
+  const wmsLayer = L.tileLayer.wms(
+    gsUrl+"/raster_valemis/wms",
+    {
+      layers: "raster_valemis:orthophoto_mbb1",
+      format: "image/png",
+      transparent: true,
+      version: "1.1.0"
+    }
+  );
+
+  wmsLayer.addTo(map);
+
   const wmsLayerAcquisition = L.tileLayer.wms(
     gsUrl+"/vector_valemis/wms",
     {
@@ -560,6 +571,7 @@ onMounted(async () => {
       format: "image/png",
       transparent: true,
       version: "1.1.0",
+      CQL_FILTER: `id_project_id = ${projectId}`,
       styles:"Acquisition_style",
       crs: L.CRS.EPSG4326,
       tiled:false
@@ -607,6 +619,18 @@ function initMap() {
   })
 
   mpwkt = new LeafletMultiPolygonWKT(map)
+  const wmsLayerProject = L.tileLayer.wms(
+    gsUrl+"/vector_valemis/wms",
+    {
+      layers: "vector_valemis:tbl_project",
+      format: "image/png",
+      transparent: true,
+      version: "1.1.0",
+      styles:"sld_project",
+    }
+  );
+
+  wmsLayerProject.addTo(landMap);
 }
 function handleGeoJsonUpload(event) {
   const target = event.target 
