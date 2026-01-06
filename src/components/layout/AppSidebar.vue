@@ -357,7 +357,7 @@ watch(
 
 /* Menu Tagline */
 .menu-tagline {
-  padding: 20px;
+  padding: 0;
   text-align: center;
   background: #f8f9fa;
   margin-top: auto;
