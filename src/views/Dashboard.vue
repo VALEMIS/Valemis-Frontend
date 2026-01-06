@@ -5,17 +5,8 @@
       <div class="container-fluid">
         <div class="row">
           <div class="col-sm-6">
-            <div class="header-title-section">
-              <div class="title-icon">
-                <i class="bi bi-speedometer2"></i>
-              </div>
-              <div>
-                <h3 class="page-title">
-                  Monitoring Dashboard
-                </h3>
-                <p class="page-subtitle">Real-time overview of all land acquisition activities</p>
-              </div>
-            </div>
+            <h3 class="page-title">Dashboard</h3>
+            <p class="page-subtitle">Gambaran Umum Sistem Pengelolaan Rehabilitasi Daerah Aliran Sungai</p>
           </div>
           <div class="col-sm-6">
             <div class="header-actions">
@@ -46,27 +37,6 @@
 
     <div class="app-content">
       <div class="container-fluid">
-        <!-- Project Selection Notice -->
-        <div v-if="!currentProjectId" class="row mb-4">
-          <div class="col-12">
-            <div class="project-notice">
-              <div class="notice-icon">
-                <i class="bi bi-info-circle"></i>
-              </div>
-              <div class="notice-content">
-                <h4 class="notice-title">Select a Project</h4>
-                <p class="notice-message">
-                  Please select a project from the dropdown above to view project-specific data for Asset Inventory,
-                  Land Acquisition, and Land Inventory.
-                </p>
-                <router-link to="/project" class="notice-button">
-                  <i class="bi bi-folder-plus"></i>
-                  Browse Projects
-                </router-link>
-              </div>
-            </div>
-          </div>
-        </div>
 
         <!-- 🗺️ ZONE 1: Unified Land Map (Top) -->
         <UnifiedLandMap />
@@ -178,43 +148,23 @@ onMounted(async () => {
 
 .app-content-header {
   background: white;
-  padding: 2rem 0;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  padding: 1.5rem 0;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
   margin-bottom: 2rem;
 }
 
-.header-title-section {
-  display: flex;
-  align-items: center;
-  gap: 1rem;
-}
-
-.title-icon {
-  width: 48px;
-  height: 48px;
-  background: #3b82f6;
-  border-radius: 12px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: white;
-  font-size: 1.5rem;
-  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.25);
-}
-
 .page-title {
-  font-size: 1.75rem;
+  font-size: 1.5rem;
   font-weight: 700;
-  margin: 0;
+  margin: 0 0 0.25rem 0;
   color: #111827;
-  letter-spacing: -0.5px;
 }
 
 .page-subtitle {
-  font-size: 0.95rem;
+  font-size: 0.875rem;
   color: #6b7280;
-  margin: 0.375rem 0 0 0;
-  font-weight: 500;
+  margin: 0;
+  font-weight: 400;
 }
 
 .header-actions {
