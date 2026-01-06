@@ -62,7 +62,7 @@
               </tr>
 
               <tr v-for="(item, index) in projects" :key="item.id_project">
-                <td>{{ item.id_project }}</td>
+                <td>{{ index+1 }}</td>
                 <td>{{ item.nama_project }}</td>
                 <td>{{ item.owner_project }}</td>
                 <td>{{ item.tanggal_dibuat }}</td>
@@ -70,6 +70,9 @@
                     <div class="btn-group" role="group">
                         <button class="btn btn-sm btn-warning" @click="router.push(`/project/${item.id_project}`)"  title="Open Project">
                             <i class="bi bi-arrow-right"></i>
+                        </button>
+                        <button class="btn btn-sm btn-danger" @click="deleteProject(item.id_project)" title="Hapus parcel">
+                          <i class="bi bi-trash"></i>
                         </button>
                     </div>
                 </td>
@@ -137,6 +140,9 @@ import 'bootstrap/dist/js/bootstrap.bundle.min.js'
 import "../utils/drawMap.js"
 import router from '../router/index.js'
 import wellknown from "wellknown"
+const apiUrl = import.meta.env.VITE_APP_API_SPATIAL_URL;
+const geoserverUrl = import.meta.env.VITE_APP_API_GEOSERVER_URL;
+// console.log(apiUrl)
 
 const projects = ref([])
 let mpwkt
@@ -152,7 +158,7 @@ const form = ref({
 })
 
 const fetchProjects = async () => {
-  const res = await axios.get('http://127.0.0.1:8000/api/spatial/Project/?format=json')
+  const res = await axios.get(apiUrl+'Project/?format=json')
   projects.value = res.data
 }
 
@@ -176,10 +182,14 @@ const closeModal = () => {
   modalInstance.hide()
 }
 
+async function deleteProject(projectId) {
+  await axios.delete(apiUrl+`Project/${projectId}/`)
+}
+
 const submitProject = async () => {
   const wkt = mpwkt.toWKT()
   form.value.geom = wkt
-  await axios.post('http://127.0.0.1:8000/api/spatial/Project/?format=json', form.value)
+  await axios.post(apiUrl+'Project/?format=json', form.value)
 
   // reset form
   form.value = {
@@ -226,7 +236,7 @@ function initProjectMap(){
   // console.log(projects.value.id_persil.geom)
   // console.log(projects.value)
   L.tileLayer.wms(
-    "http://172.28.83.5:8080/geoserver/vector_valemis/wms",
+    geoserverUrl+"vector_valemis/wms",
     {
       layers: "	vector_valemis:tbl_project",
       format: "image/png",

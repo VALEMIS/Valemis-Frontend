@@ -542,7 +542,7 @@ const fetchProjects = async () => {
     certificateNo: e.no_sertif || '',
     acquisitionYear: e.tahun_perolehan || null,
     documents: e.documents || [],
-    geom: e.id_persil?.geom || null
+    geom: e.geom || null
   }
   
 ))
@@ -827,9 +827,7 @@ const saveLand = async () => {
         "status": formData.value.certificate,
         "no_sertif": formData.value.certificateNo,
         "id_project":projectId,
-        "id_persil": {
-            "geom": wkt
-        },
+        "geom": wkt
     }
     const res = await axios.post(
     apiUrl+'/LandInventory/',

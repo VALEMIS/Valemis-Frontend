@@ -148,7 +148,7 @@
                         <i class="bi bi-pencil-square"></i>
                       </button>
                       <button class="btn btn-sm btn-danger" @click="deleteParcel(parcel.id_parcel)" title="Hapus parcel">
-                        <i class="bi bi-cross"></i>
+                        <i class="bi bi-trash"></i>
                       </button>
                     </div>
                   </td>
