@@ -1,6 +1,5 @@
 <template>
   <div class="app-wrapper">
-    <AppHeader />
     <AppSidebar />
     <main class="app-main">
       <router-view />
@@ -11,7 +10,6 @@
 
 <script setup lang="ts">
 import { onMounted } from 'vue'
-import AppHeader from './layout/AppHeader.vue'
 import AppSidebar from './layout/AppSidebar.vue'
 import AppFooter from './layout/AppFooter.vue'
 
