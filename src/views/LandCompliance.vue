@@ -18,12 +18,12 @@
           />
         <div class="form-text">Format yang didukung: SHP, GeoJSON, KML</div>
       </div>
-        <!-- <button 
+        <button 
           @click="analyze" 
           class="btn btn-primary w-100"
         >
           <i class="bi bi-upload me-2"></i>Upload Data
-        </button> -->
+        </button>
       </div>   
     </div>
     <div class="card"> 
@@ -40,17 +40,29 @@
           <thead>
             <tr>
               <th>Layer</th>
-              <th>Tahun Terbit</th>
-              <th>Luas (m²)</th>
-              <th>Luas (ha)</th>
+              <th>Nama table</th>
+              <th>Link WMS</th>
+              <th>Legenda</th>
             </tr>
           </thead>
           <tbody>
-            <tr v-for="row in stats" :key="row.layer">
-              <td>{{ row.layer }}</td>
-              <td>{{ row.jumlah_fitur }}</td>
+            <tr v-for="row in selectedLayer" :key="row.tbl_name">
+              <td>{{ row.nama_map }}</td>
+              <td>{{ row.tbl_name }}</td>
+              <td>
+                <a
+                  :href="`${gsUrl}/vector_valemis/wms?service=WMS&version=1.1.0&request=GetMap&layers=vector_valemis:${row.tbl_name}`"
+                  target="_blank"
+                >
+                  {{ gsUrl }}/vector_valemis/wms?service=WMS&version=1.1.0&request=GetMap&layers=vector_valemis:{{ row.tbl_name }}
+                </a>
+              </td>
+              <td>
+                <img :src="`${gsUrl}/vector_valemis/wms?REQUEST=GetLegendGraphic&VERSION=1.0.0&FORMAT=image/png&WIDTH=20&HEIGHT=20&LAYER=vector_valemis:${row.tbl_name}&STYLE=${row.style}`"/>
+              </td>
+              <!-- <td>{{ row.jumlah_fitur }}</td>
               <td>{{ row.luas_m2 }}</td>
-              <td>{{ row.luas_ha }}</td>
+              <td>{{ row.luas_ha }}</td> -->
             </tr>
             
           </tbody>
@@ -90,16 +102,26 @@
         <h4 id="modalTitle">Tambah Data</h4>
         <form id="form">
           <div class="form-floating">
-            <select class="form-select" id="floatingSelect" aria-label="Floating label select example">
-              <option selected>Pilih Layer Spasial</option>
-              <option v-for="value,i in layerSelection" :value="i">{{value.nama}}</option>
+            <select class="form-select" v-model="selectedOptions">
+              <option disabled value="">Pilih Layer Spasial</option>
+              <option
+                v-for="value in themeMap"
+                :key="value.tbl_name"
+                :value="{
+                  tbl_name: value.tbl_name,
+                  nama_map: value.nama_map,
+                  style:value.style
+                }"
+              >
+                {{ value.nama_map }} ({{ value.type }})
+              </option>
             </select>
             <label for="floatingSelect">Works with selects</label>
           </div>
         </form>
         <div class="mt-3 text-end">
-            <button class="btn btn-secondary" id="closeModal" v-on:click="addLayer()">Batal</button>
-            <button class="btn btn-primary" id="saveBtn" v-on:click="addLayer()">Simpan</button>
+            <button class="btn btn-secondary" id="closeModal" v-on:click="closeSelection()">Batal</button>
+            <button class="btn btn-primary" id="saveBtn" v-on:click="addLayer(selectedOptions)">Simpan</button>
           
         </div>
     </div>
@@ -115,11 +137,14 @@ import "@geoman-io/leaflet-geoman-free/dist/leaflet-geoman.css";
 // import 'bootstrap/dist/js/bootstrap.bundle.min.js' // Removed to prevent navigation conflicts
 import "../utils/drawMap.js"
 // import Select from 'primevue/select';
+import "../utils/drawMap.js"
 import shp from "shpjs"
 import "leaflet/dist/leaflet.css"
+import axios from "axios";
+import { geojsonToWKT } from "@terraformer/wkt"
 
-const apiUrl = import.meta.env.VITE_API_SPATIAL_URL
-const gsUrl = import.meta.env.VITE_API_GS_URL
+const apiUrl = import.meta.env.VITE_APP_API_SPATIAL_URL
+const gsUrl = import.meta.env.VITE_APP_API_GS_URL
 
 interface StatRow {
   layer: string
@@ -134,9 +159,23 @@ const layersOnMap = ref<any[]>([])
 const stats = ref<StatRow[]>([])
 let geojson:any = ref(null)
 let inputLayer = ref<any>()
+const themeMap = ref<any>(null)
+const selectedLayer = ref<any>([])
+const selectedOptions = ref<any>(null)
+const analyzeData = ref<any>(null)
+const analyzeDataGeom = ref<any>(null)
+let mpwkt
 // const 
 const fileSelected = computed(() => file.value !== null)
 
+
+async function fetchData()  {
+  const res = await axios.get(apiUrl+"/LandInventoryThemeMap/")
+  themeMap.value = res.data
+}
+async function fetchLayer(tbl_name) {
+  const res = await axios.get()
+}
 function handleFile(e: Event) {
   const target = e.target as HTMLInputElement
   file.value = target.files?.[0] || null
@@ -175,28 +214,36 @@ function initMap() {
 // }
 
 async function analyze() {
-  if (!file.value) {
-    alert("Upload file dulu")
-    return
-  }
-
-  const formData = new FormData()
-  formData.append("file", file.value)
-
-  const res = await fetch("http://127.0.0.1:8000/api/valemis/analyze/", {
+  // if (!file.value) {
+  //   alert("Upload file dulu")
+  //   return
+  // }
+  // console.log(inputLayer.value)
+  // const formData = new FormData()
+  // formData.append("file", file.value)
+  // const wkt = mpwkt.toWKT()
+  // console.log( geojson.value.features[0].geometry)
+  const res = await fetch("http://spatial.valemis.id/api/spatial/analyze/", {
     method: "POST",
-    body: formData
+    headers: {
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify({
+      geometry: geojsonToWKT(geojson.value.features[0].geometry),
+      tables: selectedLayer.value.map((e:any)=>(e.tbl_name))
+    })
   })
 
   const data = await res.json()
-
-  clearLayers()
-  for (const [_name, geo] of Object.entries(data.layers)) {
-    addGeoJSON(geo, { color: "blue", weight: 1, opacity: 0.5 })
-  }
-  addGeoJSON(data.input, { color: "red", weight: 2 })
-  stats.value = data.stats
+  // console.log(data)
+  // clearLayers()
+  // for (const [_name, geo] of Object.entries(data.layers)) {
+  //   addGeoJSON(geo, { color: "blue", weight: 1, opacity: 0.5 })
+  // }
+  // addGeoJSON(data.input, { color: "red", weight: 2 })
+  // stats.value = data.stats
 }
+
 async function onFile(e:any) {
   const file = e.target.files[0]
   
@@ -213,15 +260,43 @@ async function onFile(e:any) {
     geojson.value = geojsonUpload
     inputLayer = new L.GeoJSON(geojson.value).addTo(map.value as any)
   }
-  console.log(geojson.value)
+  // console.log(geojson.value)
 }
-function addLayer(){
+
+function selectLayer(e){
+  selectedOptions.value = e.value
+  console.log(selectedOptions.value)
+}
+function addLayer(nama_map:any){
   const modal = document.getElementById("modal");
   if (modal) {
     modal.style.display = "none";
   }
-  // layerSelected.push()
+  if (selectedOptions.value!=""){
+    selectedLayer.value.push(selectedOptions.value)
+  }
+
+  L.tileLayer.wms(
+    gsUrl+"/vector_valemis/wms",
+    {
+      layers: "vector_valemis:"+selectedOptions.value.tbl_name,
+      format: "image/png",
+      transparent: true,
+      styles:selectedOptions.value.style,
+      version: "1.1.0"
+    }
+  ).addTo(map.value as any);
 }
+
+
+
+function closeSelection(){
+  const modal = document.getElementById("modal");
+  modal.style.display="none"
+  selectedOptions.value = ""
+}
+
+
 function openForm(){
   const modal = document.getElementById("modal");
   if (modal) {
@@ -229,13 +304,14 @@ function openForm(){
   }
 }
 onMounted(() => {
+  fetchData()
   initMap()
   map.value?.pm.addControls({
     position: 'topleft',
     drawCircleMarker: false,
     rotateMode: false,
   })
-
+  // mpwkt = new LeafletMultiPolygonWKT(map)
 })
 
 // Clean up map instance when navigating away
