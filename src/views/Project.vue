@@ -158,7 +158,7 @@ const form = ref({
 })
 
 const fetchProjects = async () => {
-  const res = await axios.get(apiUrl+'Project/?format=json')
+  const res = await axios.get(apiUrl+'/Project/?format=json')
   projects.value = res.data
 }
 
@@ -183,13 +183,13 @@ const closeModal = () => {
 }
 
 async function deleteProject(projectId) {
-  await axios.delete(apiUrl+`Project/${projectId}/`)
+  await axios.delete(apiUrl+`/Project/${projectId}/`)
 }
 
 const submitProject = async () => {
   const wkt = mpwkt.toWKT()
   form.value.geom = wkt
-  await axios.post(apiUrl+'Project/?format=json', form.value)
+  await axios.post(apiUrl+'/Project/?format=json', form.value)
 
   // reset form
   form.value = {

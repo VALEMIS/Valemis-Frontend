@@ -291,8 +291,8 @@ const route = useRoute()
 const projectId = route.params.id_project
 const uploadGeometry = null
 
-const apiUrl = import.meta.env.VITE_API_SPATIAL_URL
-const gsUrl = import.meta.env.VITE_API_GS_URL
+const apiUrl = import.meta.env.VITE_APP_API_SPATIAL_URL
+const gsUrl = import.meta.env.VITE_APP_API_GS_URL
 
 let mpwkt
 let map = null

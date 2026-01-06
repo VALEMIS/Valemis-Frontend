@@ -101,7 +101,7 @@ let uploadedGeojson = null
 let selectedGeometry = null
 const apiUrl = import.meta.env.VITE_APP_API_SPATIAL_URL;
 const fetchAcquisition = async () => {
-  const resProject = await axios.get(apiUrl+`Project/${projectId}`)
+  const resProject = await axios.get(apiUrl+`/Project/${projectId}`)
   projects.value = resProject.data
 }
 
@@ -115,7 +115,7 @@ await fetchAcquisition ()
     attribution: '&copy; OpenStreetMap contributors'
   }).addTo(map)
 
-  const resProject = await axios.get(apiUrl+`Project/${projectId}`)
+  const resProject = await axios.get(apiUrl+`/Project/${projectId}`)
   
   if (resProject.data.geom) {
     const geojson = wellknown.parse(resProject.data.geom)

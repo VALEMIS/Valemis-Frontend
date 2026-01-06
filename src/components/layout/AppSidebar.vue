@@ -113,7 +113,7 @@ watch(
     loadingProject.value = true
     try {
       const res = await axios.get(
-        `http://127.0.0.1:8000/api/spatial/Project/${newId}`
+        `http://spatial.valemis.id/api/spatial/Project/${newId}`
       )
       projectMeta.value = res.data
     } catch (err) {
