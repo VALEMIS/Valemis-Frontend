@@ -20,7 +20,7 @@
       <div class="container-fluid">
         <!-- Stakeholder Network Visualization with Quadrant Matrix -->
         <div class="card mb-4">
-          <div class="card-header bg-primary text-white">
+          <div class="card-header text-white" style="background-color: #2c3e50;">
             <h5 class="mb-0">
               <i class="bi bi-diagram-3"></i> Stakeholder Power-Interest Matrix & Network Visualization
             </h5>
@@ -30,8 +30,8 @@
             <div class="row">
               <!-- Canvas -->
               <div class="col-lg-9">
-                <canvas ref="networkCanvas" width="900" height="650" class="border rounded bg-white w-100"
-                  @click="handleCanvasClick" style="max-width: 100%;"></canvas>
+                <canvas ref="networkCanvas" width="900" height="650" class="border rounded w-100"
+                  @click="handleCanvasClick" style="max-width: 100%; background-color: #f8f9fa;"></canvas>
               </div>
 
               <!-- Legend -->
@@ -112,34 +112,62 @@
         <!-- Dashboard Cards - Moved Below -->
         <div class="row mb-4">
           <div class="col-lg-3 col-6">
-            <div class="small-box bg-success">
-              <div class="inner">
-                <h3>{{ stats.proAktif }}</h3>
-                <p>Pro - Aktif</p>
+            <div class="card" style="border-top: 4px solid #28a745;">
+              <div class="card-body">
+                <div class="d-flex align-items-center">
+                  <div class="me-3">
+                    <h3 class="mb-0" style="color: #28a745;">{{ stats.proAktif }}</h3>
+                  </div>
+                  <div>
+                    <p class="mb-0 text-muted">Pro - Aktif</p>
+                    <small class="text-success">Supportive & Active</small>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
           <div class="col-lg-3 col-6">
-            <div class="small-box bg-info">
-              <div class="inner">
-                <h3>{{ stats.proPasif }}</h3>
-                <p>Pro - Pasif</p>
+            <div class="card" style="border-top: 4px solid #17a2b8;">
+              <div class="card-body">
+                <div class="d-flex align-items-center">
+                  <div class="me-3">
+                    <h3 class="mb-0" style="color: #17a2b8;">{{ stats.proPasif }}</h3>
+                  </div>
+                  <div>
+                    <p class="mb-0 text-muted">Pro - Pasif</p>
+                    <small class="text-info">Supportive & Passive</small>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
           <div class="col-lg-3 col-6">
-            <div class="small-box bg-warning">
-              <div class="inner">
-                <h3>{{ stats.kontraAktif }}</h3>
-                <p>Kontra - Aktif</p>
+            <div class="card" style="border-top: 4px solid #dc3545;">
+              <div class="card-body">
+                <div class="d-flex align-items-center">
+                  <div class="me-3">
+                    <h3 class="mb-0" style="color: #dc3545;">{{ stats.kontraAktif }}</h3>
+                  </div>
+                  <div>
+                    <p class="mb-0 text-muted">Kontra - Aktif</p>
+                    <small class="text-danger">Critical & Active</small>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
           <div class="col-lg-3 col-6">
-            <div class="small-box bg-danger">
-              <div class="inner">
-                <h3>{{ stats.kontraPasif }}</h3>
-                <p>Kontra - Pasif</p>
+            <div class="card" style="border-top: 4px solid #ffc107;">
+              <div class="card-body">
+                <div class="d-flex align-items-center">
+                  <div class="me-3">
+                    <h3 class="mb-0" style="color: #ffc107;">{{ stats.kontraPasif }}</h3>
+                  </div>
+                  <div>
+                    <p class="mb-0 text-muted">Kontra - Pasif</p>
+                    <small class="text-warning">Critical & Passive</small>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
@@ -2454,6 +2482,43 @@ onMounted(() => {
   background: #fff;
   border-bottom: none;
   padding: 1rem 1.25rem 0;
+}
+
+/* Clean Badge Styling */
+.badge {
+  font-weight: 500;
+  background-color: transparent !important;
+  border: 1px solid transparent;
+}
+
+.badge.bg-success {
+  color: #198754;
+  border-color: #198754;
+}
+
+.badge.bg-info {
+  color: #0dcaf0;
+  border-color: #0dcaf0;
+}
+
+.badge.bg-warning {
+  color: #ffc107;
+  border-color: #ffc107;
+}
+
+.badge.bg-danger {
+  color: #dc3545;
+  border-color: #dc3545;
+}
+
+.badge.bg-secondary {
+  color: #6c757d;
+  border-color: #6c757d;
+}
+
+.badge.bg-primary {
+  color: #0d6efd;
+  border-color: #0d6efd;
 }
 
 /* Quadrant Matrix Styles */
