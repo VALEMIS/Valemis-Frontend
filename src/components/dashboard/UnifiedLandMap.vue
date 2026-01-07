@@ -1,62 +1,8 @@
 <template>
   <div class="unified-land-map">
-    <!-- Section Header -->
-    <div class="section-header mb-3">
-      <div>
-        <h3 class="text-xl font-semibold m-0 text-secondary">
-          Land Overview
-        </h3>
-        <p class="text-500 text-sm mt-1">Interactive geospatial view</p>
-      </div>
-    </div>
-
     <!-- Map Container -->
     <Card class="map-card">
       <template #content>
-        <!-- Map Toolbar -->
-        <div class="map-toolbar">
-          <div class="flex gap-2">
-            <InputText
-              placeholder="Search location..."
-              class="search-input"
-            >
-              <template #prepend>
-                <i class="bi bi-search"></i>
-              </template>
-            </InputText>
-          </div>
-          <div class="flex gap-2">
-            <Button
-              icon="bi bi-plus-lg"
-              severity="secondary"
-              text
-              rounded
-              size="small"
-              @click="handleZoomIn"
-            />
-            <Button
-              icon="bi bi-dash-lg"
-              severity="secondary"
-              text
-              rounded
-              size="small"
-              @click="handleZoomOut"
-            />
-            <Button
-              label="Layers"
-              icon="bi bi-grid"
-              severity="secondary"
-              text
-              size="small"
-            />
-            <Button
-              label="New Job"
-              icon="bi bi-plus-lg"
-              severity="success"
-              size="small"
-            />
-          </div>
-        </div>
 
         <div class="flex">
           <!-- Map Area -->
@@ -69,23 +15,15 @@
               <span class="block mt-2 text-sm">Loading map data...</span>
             </div>
 
-            <!-- Temperature Badge -->
-            <div class="map-temperature-badge">
-              <i class="bi bi-sun text-warning mr-1"></i>
-              <span class="font-semibold">38°C</span>
-            </div>
+
           </div>
         </div>
       </template>
     </Card>
 
     <!-- Fullscreen Dialog -->
-    <Dialog
-      v-model:visible="fullscreenVisible"
-      :style="{ width: '95vw', height: '90vh' }"
-      :modal="true"
-      :showHeader="false"
-    >
+    <Dialog v-model:visible="fullscreenVisible" :style="{ width: '95vw', height: '90vh' }" :modal="true"
+      :showHeader="false">
       <div id="dashboard-map-fullscreen" class="map-container-fullscreen"></div>
     </Dialog>
   </div>

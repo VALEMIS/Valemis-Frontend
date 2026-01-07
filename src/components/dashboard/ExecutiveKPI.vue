@@ -1,22 +1,5 @@
 <template>
   <div class="executive-kpi">
-    <!-- Section Header -->
-    <div class="section-header">
-      <div class="header-content">
-        <div class="header-icon">
-          <i class="bi bi-speedometer2"></i>
-        </div>
-        <div>
-          <h3 class="section-title">Key Performance Indicators</h3>
-          <p class="section-subtitle">Real-time metrics at a glance</p>
-        </div>
-      </div>
-      <button class="refresh-btn" @click="handleRefresh" :disabled="loading">
-        <i class="bi bi-arrow-clockwise" :class="{ 'spinning': loading }"></i>
-        <span>Refresh</span>
-      </button>
-    </div>
-
     <!-- KPI Cards Grid -->
     <div class="kpi-grid">
       <KPICard v-for="kpi in kpis" :key="kpi.id" :kpi="kpi" class="kpi-item" />

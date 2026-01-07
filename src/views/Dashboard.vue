@@ -5,7 +5,7 @@
         <!-- Dashboard Title -->
         <div class="dashboard-header">
           <h3 class="page-title">Dashboard</h3>
-          <p class="page-subtitle">Gambaran Umum Sistem Pengelolaan Rehabilitasi Daerah Aliran Sungai</p>
+          <p class="page-subtitle">Gambaran Umum Sistem Pengelolaan Lahan dan Aset</p>
         </div>
 
         <!-- 🗺️ ZONE 1: Unified Land Map (Top) -->
@@ -24,26 +24,7 @@
           </div>
         </div>
 
-        <!-- Footer Info -->
-        <div class="row mt-4">
-          <div class="col-12">
-            <div class="footer-card">
-              <div class="footer-content">
-                <div class="footer-icon">
-                  <i class="bi bi-info-circle"></i>
-                </div>
-                <div class="footer-text">
-                  <p class="footer-title">
-                    Dashboard Monitoring
-                  </p>
-                  <p class="footer-subtitle">
-                    Last updated: {{ lastUpdated }} • Data refreshes automatically every 5 minutes
-                  </p>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
+
       </div>
     </div>
   </div>
@@ -117,22 +98,23 @@ onMounted(async () => {
 }
 
 .app-content {
-  padding: 2rem 0;
+  padding: 3rem 0 2rem 0;
 }
 
 .dashboard-header {
   margin-bottom: 2rem;
+  padding-top: 1rem;
 }
 
 .page-title {
-  font-size: 1.5rem;
+  font-size: 2.25rem;
   font-weight: 700;
-  margin: 0 0 0.25rem 0;
+  margin: 0 0 0.5rem 0;
   color: #111827;
 }
 
 .page-subtitle {
-  font-size: 0.875rem;
+  font-size: 1.125rem;
   color: #6b7280;
   margin: 0;
   font-weight: 400;
