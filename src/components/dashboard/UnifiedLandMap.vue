@@ -41,7 +41,8 @@ import { useDashboardData } from '@/composables/useDashboardData'
 import { useLeafletMap } from '@/composables/useLeafletMap'
 import L from 'leaflet'
 import type { MapLayer, MapFilter } from '@/types/dashboard'
-
+const apiUrl = import.meta.env.VITE_APP_API_SPATIAL_URL
+const gsUrl = import.meta.env.VITE_APP_API_GS_URL
 const { mapLayers } = useDashboardData()
 
 const mapContainer = ref<HTMLElement | null>(null)
@@ -81,9 +82,99 @@ onMounted(() => {
     // Add tile layer
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
       attribution: '© OpenStreetMap contributors'
-    }).addTo(map)
+      }).addTo(map)
+    const wmsLayer = L.tileLayer.wms(
+      gsUrl+"/raster_valemis/wms",
+      {
+        layers: "raster_valemis:orthophoto_mbb1",
+        format: "image/png",
+        transparent: true,
+        version: "1.1.0"
+      }
+    );
 
-    // Add sample data (in real implementation, this would come from API)
+    wmsLayer.addTo(map);
+
+    // const wmsLayerHutan = L.tileLayer.wms(
+    //   gsUrl+"/vector_valemis/wms",
+    //   {
+    //     layers: "		vector_valemis:theme_7e0f4b08",
+    //     format: "image/png",
+    //     transparent: true,
+    //     styles:"Style Kawasan Hutan",
+    //     version: "1.1.0"
+    //   }
+    // );
+
+    // wmsLayerHutan.addTo(map);
+
+    const wmsLayerBatas = L.tileLayer.wms(
+      gsUrl+"/vector_valemis/wms",
+      {
+        layers: "	vector_valemis:theme_ea895991",
+        format: "image/png",
+        transparent: true,
+        styles:"Style Batas Desa",
+        version: "1.1.0"
+      }
+    );
+
+    wmsLayerBatas.addTo(map);
+    const wmsLayerIUPK = L.tileLayer.wms(
+    gsUrl+"/vector_valemis/wms",
+    {
+      layers: "	vector_valemis:theme_eab3f65a",
+      format: "image/png",
+      transparent: true,
+      version: "1.1.0",
+      styles:"sld_iupk_3",
+      crs: L.CRS.EPSG4326,
+    }
+  );
+
+  wmsLayerIUPK.addTo(map);
+
+    const wmsLayerAcquisition = L.tileLayer.wms(
+    gsUrl+"/vector_valemis/wms",
+    {
+      layers: "	vector_valemis:tbl_acquisition",
+      format: "image/png",
+      transparent: true,
+      version: "1.1.0",
+      styles:"sld_persil",
+      crs: L.CRS.EPSG4326,
+    }
+  );
+
+  wmsLayerAcquisition.addTo(map);
+  const wmsLayerAsset = L.tileLayer.wms(
+    gsUrl+"/vector_valemis/wms",
+    {
+      layers: "	vector_valemis:census_kepala_keluarga",
+      format: "image/png",
+      transparent: true,
+      version: "1.1.0",
+      styles:"sld_asset_point",
+      crs: L.CRS.EPSG4326,
+    }
+  );
+
+  wmsLayerAsset.addTo(map);
+
+  const wmsLayerProject = L.tileLayer.wms(
+    gsUrl+"/vector_valemis/wms",
+    {
+      layers: "	vector_valemis:tbl_project",
+      format: "image/png",
+      transparent: true,
+      version: "1.1.0",
+      styles:"sld_projek",
+      crs: L.CRS.EPSG4326,
+    }
+  );
+
+  wmsLayerProject.addTo(map);
+      // Add sample data (in real implementation, this would come from API)
     addSampleLayers()
 
     // Simulate loading
@@ -104,54 +195,6 @@ onUnmounted(() => {
 const addSampleLayers = () => {
   if (!map) return
 
-  // Sample polygon for Sorowako
-  const sorowakoPolygon = L.polygon([
-    [-2.55, 121.0],
-    [-2.55, 121.1],
-    [-2.45, 121.1],
-    [-2.45, 121.0]
-  ], {
-    color: '#22c55e',
-    fillColor: '#22c55e',
-    fillOpacity: 0.3,
-    weight: 2
-  }).addTo(map)
-
-  sorowakoPolygon.bindPopup(`
-    <div>
-      <h4>Sorowako</h4>
-      <p>Status: Lahan Bebas</p>
-      <p>Parcels: 45</p>
-    </div>
-  `)
-
-  // Sample polygon for Magani
-  const maganiPolygon = L.polygon([
-    [-2.6, 121.15],
-    [-2.6, 121.25],
-    [-2.5, 121.25],
-    [-2.5, 121.15]
-  ], {
-    color: '#eab308',
-    fillColor: '#eab308',
-    fillOpacity: 0.3,
-    weight: 2
-  }).addTo(map)
-
-  maganiPolygon.bindPopup(`
-    <div>
-      <h4>Magani</h4>
-      <p>Status: Dalam Proses</p>
-      <p>Parcels: 32</p>
-    </div>
-  `)
-
-  // Add some markers
-  const marker1 = L.marker([-2.5, 121.05]).addTo(map)
-  marker1.bindPopup('<div><h4>Parcel #1234</h4><p>Status: Bebas</p><p>Owner: John Doe</p></div>')
-
-  const marker2 = L.marker([-2.52, 121.08]).addTo(map)
-  marker2.bindPopup('<div><h4>Parcel #1235</h4><p>Status: Proses</p><p>Owner: Jane Smith</p></div>')
 }
 
 // Handle layer toggle
