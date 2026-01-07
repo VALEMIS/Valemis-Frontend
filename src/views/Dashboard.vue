@@ -5,7 +5,7 @@
         <!-- Dashboard Title -->
         <div class="dashboard-header">
           <h3 class="page-title">Dashboard</h3>
-          <p class="page-subtitle">Gambaran Umum Sistem Pengelolaan Lahan dan Aset</p>
+          <!-- <p class="page-subtitle">Gambaran Umum Sistem Pengelolaan Lahan dan Aset</p> -->
         </div>
 
         <!-- 🗺️ ZONE 1: Unified Land Map (Top) -->
