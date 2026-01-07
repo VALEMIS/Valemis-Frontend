@@ -25,7 +25,7 @@
 
       <!-- Bar Chart -->
       <div class="chart-card">
-        <h4 class="chart-title">Progres Bulanan</h4>
+        <h4 class="chart-title">Progres Per Kegiatan</h4>
         <div class="chart-wrapper bar-chart-wrapper">
           <canvas id="progress-bar-chart"></canvas>
         </div>
@@ -72,7 +72,7 @@ onMounted(() => {
             padding: 15,
             font: {
               size: 12,
-              weight: '500'
+              weight: 500
             },
             color: '#6b7280',
             usePointStyle: true,
@@ -103,16 +103,25 @@ onMounted(() => {
 
   initPieChart(pieChartConfig)
 
-  // Bar Chart - Monthly Progress
+  // Bar Chart - Progress per Activity
   const barChartData = {
     labels: ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun'],
-    datasets: [{
-      label: 'Selesai',
-      data: [12, 19, 15, 25, 22, 30],
-      backgroundColor: '#3b82f6',
-      borderRadius: 6,
-      barThickness: 30
-    }]
+    datasets: [
+      {
+        label: 'Pembebasan Lahan (Akuisisi)',
+        data: [12, 19, 15, 25, 22, 30],
+        backgroundColor: '#3b82f6',
+        borderRadius: 6,
+        barThickness: 25
+      },
+      {
+        label: 'Menyelesaikan Sengketa (Litigasi)',
+        data: [5, 8, 6, 10, 9, 12],
+        backgroundColor: '#ef4444',
+        borderRadius: 6,
+        barThickness: 25
+      }
+    ]
   }
 
   const barChartConfig = {
@@ -123,7 +132,18 @@ onMounted(() => {
       maintainAspectRatio: false,
       plugins: {
         legend: {
-          display: false
+          display: true,
+          position: 'bottom' as const,
+          labels: {
+            padding: 15,
+            font: {
+              size: 12,
+              weight: 500
+            },
+            color: '#6b7280',
+            usePointStyle: true,
+            pointStyle: 'circle'
+          }
         },
         tooltip: {
           backgroundColor: 'rgba(17, 24, 39, 0.95)',
@@ -135,7 +155,7 @@ onMounted(() => {
           cornerRadius: 8,
           callbacks: {
             label: function (context: any) {
-              return `Selesai: ${context.parsed.y} bidang`
+              return `${context.dataset.label}: ${context.parsed.y} kegiatan`
             }
           }
         }
@@ -151,7 +171,7 @@ onMounted(() => {
             color: '#6b7280',
             font: {
               size: 12,
-              weight: '500'
+              weight: 500
             }
           }
         },
@@ -164,7 +184,7 @@ onMounted(() => {
             color: '#6b7280',
             font: {
               size: 12,
-              weight: '500'
+              weight: 500
             }
           }
         }
@@ -245,7 +265,7 @@ onMounted(() => {
 }
 
 .bar-chart-wrapper {
-  height: 250px;
+  height: 300px;
 }
 
 @media (max-width: 768px) {

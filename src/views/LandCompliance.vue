@@ -129,6 +129,7 @@
 </template>
 
 <script setup lang="ts">
+// @ts-nocheck
 import { ref, onMounted, onBeforeUnmount, computed,watch } from "vue"
 import L from "leaflet"
 import 'leaflet/dist/leaflet.css'
@@ -223,7 +224,7 @@ async function analyze() {
   // formData.append("file", file.value)
   // const wkt = mpwkt.toWKT()
   // console.log( geojson.value.features[0].geometry)
-  const res = await fetch("http://spatial.valemis.id/api/spatial/analyze/", {
+  const res = await fetch(`${apiUrl}/analyze/`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json"

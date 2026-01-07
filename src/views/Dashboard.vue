@@ -18,12 +18,14 @@
         <div class="dashboard-bottom-grid">
           <div class="charts-column">
             <MonitoringCharts />
+
+            <!-- 📄 Appraisal Documents Section -->
+            <AppraisalDocuments />
           </div>
           <div class="alerts-column">
             <CriticalAlerts />
           </div>
         </div>
-
 
       </div>
     </div>
@@ -37,6 +39,7 @@ import ExecutiveKPI from '@/components/dashboard/ExecutiveKPI.vue'
 import CriticalAlerts from '@/components/dashboard/CriticalAlerts.vue'
 import UnifiedLandMap from '@/components/dashboard/UnifiedLandMap.vue'
 import MonitoringCharts from '@/components/dashboard/MonitoringCharts.vue'
+import AppraisalDocuments from '@/components/dashboard/AppraisalDocuments.vue'
 import { useProject } from '@/composables/useProject'
 
 const router = useRouter()

@@ -21,7 +21,6 @@
             <Badge
               :value="layer.data.length"
               severity="secondary"
-              size="small"
             />
           </div>
         </div>
@@ -99,7 +98,7 @@
               :style="{ backgroundColor: legend.color }"
             ></span>
             <span class="flex-1">{{ legend.label }}</span>
-            <Badge :value="legend.count" severity="secondary" size="small" />
+            <Badge :value="legend.count" severity="secondary" />
           </div>
         </div>
       </div>

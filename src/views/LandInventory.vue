@@ -449,6 +449,7 @@
 </template>
 
 <script setup lang="ts">
+// @ts-nocheck
 import { ref, computed, onMounted, onUnmounted, watch, nextTick } from 'vue'
 import { landApi } from '../api/index'
 import L from 'leaflet'

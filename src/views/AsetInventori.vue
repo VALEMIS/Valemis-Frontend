@@ -26,10 +26,9 @@
                 <label class="form-label"><strong>Filter per Desa</strong></label>
                 <select v-model="selectedVillage" class="form-select" @change="filterByVillage">
                   <option value="all">Semua Desa</option>
-                  <option value="Desa Sorowako">Desa Sorowako</option>
-                  <option value="Desa Magani">Desa Magani</option>
-                  <option value="Desa Wewangriu">Desa Wewangriu</option>
-                  <option value="Desa Nikkel">Desa Nikkel</option>
+                  <option v-for="village in uniqueVillages" :key="village" :value="village">
+                    {{ village }}
+                  </option>
                 </select>
               </div>
             </div>
@@ -92,12 +91,22 @@
                       {{ slotProps.index + 1 }}
                     </template>
                   </Column>
-                  <Column header="ID Rumah Tangga">
+                  <Column header="ID Asset">
                     <template #body="slotProps">
-                      <span class="badge bg-primary">{{ slotProps.data.id_rumah_tangga || '-' }}</span>
+                      <strong style="font-size: 0.875rem;">{{ slotProps.data.id_rumah_tangga || '-' }}</strong>
                     </template>
                   </Column>
-                  <Column header="Nama Kepala Keluarga">
+                  <Column header="Tanggal">
+                    <template #body="slotProps">
+                      <small>{{ slotProps.data.tanggal || '-' }}</small>
+                    </template>
+                  </Column>
+                  <Column header="Koordinat">
+                    <template #body="slotProps">
+                      <small>{{ slotProps.data.koordinat || '-' }}</small>
+                    </template>
+                  </Column>
+                  <Column header="Nama">
                     <template #body="slotProps">
                       <strong>{{ [slotProps.data.nama_depan, slotProps.data.nama_tengah,
                       slotProps.data.nama_belakang].filter(Boolean).join(' ') || '-' }}</strong>
@@ -108,28 +117,13 @@
                       {{ slotProps.data.desa || '-' }}
                     </template>
                   </Column>
-                  <Column header="Kecamatan">
-                    <template #body="slotProps">
-                      {{ slotProps.data.kecamatan || '-' }}
-                    </template>
-                  </Column>
-                  <Column header="Jumlah Anggota">
-                    <template #body="slotProps">
-                      <span class="badge bg-info">{{ slotProps.data.jumlah_orang_rumah_tangga || '0' }}</span>
-                    </template>
-                  </Column>
-                  <Column header="Tanggal Survey">
-                    <template #body="slotProps">
-                      <small>{{ slotProps.data.tanggal || '-' }}</small>
-                    </template>
-                  </Column>
                   <Column header="Aksi">
                     <template #body="slotProps">
-                      <div class="text-center">
-                        <button class="btn btn-sm btn-primary me-1" @click="viewDetail(slotProps.data)" title="Detail">
+                      <div class="d-flex gap-1 justify-content-center">
+                        <button class="btn btn-sm btn-primary" @click="viewDetail(slotProps.data)" title="Detail">
                           <i class="bi bi-eye-fill"></i>
                         </button>
-                        <button class="btn btn-sm btn-warning me-1" @click="editAsset(slotProps.data)" title="Edit">
+                        <button class="btn btn-sm btn-warning" @click="editAsset(slotProps.data)" title="Edit">
                           <i class="bi bi-pencil-square"></i>
                         </button>
                         <button class="btn btn-sm btn-danger" @click="deleteAsset(slotProps.data)" title="Hapus">
@@ -144,22 +138,7 @@
           </div>
         </div>
 
-        <!-- Summary per Desa -->
-        <div class="row mt-3">
-          <div class="col-md-3" v-for="village in villageSummary" :key="village.name">
-            <div class="card">
-              <div class="card-body">
-                <h5 class="card-title">{{ village.name }}</h5>
-                <p class="mb-1"><strong>Total Asset:</strong> {{ village.totalAssets }}</p>
-                <p class="mb-1"><strong>Total KK:</strong> {{ village.totalKK }}</p>
-                <p class="mb-1"><strong>Luas Total:</strong> {{ village.totalArea.toLocaleString() }} m²</p>
-                <button class="btn btn-sm btn-primary mt-2" @click="selectVillageFilter(village.name)">
-                  <i class="bi bi-filter"></i> Filter
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
+
       </div>
     </div>
 
@@ -455,6 +434,7 @@ import CensusFormModal from '../components/CensusFormModal.vue'
 const gsUrl = import.meta.env.VITE_APP_API_GS_URL
 interface Asset {
   id: number
+  id_asset?: string  // Auto-generated asset ID from API
   created_at?: string
   updated_at?: string
   // A. Identifikasi Rumah Tangga dan PAP (1-6)
@@ -470,6 +450,7 @@ interface Asset {
   nama_depan?: string
   nama_tengah?: string
   nama_belakang?: string
+  nama_lengkap?: string  // Full name from API
   nama_ayah?: string
   nama_kakek?: string
   nama_pasangan?: string
@@ -866,121 +847,129 @@ const fetchAssets = async () => {
   error.value = null
   try {
     const response = await censusKepalaKeluargaApi.getAll({ id_project: projectId.value || '' })
-    assets.value = response.results.map((asset: any) => ({
-      id: asset.id,
-      id_asset: asset.id_asset,  // Auto-generated asset ID
-      created_at: asset.created_at,
-      updated_at: asset.updated_at,
-      // A. Identifikasi Rumah Tangga dan PAP
-      kode_enumerator: asset.kode_enumerator,
-      id_rumah_tangga: asset.id_rumah_tangga,
-      tanggal: asset.tanggal,
-      kode_foto_survei: asset.kode_foto_survei,
-      id_unik: asset.id_unik,
-      koordinat: asset.koordinat,
-      // B. Informasi Kepala Keluarga
-      nama_depan: asset.nama_depan,
-      nama_tengah: asset.nama_tengah,
-      nama_belakang: asset.nama_belakang,
-      nama_ayah: asset.nama_ayah,
-      nama_kakek: asset.nama_kakek,
-      nama_pasangan: asset.nama_pasangan,
-      nomor_telepon: asset.nomor_telepon,
-      nik: asset.nik,
-      desa: asset.desa,
-      kecamatan: asset.kecamatan,
-      kabupaten: asset.kabupaten,
-      provinsi: asset.provinsi,
-      nama_responden: asset.nama_responden,
-      hubungan_responden_kk: asset.hubungan_responden_kk,
-      agama: asset.agama,
-      agama_lainnya: asset.agama_lainnya,
-      asal_etnis: asset.asal_etnis,
-      asal_etnis_lainnya: asset.asal_etnis_lainnya,
-      bahasa: asset.bahasa,
-      bahasa_lainnya: asset.bahasa_lainnya,
-      tempat_asal_kk: asset.tempat_asal_kk,
-      tempat_asal_tentukan: asset.tempat_asal_tentukan,
-      jumlah_orang_rumah_tangga: asset.jumlah_orang_rumah_tangga,
-      no_anggota: asset.no_anggota,
-      id_dampak: asset.id_dampak,
-      anggota_nama_depan: asset.anggota_nama_depan,
-      anggota_nama_belakang: asset.anggota_nama_belakang,
-      hubungan_kk: asset.hubungan_kk,
-      jenis_kelamin: asset.jenis_kelamin,
-      usia: asset.usia,
-      status_perkawinan: asset.status_perkawinan,
-      bisa_membaca_menulis: asset.bisa_membaca_menulis,
-      sedang_sekolah: asset.sedang_sekolah,
-      lokasi_sekolah: asset.lokasi_sekolah,
-      pendidikan_terakhir: asset.pendidikan_terakhir,
-      alasan_penghentian: asset.alasan_penghentian,
-      alasan_penghentian_lainnya: asset.alasan_penghentian_lainnya,
-      disabilitas: asset.disabilitas,
-      disabilitas_lainnya: asset.disabilitas_lainnya,
-      kondisi_kesehatan_kronis: asset.kondisi_kesehatan_kronis,
-      kesehatan_lainnya: asset.kesehatan_lainnya,
-      bekerja_12_bulan: asset.bekerja_12_bulan,
-      pekerjaan_utama: asset.pekerjaan_utama,
-      pekerjaan_utama_lainnya: asset.pekerjaan_utama_lainnya,
-      jenis_pekerjaan: asset.jenis_pekerjaan,
-      lokasi_pekerjaan: asset.lokasi_pekerjaan,
-      lokasi_pekerjaan_lainnya: asset.lokasi_pekerjaan_lainnya,
-      jumlah_bulan_bekerja: asset.jumlah_bulan_bekerja,
-      penghasilan_per_bulan: asset.penghasilan_per_bulan,
-      pekerjaan_sekunder: asset.pekerjaan_sekunder,
-      pekerjaan_sekunder_lainnya: asset.pekerjaan_sekunder_lainnya,
-      lokasi_pekerjaan_sekunder: asset.lokasi_pekerjaan_sekunder,
-      lokasi_pekerjaan_sekunder_lainnya: asset.lokasi_pekerjaan_sekunder_lainnya,
-      jumlah_bulan_bekerja_sekunder: asset.jumlah_bulan_bekerja_sekunder,
-      penghasilan_sekunder_per_bulan: asset.penghasilan_sekunder_per_bulan,
-      keterampilan: asset.keterampilan,
-      keterampilan_lainnya: asset.keterampilan_lainnya,
-      penyakit_umum: asset.penyakit_umum,
-      tempat_pelayanan: asset.tempat_pelayanan,
-      kecukupan_pangan: asset.kecukupan_pangan,
-      defisit_pangan: asset.defisit_pangan,
-      defisit_pangan_lainnya: asset.defisit_pangan_lainnya,
-      penghasilan_tahunan: asset.penghasilan_tahunan,
-      pengeluaran_bulanan: asset.pengeluaran_bulanan,
-      rekening_bank: asset.rekening_bank,
-      tabungan: asset.tabungan,
-      hutang: asset.hutang,
-      tabungan_detail: asset.tabungan_detail,
-      tabungan_lainnya: asset.tabungan_lainnya,
-      hutang_detail: asset.hutang_detail,
-      hutang_lainnya: asset.hutang_lainnya,
-      alasan_hutang: asset.alasan_hutang,
-      alasan_hutang_lainnya: asset.alasan_hutang_lainnya,
-      pernah_dampak_proyek: asset.pernah_dampak_proyek,
-      jenis_proyek: asset.jenis_proyek,
-      jenis_proyek_lainnya: asset.jenis_proyek_lainnya,
-      luas_lahan_dibebaskan: asset.luas_lahan_dibebaskan,
-      pernah_pengungsi: asset.pernah_pengungsi,
-      punya_bisnis: asset.punya_bisnis,
-      lokasi_bisnis: asset.lokasi_bisnis,
-      lokasi_bisnis_lainnya: asset.lokasi_bisnis_lainnya,
-      kepemilikan_bisnis: asset.kepemilikan_bisnis,
-      kepemilikan_bisnis_lainnya: asset.kepemilikan_bisnis_lainnya,
-      sejak_kapan_bisnis: asset.sejak_kapan_bisnis,
-      jenis_bisnis: asset.jenis_bisnis,
-      jenis_bisnis_lainnya: asset.jenis_bisnis_lainnya,
-      jumlah_pegawai: asset.jumlah_pegawai,
-      pendapatan_rata_bisnis: asset.pendapatan_rata_bisnis,
-      deskripsi_produk_layanan: asset.deskripsi_produk_layanan,
-      tipe_rumah: asset.tipe_rumah,
-      tipe_rumah_lainnya: asset.tipe_rumah_lainnya,
-      pelayanan_listrik: asset.pelayanan_listrik,
-      pelayanan_listrik_lainnya: asset.pelayanan_listrik_lainnya,
-      sumber_air: asset.sumber_air,
-      sumber_air_lainnya: asset.sumber_air_lainnya,
-      sanitasi: asset.sanitasi,
-      karakteristik_khusus: asset.karakteristik_khusus,
-      sumber_informasi: asset.sumber_informasi,
-      metode_komunikasi: asset.metode_komunikasi,
-      surveyed_by: asset.surveyed_by,
-      notes: asset.notes,
-    }))
+    assets.value = response.results.map((asset: any) => {
+      // Handle nama_lengkap from API - split it for display compatibility
+      const namaLengkap = asset.nama_lengkap || ''
+      const namaParts = namaLengkap.split(' ')
+
+      return {
+        id: asset.id,
+        id_asset: asset.id_asset,  // Auto-generated asset ID
+        created_at: asset.created_at,
+        updated_at: asset.updated_at,
+        // A. Identifikasi Rumah Tangga dan PAP
+        kode_enumerator: asset.kode_enumerator,
+        id_rumah_tangga: asset.id_rumah_tangga || asset.id_asset, // Fallback to id_asset if id_rumah_tangga is null
+        tanggal: asset.tanggal || asset.created_at?.split('T')[0], // Fallback to created date
+        kode_foto_survei: asset.kode_foto_survei,
+        id_unik: asset.id_unik,
+        koordinat: asset.koordinat,
+        // B. Informasi Kepala Keluarga
+        // Map nama_lengkap to individual name fields for compatibility
+        nama_depan: asset.nama_depan || namaParts[0] || '',
+        nama_tengah: asset.nama_tengah || (namaParts.length > 2 ? namaParts.slice(1, -1).join(' ') : ''),
+        nama_belakang: asset.nama_belakang || (namaParts.length > 1 ? namaParts[namaParts.length - 1] : ''),
+        nama_lengkap: namaLengkap, // Keep original for reference
+        nama_ayah: asset.nama_ayah,
+        nama_kakek: asset.nama_kakek,
+        nama_pasangan: asset.nama_pasangan,
+        nomor_telepon: asset.nomor_telepon,
+        nik: asset.nik,
+        desa: asset.desa,
+        kecamatan: asset.kecamatan,
+        kabupaten: asset.kabupaten,
+        provinsi: asset.provinsi,
+        nama_responden: asset.nama_responden,
+        hubungan_responden_kk: asset.hubungan_responden_kk,
+        agama: asset.agama,
+        agama_lainnya: asset.agama_lainnya,
+        asal_etnis: asset.asal_etnis,
+        asal_etnis_lainnya: asset.asal_etnis_lainnya,
+        bahasa: asset.bahasa,
+        bahasa_lainnya: asset.bahasa_lainnya,
+        tempat_asal_kk: asset.tempat_asal_kk,
+        tempat_asal_tentukan: asset.tempat_asal_tentukan,
+        jumlah_orang_rumah_tangga: asset.jumlah_orang_rumah_tangga,
+        no_anggota: asset.no_anggota,
+        id_dampak: asset.id_dampak,
+        anggota_nama_depan: asset.anggota_nama_depan,
+        anggota_nama_belakang: asset.anggota_nama_belakang,
+        hubungan_kk: asset.hubungan_kk,
+        jenis_kelamin: asset.jenis_kelamin,
+        usia: asset.usia,
+        status_perkawinan: asset.status_perkawinan,
+        bisa_membaca_menulis: asset.bisa_membaca_menulis,
+        sedang_sekolah: asset.sedang_sekolah,
+        lokasi_sekolah: asset.lokasi_sekolah,
+        pendidikan_terakhir: asset.pendidikan_terakhir,
+        alasan_penghentian: asset.alasan_penghentian,
+        alasan_penghentian_lainnya: asset.alasan_penghentian_lainnya,
+        disabilitas: asset.disabilitas,
+        disabilitas_lainnya: asset.disabilitas_lainnya,
+        kondisi_kesehatan_kronis: asset.kondisi_kesehatan_kronis,
+        kesehatan_lainnya: asset.kesehatan_lainnya,
+        bekerja_12_bulan: asset.bekerja_12_bulan,
+        pekerjaan_utama: asset.pekerjaan_utama,
+        pekerjaan_utama_lainnya: asset.pekerjaan_utama_lainnya,
+        jenis_pekerjaan: asset.jenis_pekerjaan,
+        lokasi_pekerjaan: asset.lokasi_pekerjaan,
+        lokasi_pekerjaan_lainnya: asset.lokasi_pekerjaan_lainnya,
+        jumlah_bulan_bekerja: asset.jumlah_bulan_bekerja,
+        penghasilan_per_bulan: asset.penghasilan_per_bulan,
+        pekerjaan_sekunder: asset.pekerjaan_sekunder,
+        pekerjaan_sekunder_lainnya: asset.pekerjaan_sekunder_lainnya,
+        lokasi_pekerjaan_sekunder: asset.lokasi_pekerjaan_sekunder,
+        lokasi_pekerjaan_sekunder_lainnya: asset.lokasi_pekerjaan_sekunder_lainnya,
+        jumlah_bulan_bekerja_sekunder: asset.jumlah_bulan_bekerja_sekunder,
+        penghasilan_sekunder_per_bulan: asset.penghasilan_sekunder_per_bulan,
+        keterampilan: asset.keterampilan,
+        keterampilan_lainnya: asset.keterampilan_lainnya,
+        penyakit_umum: asset.penyakit_umum,
+        tempat_pelayanan: asset.tempat_pelayanan,
+        kecukupan_pangan: asset.kecukupan_pangan,
+        defisit_pangan: asset.defisit_pangan,
+        defisit_pangan_lainnya: asset.defisit_pangan_lainnya,
+        penghasilan_tahunan: asset.penghasilan_tahunan,
+        pengeluaran_bulanan: asset.pengeluaran_bulanan,
+        rekening_bank: asset.rekening_bank,
+        tabungan: asset.tabungan,
+        hutang: asset.hutang,
+        tabungan_detail: asset.tabungan_detail,
+        tabungan_lainnya: asset.tabungan_lainnya,
+        hutang_detail: asset.hutang_detail,
+        hutang_lainnya: asset.hutang_lainnya,
+        alasan_hutang: asset.alasan_hutang,
+        alasan_hutang_lainnya: asset.alasan_hutang_lainnya,
+        pernah_dampak_proyek: asset.pernah_dampak_proyek,
+        jenis_proyek: asset.jenis_proyek,
+        jenis_proyek_lainnya: asset.jenis_proyek_lainnya,
+        luas_lahan_dibebaskan: asset.luas_lahan_dibebaskan,
+        pernah_pengungsi: asset.pernah_pengungsi,
+        punya_bisnis: asset.punya_bisnis,
+        lokasi_bisnis: asset.lokasi_bisnis,
+        lokasi_bisnis_lainnya: asset.lokasi_bisnis_lainnya,
+        kepemilikan_bisnis: asset.kepemilikan_bisnis,
+        kepemilikan_bisnis_lainnya: asset.kepemilikan_bisnis_lainnya,
+        sejak_kapan_bisnis: asset.sejak_kapan_bisnis,
+        jenis_bisnis: asset.jenis_bisnis,
+        jenis_bisnis_lainnya: asset.jenis_bisnis_lainnya,
+        jumlah_pegawai: asset.jumlah_pegawai,
+        pendapatan_rata_bisnis: asset.pendapatan_rata_bisnis,
+        deskripsi_produk_layanan: asset.deskripsi_produk_layanan,
+        tipe_rumah: asset.tipe_rumah,
+        tipe_rumah_lainnya: asset.tipe_rumah_lainnya,
+        pelayanan_listrik: asset.pelayanan_listrik,
+        pelayanan_listrik_lainnya: asset.pelayanan_listrik_lainnya,
+        sumber_air: asset.sumber_air,
+        sumber_air_lainnya: asset.sumber_air_lainnya,
+        sanitasi: asset.sanitasi,
+        karakteristik_khusus: asset.karakteristik_khusus,
+        sumber_informasi: asset.sumber_informasi,
+        metode_komunikasi: asset.metode_komunikasi,
+        surveyed_by: asset.surveyed_by,
+        notes: asset.notes,
+      }
+    })
   } catch (err) {
     error.value = err instanceof Error ? err.message : 'Failed to fetch assets'
     console.error('Error fetching assets:', err)
@@ -996,9 +985,16 @@ const filteredAssets = computed(() => {
   return assets.value.filter(asset => asset.desa === selectedVillage.value)
 })
 
+// Get unique villages from data
+const uniqueVillages = computed(() => {
+  const villages = assets.value
+    .map(asset => asset.desa)
+    .filter((desa): desa is string => !!desa) // Filter out null/undefined and type guard
+  return [...new Set(villages)].sort() // Remove duplicates and sort
+})
+
 const villageSummary = computed(() => {
-  const villages = ['Desa Sorowako', 'Desa Magani', 'Desa Wewangriu', 'Desa Nikkel']
-  return villages.map(village => {
+  return uniqueVillages.value.map(village => {
     const villageAssets = assets.value.filter(a => a.desa === village)
     return {
       name: village,
@@ -1220,6 +1216,8 @@ const viewOnMap = (asset: Asset) => {
 
 const addAsset = () => {
   isEditMode.value = false
+  isReadOnly.value = false
+  selectedAssetId.value = null
   // Reset to same structure as initial formData
   formData.value = {
     id: undefined,
@@ -1643,8 +1641,287 @@ const formatRupiah = (value: number): string => {
 // Export to CSV
 const exportToCsv = async () => {
   try {
-    // CSV export will be implemented later
-    alert('CSV export coming soon')
+    // Define field mapping with headers - ALL fields from census modal
+    const fieldMapping = [
+      // Basic Info
+      { header: 'ID', field: 'id' },
+      { header: 'ID Asset', field: 'id_asset' },
+      { header: 'Created At', field: 'created_at' },
+      { header: 'Updated At', field: 'updated_at' },
+
+      // A. Identifikasi Rumah Tangga dan PAP
+      { header: 'Kode Enumerator', field: 'kode_enumerator' },
+      { header: 'ID Rumah Tangga', field: 'id_rumah_tangga' },
+      { header: 'Tanggal', field: 'tanggal' },
+      { header: 'Kode Foto Survei', field: 'kode_foto_survei' },
+      { header: 'Entitas Terdampak', field: 'entitas_terdampak' },
+      { header: 'ID Unik', field: 'id_unik' },
+      { header: 'Koordinat', field: 'koordinat' },
+      { header: 'Latitude', field: 'latitude' },
+      { header: 'Longitude', field: 'longitude' },
+
+      // B. Informasi Kepala Keluarga
+      { header: 'Nama Depan', field: 'nama_depan' },
+      { header: 'Nama Tengah', field: 'nama_tengah' },
+      { header: 'Nama Belakang', field: 'nama_belakang' },
+      { header: 'Nama Lengkap', field: 'nama_lengkap' },
+      { header: 'Nama Ayah', field: 'nama_ayah' },
+      { header: 'Nama Kakek', field: 'nama_kakek' },
+      { header: 'Nama Pasangan', field: 'nama_pasangan' },
+      { header: 'Nomor Telepon', field: 'nomor_telepon' },
+      { header: 'NIK', field: 'nik' },
+      { header: 'Desa', field: 'desa' },
+      { header: 'Kecamatan', field: 'kecamatan' },
+      { header: 'Kabupaten', field: 'kabupaten' },
+      { header: 'Provinsi', field: 'provinsi' },
+      { header: 'Nama Responden', field: 'nama_responden' },
+      { header: 'Hubungan Responden dengan KK', field: 'hubungan_responden_kk' },
+
+      // C. Identifikasi Dampak
+      { header: 'Identifikasi Dampak', field: 'identifikasi_dampak' },
+      { header: 'Identifikasi Dampak Lainnya', field: 'identifikasi_dampak_lainnya' },
+
+      // D. Profil Sosial
+      { header: 'Agama', field: 'agama' },
+      { header: 'Agama Lainnya', field: 'agama_lainnya' },
+      { header: 'Asal Etnis', field: 'asal_etnis' },
+      { header: 'Asal Etnis Lainnya', field: 'asal_etnis_lainnya' },
+      { header: 'Bahasa', field: 'bahasa' },
+      { header: 'Bahasa Lainnya', field: 'bahasa_lainnya' },
+      { header: 'Tempat Asal KK', field: 'tempat_asal_kk' },
+      { header: 'Tempat Asal Tentukan', field: 'tempat_asal_tentukan' },
+
+      // E. Demografi Kepala Keluarga
+      { header: 'Jumlah Orang Rumah Tangga', field: 'jumlah_orang_rumah_tangga' },
+      { header: 'Jenis Kelamin', field: 'jenis_kelamin' },
+      { header: 'Tanggal Lahir', field: 'tanggal_lahir' },
+      { header: 'Usia', field: 'usia' },
+      { header: 'Status Perkawinan', field: 'status_perkawinan' },
+      { header: 'Bisa Membaca Menulis', field: 'bisa_membaca_menulis' },
+      { header: 'Defisit Pangan', field: 'defisit_pangan' },
+      { header: 'Defisit Pangan Lainnya', field: 'defisit_pangan_lainnya' },
+      { header: 'Sedang Sekolah', field: 'sedang_sekolah' },
+      { header: 'Sekolah Dimana', field: 'sekolah_dimana' },
+      { header: 'Lokasi Sekolah', field: 'lokasi_sekolah' },
+      { header: 'Pendidikan Terakhir', field: 'pendidikan_terakhir' },
+      { header: 'Alasan Penghentian', field: 'alasan_penghentian' },
+      { header: 'Alasan Penghentian Lainnya', field: 'alasan_penghentian_lainnya' },
+      { header: 'Disabilitas', field: 'disabilitas' },
+      { header: 'Disabilitas Lainnya', field: 'disabilitas_lainnya' },
+      { header: 'Kondisi Kesehatan Kronis', field: 'kondisi_kesehatan_kronis' },
+      { header: 'Kondisi Kesehatan Kronis Lainnya', field: 'kondisi_kesehatan_kronis_lainnya' },
+
+      // F. Pekerjaan KK
+      { header: 'Bekerja 12 Bulan', field: 'bekerja_12_bulan' },
+      { header: 'Pekerjaan Utama', field: 'pekerjaan_utama' },
+      { header: 'Pekerjaan Utama Lainnya', field: 'pekerjaan_utama_lainnya' },
+      { header: 'Jenis Pekerjaan Utama', field: 'jenis_pekerjaan_utama' },
+      { header: 'Jenis Pekerjaan', field: 'jenis_pekerjaan' },
+      { header: 'Lokasi Pekerjaan Utama', field: 'lokasi_pekerjaan_utama' },
+      { header: 'Lokasi Pekerjaan', field: 'lokasi_pekerjaan' },
+      { header: 'Lokasi Pekerjaan Lainnya', field: 'lokasi_pekerjaan_lainnya' },
+      { header: 'Lokasi Pekerjaan Utama Lainnya', field: 'lokasi_pekerjaan_utama_lainnya' },
+      { header: 'Jumlah Bulan Bekerja', field: 'jumlah_bulan_bekerja' },
+      { header: 'Penghasilan per Bulan', field: 'penghasilan_per_bulan' },
+
+      // G. Pekerjaan Sekunder
+      { header: 'Pekerjaan Sekunder', field: 'pekerjaan_sekunder' },
+      { header: 'Pekerjaan Sekunder Lainnya', field: 'pekerjaan_sekunder_lainnya' },
+      { header: 'Lokasi Pekerjaan Sekunder', field: 'lokasi_pekerjaan_sekunder' },
+      { header: 'Lokasi Pekerjaan Sekunder Lainnya', field: 'lokasi_pekerjaan_sekunder_lainnya' },
+      { header: 'Jumlah Bulan Bekerja Sekunder', field: 'jumlah_bulan_bekerja_sekunder' },
+      { header: 'Penghasilan Sekunder per Bulan', field: 'penghasilan_sekunder_per_bulan' },
+
+      // H. Keterampilan & Kesehatan
+      { header: 'Keterampilan', field: 'keterampilan' },
+      { header: 'Keterampilan Lainnya', field: 'keterampilan_lainnya' },
+      { header: 'Penyakit Umum', field: 'penyakit_umum' },
+      { header: 'Tempat Pelayanan', field: 'tempat_pelayanan' },
+      { header: 'Kecukupan Pangan', field: 'kecukupan_pangan' },
+
+      // I. Keuangan
+      { header: 'Penghasilan Tahunan', field: 'penghasilan_tahunan' },
+      { header: 'Pengeluaran Bulanan', field: 'pengeluaran_bulanan' },
+      { header: 'Rekening Bank', field: 'rekening_bank' },
+      { header: 'Punya Tabungan', field: 'punya_tabungan' },
+      { header: 'Tabungan', field: 'tabungan' },
+      { header: 'Jenis Tabungan', field: 'jenis_tabungan' },
+      { header: 'Jenis Tabungan Lainnya', field: 'jenis_tabungan_lainnya' },
+      { header: 'Tabungan Detail', field: 'tabungan_detail' },
+      { header: 'Tabungan Lainnya', field: 'tabungan_lainnya' },
+      { header: 'Punya Hutang', field: 'punya_hutang' },
+      { header: 'Hutang', field: 'hutang' },
+      { header: 'Jenis Hutang', field: 'jenis_hutang' },
+      { header: 'Jenis Hutang Lainnya', field: 'jenis_hutang_lainnya' },
+      { header: 'Hutang Detail', field: 'hutang_detail' },
+      { header: 'Hutang Lainnya', field: 'hutang_lainnya' },
+      { header: 'Alasan Hutang', field: 'alasan_hutang' },
+      { header: 'Alasan Hutang Lainnya', field: 'alasan_hutang_lainnya' },
+
+      // J. Dampak Pembebasan Lahan
+      { header: 'Pernah Dampak Proyek', field: 'pernah_dampak_proyek' },
+      { header: 'Pernah Terdampak Proyek', field: 'pernah_terdampak_proyek' },
+      { header: 'Jenis Proyek', field: 'jenis_proyek' },
+      { header: 'Jenis Proyek Sebelumnya', field: 'jenis_proyek_sebelumnya' },
+      { header: 'Jenis Proyek Lainnya', field: 'jenis_proyek_lainnya' },
+      { header: 'Luas Lahan Dibebaskan', field: 'luas_lahan_dibebaskan' },
+      { header: 'Perkiraan Dampak', field: 'perkiraan_dampak' },
+      { header: 'Pernah Pengungsi', field: 'pernah_pengungsi' },
+
+      // K. Bisnis/Usaha
+      { header: 'Punya Bisnis', field: 'punya_bisnis' },
+      { header: 'Lokasi Bisnis', field: 'lokasi_bisnis' },
+      { header: 'Lokasi Bisnis Lainnya', field: 'lokasi_bisnis_lainnya' },
+      { header: 'Kepemilikan Bisnis', field: 'kepemilikan_bisnis' },
+      { header: 'Kepemilikan Bisnis Lainnya', field: 'kepemilikan_bisnis_lainnya' },
+      { header: 'Sejak Kapan Bisnis', field: 'sejak_kapan_bisnis' },
+      { header: 'Jenis Bisnis', field: 'jenis_bisnis' },
+      { header: 'Jenis Bisnis Lainnya', field: 'jenis_bisnis_lainnya' },
+      { header: 'Jumlah Pegawai', field: 'jumlah_pegawai' },
+      { header: 'Pendapatan Rata Bisnis', field: 'pendapatan_rata_bisnis' },
+      { header: 'Pendapatan Bisnis per Bulan', field: 'pendapatan_bisnis_per_bulan' },
+      { header: 'Deskripsi Produk Layanan', field: 'deskripsi_produk_layanan' },
+
+      // L. Struktur Tempat Tinggal
+      { header: 'Tipe Rumah', field: 'tipe_rumah' },
+      { header: 'Tipe Rumah Lainnya', field: 'tipe_rumah_lainnya' },
+      { header: 'Luas Rumah', field: 'luas_rumah' },
+      { header: 'Pelayanan Listrik', field: 'pelayanan_listrik' },
+      { header: 'Pelayanan Listrik Lainnya', field: 'pelayanan_listrik_lainnya' },
+      { header: 'Sumber Air', field: 'sumber_air' },
+      { header: 'Sumber Air Lainnya', field: 'sumber_air_lainnya' },
+      { header: 'Sanitasi', field: 'sanitasi' },
+      { header: 'Karakteristik Khusus', field: 'karakteristik_khusus' },
+
+      // M. Kerentanan
+      { header: 'Karakteristik Kerentanan', field: 'karakteristik_kerentanan' },
+
+      // N. Sumber Informasi & Komunikasi
+      { header: 'Sumber Informasi', field: 'sumber_informasi' },
+      { header: 'Sumber Informasi Lainnya', field: 'sumber_informasi_lainnya' },
+      { header: 'Metode Komunikasi', field: 'metode_komunikasi' },
+      { header: 'Metode Komunikasi Lainnya', field: 'metode_komunikasi_lainnya' },
+
+      // O. Tanah
+      { header: 'NIB', field: 'nib' },
+      { header: 'Letak Tanah', field: 'letak_tanah' },
+      { header: 'Status Tanah', field: 'status_tanah' },
+      { header: 'Surat Bukti Tanah', field: 'surat_bukti_tanah' },
+      { header: 'Luas Tanah', field: 'luas_tanah' },
+      { header: 'Tahun Kelola Lahan', field: 'tahun_kelola_lahan' },
+      { header: 'Asal Usul Perolehan', field: 'asal_usul_perolehan' },
+      { header: 'Biaya Perolehan', field: 'biaya_perolehan' },
+      { header: 'Pembebanan Hak Tanah', field: 'pembebanan_hak_tanah' },
+      { header: 'Fungsi Kawasan', field: 'fungsi_kawasan' },
+      { header: 'Benda Lain Tanah', field: 'benda_lain_tanah' },
+      { header: 'Batas Utara', field: 'batas_utara' },
+      { header: 'Batas Selatan', field: 'batas_selatan' },
+      { header: 'Batas Timur', field: 'batas_timur' },
+      { header: 'Batas Barat', field: 'batas_barat' },
+
+      // P. Ruang Atas/Bawah
+      { header: 'HM Sarusun', field: 'hm_sarusun' },
+      { header: 'Luas Ruang', field: 'luas_ruang' },
+
+      // Q. Tanaman (40+ jenis tanaman)
+      { header: 'Tanaman Merica', field: 'tanaman_merica' },
+      { header: 'Tanaman Alpukat', field: 'tanaman_alpukat' },
+      { header: 'Tanaman Aren', field: 'tanaman_aren' },
+      { header: 'Tanaman Belimbing', field: 'tanaman_belimbing' },
+      { header: 'Tanaman Belukar', field: 'tanaman_belukar' },
+      { header: 'Tanaman Bonglai', field: 'tanaman_bonglai' },
+      { header: 'Tanaman Buah Naga', field: 'tanaman_buah_naga' },
+      { header: 'Tanaman Cabai', field: 'tanaman_cabai' },
+      { header: 'Tanaman Cempedak', field: 'tanaman_cempedak' },
+      { header: 'Tanaman Cengkeh', field: 'tanaman_cengkeh' },
+      { header: 'Tanaman Cokelat', field: 'tanaman_cokelat' },
+      { header: 'Tanaman Durian', field: 'tanaman_durian' },
+      { header: 'Tanaman Jahe Merah', field: 'tanaman_jahe_merah' },
+      { header: 'Tanaman Jambu', field: 'tanaman_jambu' },
+      { header: 'Tanaman Jambu Air', field: 'tanaman_jambu_air' },
+      { header: 'Tanaman Jambu Batu', field: 'tanaman_jambu_batu' },
+      { header: 'Tanaman Jambu Biji', field: 'tanaman_jambu_biji' },
+      { header: 'Tanaman Jati Putih', field: 'tanaman_jati_putih' },
+      { header: 'Tanaman Jengkol', field: 'tanaman_jengkol' },
+      { header: 'Tanaman Jeruk', field: 'tanaman_jeruk' },
+      { header: 'Tanaman Jeruk Nipis', field: 'tanaman_jeruk_nipis' },
+      { header: 'Tanaman Kapuk', field: 'tanaman_kapuk' },
+      { header: 'Tanaman Kecombrang', field: 'tanaman_kecombrang' },
+      { header: 'Tanaman Kelapa', field: 'tanaman_kelapa' },
+      { header: 'Tanaman Kelapa Sawit', field: 'tanaman_kelapa_sawit' },
+      { header: 'Tanaman Kelor', field: 'tanaman_kelor' },
+      { header: 'Tanaman Kopi', field: 'tanaman_kopi' },
+      { header: 'Tanaman Kunyit', field: 'tanaman_kunyit' },
+      { header: 'Tanaman Kunyit Hitam', field: 'tanaman_kunyit_hitam' },
+      { header: 'Tanaman Langsat', field: 'tanaman_langsat' },
+      { header: 'Tanaman Lengkuas', field: 'tanaman_lengkuas' },
+      { header: 'Tanaman Mangga', field: 'tanaman_mangga' },
+      { header: 'Tanaman Nanas', field: 'tanaman_nanas' },
+      { header: 'Tanaman Nangka', field: 'tanaman_nangka' },
+      { header: 'Tanaman Nilam', field: 'tanaman_nilam' },
+      { header: 'Tanaman Pepaya', field: 'tanaman_pepaya' },
+      { header: 'Tanaman Pinang', field: 'tanaman_pinang' },
+      { header: 'Tanaman Rambutan', field: 'tanaman_rambutan' },
+      { header: 'Tanaman Serai', field: 'tanaman_serai' },
+      { header: 'Tanaman Singkong', field: 'tanaman_singkong' },
+      { header: 'Tanaman Sirsak', field: 'tanaman_sirsak' },
+      { header: 'Tanaman Sukun', field: 'tanaman_sukun' },
+      { header: 'Tanaman Talas', field: 'tanaman_talas' },
+      { header: 'Tanaman Ubi', field: 'tanaman_ubi' },
+
+      // R. Informasi Lainnya
+      { header: 'Catatan Tambahan', field: 'catatan_tambahan' },
+      { header: 'Kebutuhan Khusus', field: 'kebutuhan_khusus' },
+      { header: 'Harapan Kompensasi', field: 'harapan_kompensasi' },
+
+      // Anggota Keluarga
+      { header: 'No Anggota', field: 'no_anggota' },
+      { header: 'ID Dampak', field: 'id_dampak' },
+      { header: 'Anggota Nama Depan', field: 'anggota_nama_depan' },
+      { header: 'Anggota Nama Belakang', field: 'anggota_nama_belakang' },
+      { header: 'Hubungan KK', field: 'hubungan_kk' },
+
+      // Metadata
+      { header: 'Surveyed By', field: 'surveyed_by' },
+      { header: 'Notes', field: 'notes' }
+    ]
+
+    // Extract headers
+    const headers = fieldMapping.map(f => f.header)
+
+    // Map data to CSV rows
+    const rows = filteredAssets.value.map(asset => {
+      return fieldMapping.map(({ field }) => {
+        const value = (asset as any)[field]
+        // Handle null/undefined
+        if (value === null || value === undefined || value === '') return '-'
+        // Convert to string and escape
+        const stringValue = String(value)
+        if (stringValue.includes(',') || stringValue.includes('"') || stringValue.includes('\n')) {
+          return `"${stringValue.replace(/"/g, '""')}"`
+        }
+        return stringValue
+      })
+    })
+
+    // Combine headers and rows
+    const csvContent = [
+      headers.join(','),
+      ...rows.map(row => row.join(','))
+    ].join('\n')
+
+    // Create blob and download
+    const blob = new Blob(['\ufeff' + csvContent], { type: 'text/csv;charset=utf-8;' })
+    const link = document.createElement('a')
+    const url = URL.createObjectURL(blob)
+
+    link.setAttribute('href', url)
+    link.setAttribute('download', `asset-inventory-${new Date().toISOString().split('T')[0]}.csv`)
+    link.style.visibility = 'hidden'
+    document.body.appendChild(link)
+    link.click()
+    document.body.removeChild(link)
+
     alert('Data berhasil didownload dalam format CSV!')
   } catch (err) {
     alert('Gagal mendownload data: ' + (err instanceof Error ? err.message : 'Unknown error'))

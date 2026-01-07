@@ -84,12 +84,12 @@
             </router-link>
           </li>
 
-          <!-- 6. Stakeholder Management Module -->
+          <!-- 6. Stakeholder Mapping Module -->
           <li class="nav-item">
             <router-link to="/stakeholder-management/advanced" class="nav-link"
               :class="{ active: route.path.startsWith('/stakeholder-management') }">
               <i class="nav-icon pi pi-users"></i>
-              <span>Stakeholder Management</span>
+              <span>Stakeholder Mapping</span>
             </router-link>
           </li>
 
@@ -130,6 +130,7 @@ import { useRoute, useRouter } from 'vue-router'
 import { computed, watch, ref } from 'vue';
 import axios from 'axios';
 
+const API_URL = import.meta.env.VITE_APP_API_SPATIAL_URL
 const projectMeta = ref<any>(null)
 const loadingProject = ref(false)
 const showAccountMenu = ref(false)
@@ -162,7 +163,7 @@ watch(
     loadingProject.value = true
     try {
       const res = await axios.get(
-        `http://spatial.valemis.id/api/spatial/Project/${newId}`
+        `${API_URL}/Project/${newId}`
       )
       projectMeta.value = res.data
     } catch (err) {

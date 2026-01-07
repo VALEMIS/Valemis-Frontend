@@ -107,9 +107,10 @@ import { Modal } from 'bootstrap'
 
 const props = defineProps(['id_project'])
 
-const API = `http://spatial.valemis.id/api/spatial/LandInventoryRaster`
-const API_BYPROJECT = `http://spatial.valemis.id/api/spatial/LandInventoryRaster/?id_project=${props.id_project}`
-const PROJECT_API = 'http://spatial.valemis.id/api/spatial/Project'
+const API_URL = import.meta.env.VITE_APP_API_SPATIAL_URL
+const API = `${API_URL}/LandInventoryRaster`
+const API_BYPROJECT = `${API_URL}/LandInventoryRaster/?id_project=${props.id_project}`
+const PROJECT_API = `${API_URL}/Project`
 
 
 const rasters = ref([])

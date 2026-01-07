@@ -4,12 +4,12 @@
       <div class="container-fluid">
         <div class="row">
           <div class="col-sm-6">
-            <h3 class="mb-0">Stakeholder Management System</h3>
+            <h3 class="mb-0">Stakeholder Mapping System</h3>
           </div>
           <div class="col-sm-6">
             <ol class="breadcrumb float-sm-end">
               <li class="breadcrumb-item"><router-link to="/">Home</router-link></li>
-              <li class="breadcrumb-item active">Stakeholder Management</li>
+              <li class="breadcrumb-item active">Stakeholder Mapping</li>
             </ol>
           </div>
         </div>
@@ -20,7 +20,7 @@
       <div class="container-fluid">
         <!-- Stakeholder Network Visualization with Quadrant Matrix -->
         <div class="card mb-4">
-          <div class="card-header bg-primary text-white">
+          <div class="card-header text-white" style="background-color: #2c3e50;">
             <h5 class="mb-0">
               <i class="bi bi-diagram-3"></i> Stakeholder Power-Interest Matrix & Network Visualization
             </h5>
@@ -30,31 +30,36 @@
             <div class="row">
               <!-- Canvas -->
               <div class="col-lg-9">
-                <canvas ref="networkCanvas" width="900" height="650" class="border rounded bg-white w-100" @click="handleCanvasClick" style="max-width: 100%;"></canvas>
+                <canvas ref="networkCanvas" width="900" height="650" class="border rounded w-100"
+                  @click="handleCanvasClick" style="max-width: 100%; background-color: #f8f9fa;"></canvas>
               </div>
 
               <!-- Legend -->
               <div class="col-lg-3">
                 <div class="ps-3">
                   <h6 class="mb-3"><i class="bi bi-info-circle"></i> Legend</h6>
-                  
+
                   <!-- Sentiment -->
                   <div class="mb-3">
                     <small class="text-muted fw-bold d-block mb-2">Sentiment:</small>
                     <div class="d-flex align-items-center mb-2">
-                      <span class="d-inline-block rounded-circle me-2" style="width: 12px; height: 12px; background-color: #28a745;"></span>
+                      <span class="d-inline-block rounded-circle me-2"
+                        style="width: 12px; height: 12px; background-color: #28a745;"></span>
                       <small>Pro Aktif</small>
                     </div>
                     <div class="d-flex align-items-center mb-2">
-                      <span class="d-inline-block rounded-circle me-2" style="width: 12px; height: 12px; background-color: #17a2b8;"></span>
+                      <span class="d-inline-block rounded-circle me-2"
+                        style="width: 12px; height: 12px; background-color: #17a2b8;"></span>
                       <small>Pro Pasif</small>
                     </div>
                     <div class="d-flex align-items-center mb-2">
-                      <span class="d-inline-block rounded-circle me-2" style="width: 12px; height: 12px; background-color: #dc3545;"></span>
+                      <span class="d-inline-block rounded-circle me-2"
+                        style="width: 12px; height: 12px; background-color: #dc3545;"></span>
                       <small>Kontra Aktif</small>
                     </div>
                     <div class="d-flex align-items-center mb-2">
-                      <span class="d-inline-block rounded-circle me-2" style="width: 12px; height: 12px; background-color: #ffc107;"></span>
+                      <span class="d-inline-block rounded-circle me-2"
+                        style="width: 12px; height: 12px; background-color: #ffc107;"></span>
                       <small>Kontra Pasif</small>
                     </div>
                   </div>
@@ -87,7 +92,8 @@
                     </div>
                     <div class="mb-2">
                       <small><strong>· · ·</strong> Weak</small>
-                      <div><small class="text-muted">(score <40)</small></div>
+                      <div><small class="text-muted">(score &lt;40)</small>
+                      </div>
                     </div>
                   </div>
 
@@ -106,34 +112,62 @@
         <!-- Dashboard Cards - Moved Below -->
         <div class="row mb-4">
           <div class="col-lg-3 col-6">
-            <div class="small-box bg-success">
-              <div class="inner">
-                <h3>{{ stats.proAktif }}</h3>
-                <p>Pro - Aktif</p>
+            <div class="card" style="border-top: 4px solid #28a745;">
+              <div class="card-body">
+                <div class="d-flex align-items-center">
+                  <div class="me-3">
+                    <h3 class="mb-0" style="color: #28a745;">{{ stats.proAktif }}</h3>
+                  </div>
+                  <div>
+                    <p class="mb-0 text-muted">Pro - Aktif</p>
+                    <small class="text-success">Supportive & Active</small>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
           <div class="col-lg-3 col-6">
-            <div class="small-box bg-info">
-              <div class="inner">
-                <h3>{{ stats.proPasif }}</h3>
-                <p>Pro - Pasif</p>
+            <div class="card" style="border-top: 4px solid #17a2b8;">
+              <div class="card-body">
+                <div class="d-flex align-items-center">
+                  <div class="me-3">
+                    <h3 class="mb-0" style="color: #17a2b8;">{{ stats.proPasif }}</h3>
+                  </div>
+                  <div>
+                    <p class="mb-0 text-muted">Pro - Pasif</p>
+                    <small class="text-info">Supportive & Passive</small>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
           <div class="col-lg-3 col-6">
-            <div class="small-box bg-warning">
-              <div class="inner">
-                <h3>{{ stats.kontraAktif }}</h3>
-                <p>Kontra - Aktif</p>
+            <div class="card" style="border-top: 4px solid #dc3545;">
+              <div class="card-body">
+                <div class="d-flex align-items-center">
+                  <div class="me-3">
+                    <h3 class="mb-0" style="color: #dc3545;">{{ stats.kontraAktif }}</h3>
+                  </div>
+                  <div>
+                    <p class="mb-0 text-muted">Kontra - Aktif</p>
+                    <small class="text-danger">Critical & Active</small>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
           <div class="col-lg-3 col-6">
-            <div class="small-box bg-danger">
-              <div class="inner">
-                <h3>{{ stats.kontraPasif }}</h3>
-                <p>Kontra - Pasif</p>
+            <div class="card" style="border-top: 4px solid #ffc107;">
+              <div class="card-body">
+                <div class="d-flex align-items-center">
+                  <div class="me-3">
+                    <h3 class="mb-0" style="color: #ffc107;">{{ stats.kontraPasif }}</h3>
+                  </div>
+                  <div>
+                    <p class="mb-0 text-muted">Kontra - Pasif</p>
+                    <small class="text-warning">Critical & Passive</small>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
@@ -144,62 +178,38 @@
           <div class="card-header">
             <ul class="nav nav-tabs card-header-tabs" role="tablist">
               <li class="nav-item">
-                <a 
-                  class="nav-link" 
-                  :class="{ active: activeTab === 'master' }"
-                  @click="activeTab = 'master'"
-                  href="javascript:void(0)"
-                >
+                <a class="nav-link" :class="{ active: activeTab === 'master' }" @click="activeTab = 'master'"
+                  href="javascript:void(0)">
                   <i class="bi bi-person-badge"></i> Master Stakeholder
                 </a>
               </li>
               <li class="nav-item">
-                <a 
-                  class="nav-link" 
-                  :class="{ active: activeTab === 'background' }"
-                  @click="activeTab = 'background'"
-                  href="javascript:void(0)"
-                >
+                <a class="nav-link" :class="{ active: activeTab === 'background' }" @click="activeTab = 'background'"
+                  href="javascript:void(0)">
                   <i class="bi bi-book"></i> Latar Belakang
                 </a>
               </li>
               <li class="nav-item">
-                <a 
-                  class="nav-link" 
-                  :class="{ active: activeTab === 'isu' }"
-                  @click="activeTab = 'isu'"
-                  href="javascript:void(0)"
-                >
+                <a class="nav-link" :class="{ active: activeTab === 'isu' }" @click="activeTab = 'isu'"
+                  href="javascript:void(0)">
                   <i class="bi bi-flag"></i> Isu/Project
                 </a>
               </li>
               <li class="nav-item">
-                <a 
-                  class="nav-link" 
-                  :class="{ active: activeTab === 'interaksi' }"
-                  @click="activeTab = 'interaksi'"
-                  href="javascript:void(0)"
-                >
+                <a class="nav-link" :class="{ active: activeTab === 'interaksi' }" @click="activeTab = 'interaksi'"
+                  href="javascript:void(0)">
                   <i class="bi bi-chat-dots"></i> Log Interaksi
                 </a>
               </li>
               <li class="nav-item">
-                <a
-                  class="nav-link"
-                  :class="{ active: activeTab === 'network' }"
-                  @click="activeTab = 'network'"
-                  href="javascript:void(0)"
-                >
+                <a class="nav-link" :class="{ active: activeTab === 'network' }" @click="activeTab = 'network'"
+                  href="javascript:void(0)">
                   <i class="bi bi-diagram-2"></i> Network/Relasi & Dokumen
                 </a>
               </li>
               <li class="nav-item">
-                <a
-                  class="nav-link"
-                  :class="{ active: activeTab === 'sentiment' }"
-                  @click="activeTab = 'sentiment'"
-                  href="javascript:void(0)"
-                >
+                <a class="nav-link" :class="{ active: activeTab === 'sentiment' }" @click="activeTab = 'sentiment'"
+                  href="javascript:void(0)">
                   <i class="bi bi-twitter-x"></i> Sentimen Sosial Media
                 </a>
               </li>
@@ -214,7 +224,7 @@
                   <i class="bi bi-plus-circle"></i> Tambah Stakeholder
                 </button>
               </div>
-              
+
               <div class="table-responsive">
                 <table ref="masterTable" class="table table-bordered table-hover table-sm">
                   <thead class="table-light">
@@ -365,17 +375,15 @@
                         <small class="text-muted">{{ isu.isu_spesifik }}</small>
                       </td>
                       <td>
-                        <span v-for="(dampak, idx) in isu.jenis_dampak" :key="idx" class="badge bg-warning text-dark me-1">
+                        <span v-for="(dampak, idx) in isu.jenis_dampak" :key="idx"
+                          class="badge bg-warning text-dark me-1">
                           {{ dampak }}
                         </span>
                       </td>
                       <td>
                         <div class="progress" style="height: 20px;">
-                          <div 
-                            class="progress-bar" 
-                            :class="getProgressClass(isu.besaran_dampak)"
-                            :style="{ width: (isu.besaran_dampak * 20) + '%' }"
-                          >
+                          <div class="progress-bar" :class="getProgressClass(isu.besaran_dampak)"
+                            :style="{ width: (isu.besaran_dampak * 20) + '%' }">
                             {{ isu.besaran_dampak }}/5
                           </div>
                         </div>
@@ -528,11 +536,9 @@
                         </td>
                         <td>
                           <div class="progress" style="height: 20px;">
-                            <div 
-                              class="progress-bar" 
+                            <div class="progress-bar"
                               :class="rel.intensitas_kedekatan >= 4 ? 'bg-success' : rel.intensitas_kedekatan >= 3 ? 'bg-info' : 'bg-warning'"
-                              :style="{ width: (rel.intensitas_kedekatan * 20) + '%' }"
-                            >
+                              :style="{ width: (rel.intensitas_kedekatan * 20) + '%' }">
                               {{ rel.intensitas_kedekatan }}/5
                             </div>
                           </div>
@@ -547,12 +553,10 @@
                             <span class="badge bg-secondary">
                               <i class="bi bi-files"></i> {{ getRelationDocuments(rel).length }} dokumen
                             </span>
-                            <button 
-                              class="btn btn-sm btn-outline-primary" 
-                              @click="toggleRelationDocuments(rel.id)"
-                              v-if="getRelationDocuments(rel).length > 0"
-                            >
-                              <i class="bi" :class="expandedRelations.includes(rel.id) ? 'bi-chevron-up' : 'bi-chevron-down'"></i>
+                            <button class="btn btn-sm btn-outline-primary" @click="toggleRelationDocuments(rel.id)"
+                              v-if="getRelationDocuments(rel).length > 0">
+                              <i class="bi"
+                                :class="expandedRelations.includes(rel.id) ? 'bi-chevron-up' : 'bi-chevron-down'"></i>
                             </button>
                           </div>
                         </td>
@@ -590,10 +594,12 @@
                                     <button class="btn btn-outline-primary" @click="viewDocument(doc)" title="Lihat">
                                       <i class="bi bi-eye"></i>
                                     </button>
-                                    <button class="btn btn-outline-success" @click="downloadDocument(doc)" title="Download">
+                                    <button class="btn btn-outline-success" @click="downloadDocument(doc)"
+                                      title="Download">
                                       <i class="bi bi-download"></i>
                                     </button>
-                                    <button class="btn btn-outline-danger" @click="deleteEvidence(doc.id)" title="Hapus">
+                                    <button class="btn btn-outline-danger" @click="deleteEvidence(doc.id)"
+                                      title="Hapus">
                                       <i class="bi bi-trash"></i>
                                     </button>
                                   </div>
@@ -601,7 +607,8 @@
                               </div>
                             </div>
                             <div class="col-md-12" v-if="getRelationDocuments(rel).length === 0">
-                              <p class="text-muted mb-0"><i class="bi bi-info-circle"></i> Belum ada dokumen untuk relasi ini.</p>
+                              <p class="text-muted mb-0"><i class="bi bi-info-circle"></i> Belum ada dokumen untuk
+                                relasi ini.</p>
                             </div>
                           </div>
                         </td>
@@ -635,7 +642,8 @@
                       <label class="form-label">Username / Keyword (Optional)</label>
                       <div class="input-group">
                         <span class="input-group-text">@</span>
-                        <input type="text" class="form-control" v-model="sentimentForm.keyword" placeholder="username atau keyword">
+                        <input type="text" class="form-control" v-model="sentimentForm.keyword"
+                          placeholder="username atau keyword">
                       </div>
                     </div>
                   </div>
@@ -751,7 +759,8 @@
                         </span>
                       </div>
                       <div v-if="tweet.details" class="mt-2 small text-muted">
-                        Pos: {{ tweet.details.positive }}, Neu: {{ tweet.details.neutral }}, Neg: {{ tweet.details.negative }}
+                        Pos: {{ tweet.details.positive }}, Neu: {{ tweet.details.neutral }}, Neg: {{
+                          tweet.details.negative }}
                       </div>
                     </div>
                   </div>
@@ -918,13 +927,15 @@
                 <div class="col-md-4">
                   <div class="mb-3">
                     <label class="form-label">Level Pengaruh (1-5) *</label>
-                    <input type="number" class="form-control" v-model.number="masterForm.level_pengaruh" min="1" max="5">
+                    <input type="number" class="form-control" v-model.number="masterForm.level_pengaruh" min="1"
+                      max="5">
                   </div>
                 </div>
                 <div class="col-md-4">
                   <div class="mb-3">
                     <label class="form-label">Level Kepentingan (1-5) *</label>
-                    <input type="number" class="form-control" v-model.number="masterForm.level_kepentingan" min="1" max="5">
+                    <input type="number" class="form-control" v-model.number="masterForm.level_kepentingan" min="1"
+                      max="5">
                   </div>
                 </div>
                 <div class="col-12">
@@ -989,7 +1000,8 @@
                 <div class="col-md-12">
                   <div class="mb-3">
                     <label class="form-label">Kekerabatan dengan Stakeholder Lain</label>
-                    <input type="text" class="form-control" v-model="backgroundForm.detail_kekerabatan" placeholder="Contoh: Sepupu dari Budi Santoso">
+                    <input type="text" class="form-control" v-model="backgroundForm.detail_kekerabatan"
+                      placeholder="Contoh: Sepupu dari Budi Santoso">
                   </div>
                 </div>
               </div>
@@ -1186,7 +1198,8 @@
                 <div class="col-md-6">
                   <div class="mb-3">
                     <label class="form-label">Score Closeness (0-100) *</label>
-                    <input type="number" class="form-control" v-model.number="relationForm.score_closeness" min="0" max="100">
+                    <input type="number" class="form-control" v-model.number="relationForm.score_closeness" min="0"
+                      max="100">
                   </div>
                 </div>
                 <div class="col-md-6">
@@ -1885,10 +1898,10 @@ const getFileIcon = (jenis: string) => {
 }
 
 const formatDate = (date: string) => {
-  return new Date(date).toLocaleDateString('id-ID', { 
-    day: '2-digit', 
-    month: 'short', 
-    year: 'numeric' 
+  return new Date(date).toLocaleDateString('id-ID', {
+    day: '2-digit',
+    month: 'short',
+    year: 'numeric'
   })
 }
 
@@ -2118,7 +2131,7 @@ const analyzeSentiment = async () => {
 // Draw network visualization with quadrant matrix and directional arrows
 const drawNetwork = () => {
   if (!networkCanvas.value) return
-  
+
   const canvas = networkCanvas.value
   const ctx = canvas.getContext('2d')
   if (!ctx) return
@@ -2136,13 +2149,13 @@ const drawNetwork = () => {
   // Draw quadrant background colors
   ctx.fillStyle = 'rgba(255, 193, 7, 0.1)' // Yellow - Top-Left (Aktif-Negatif)
   ctx.fillRect(padding, padding, width / 2, height / 2)
-  
+
   ctx.fillStyle = 'rgba(40, 167, 69, 0.1)' // Green - Top-Right (Aktif-Positif)
   ctx.fillRect(centerX, padding, width / 2, height / 2)
-  
+
   ctx.fillStyle = 'rgba(108, 117, 125, 0.1)' // Gray - Bottom-Left (Pasif-Negatif)
   ctx.fillRect(padding, centerY, width / 2, height / 2)
-  
+
   ctx.fillStyle = 'rgba(23, 162, 184, 0.1)' // Cyan - Bottom-Right (Pasif-Positif)
   ctx.fillRect(centerX, centerY, width / 2, height / 2)
 
@@ -2150,39 +2163,39 @@ const drawNetwork = () => {
   ctx.strokeStyle = '#ccc'
   ctx.lineWidth = 1
   ctx.setLineDash([5, 5])
-  
+
   // Vertical center line
   ctx.beginPath()
   ctx.moveTo(centerX, padding)
   ctx.lineTo(centerX, canvas.height - padding)
   ctx.stroke()
-  
+
   // Horizontal center line
   ctx.beginPath()
   ctx.moveTo(padding, centerY)
   ctx.lineTo(canvas.width - padding, centerY)
   ctx.stroke()
-  
+
   ctx.setLineDash([])
 
   // Draw axis labels
   ctx.fillStyle = '#333'
   ctx.font = 'bold 14px Arial'
   ctx.textAlign = 'center'
-  
+
   // Top label (Aktif)
   ctx.fillText('Aktif', canvas.width / 2, padding - 15)
-  
+
   // Bottom label (Pasif)
   ctx.fillText('Pasif', canvas.width / 2, canvas.height - padding + 30)
-  
+
   // Left label (Negatif) - positioned at vertical center, outside left
   ctx.save()
   ctx.translate(20, canvas.height / 2)
   ctx.rotate(-Math.PI / 2)
   ctx.fillText('Negatif', 0, 0)
   ctx.restore()
-  
+
   // Right label (Positif) - positioned at vertical center, outside right
   ctx.save()
   ctx.translate(canvas.width - 20, canvas.height / 2)
@@ -2221,7 +2234,7 @@ const drawNetwork = () => {
   const drawArrow = (fromX: number, fromY: number, toX: number, toY: number, color: string, lineWidth: number, isDashed: boolean = false) => {
     const headlen = 12 // length of arrow head
     const angle = Math.atan2(toY - fromY, toX - fromX)
-    
+
     // Calculate positions to draw from edge of circle (radius 25) not center
     const fromRadius = 28
     const toRadius = 28
@@ -2229,20 +2242,20 @@ const drawNetwork = () => {
     const startY = fromY + fromRadius * Math.sin(angle)
     const endX = toX - toRadius * Math.cos(angle)
     const endY = toY - toRadius * Math.sin(angle)
-    
+
     ctx.beginPath()
     ctx.moveTo(startX, startY)
     ctx.lineTo(endX, endY)
     ctx.strokeStyle = color
     ctx.lineWidth = lineWidth
-    
+
     if (isDashed) {
       ctx.setLineDash([5, 5])
     } else {
       ctx.setLineDash([])
     }
     ctx.stroke()
-    
+
     // Draw arrow head
     ctx.beginPath()
     ctx.moveTo(endX, endY)
@@ -2264,13 +2277,13 @@ const drawNetwork = () => {
   relations.value.forEach(rel => {
     const nodeA = nodes.find(n => n.id === rel.stakeholder_a_id)
     const nodeB = nodes.find(n => n.id === rel.stakeholder_b_id)
-    
+
     if (nodeA && nodeB) {
       // Determine color and line style based on closeness score
       let color = '#999'
       let lineWidth = 1
       let isDashed = false
-      
+
       if (rel.skor_kedekatan_total > 70) {
         lineWidth = 3
         color = '#2c3e50'
@@ -2283,7 +2296,7 @@ const drawNetwork = () => {
         color = '#999'
         isDashed = true
       }
-      
+
       // Draw arrow based on direction
       if (rel.arah_pengaruh === 'A → B') {
         // A influences B
@@ -2295,14 +2308,14 @@ const drawNetwork = () => {
         // Mutual influence - draw double-headed arrow with slight offset
         const offsetAngle = Math.atan2(nodeB.y - nodeA.y, nodeB.x - nodeA.x) + Math.PI / 2
         const offset = 6
-        
+
         // Upper arrow (A to B)
         const a1x = nodeA.x + offset * Math.cos(offsetAngle)
         const a1y = nodeA.y + offset * Math.sin(offsetAngle)
         const b1x = nodeB.x + offset * Math.cos(offsetAngle)
         const b1y = nodeB.y + offset * Math.sin(offsetAngle)
         drawArrow(a1x, a1y, b1x, b1y, color, lineWidth, isDashed)
-        
+
         // Lower arrow (B to A)
         const a2x = nodeA.x - offset * Math.cos(offsetAngle)
         const a2y = nodeA.y - offset * Math.sin(offsetAngle)
@@ -2310,7 +2323,7 @@ const drawNetwork = () => {
         const b2y = nodeB.y - offset * Math.sin(offsetAngle)
         drawArrow(b2x, b2y, a2x, a2y, color, lineWidth, isDashed)
       }
-      
+
       // Draw closeness score in the middle of line
       const midX = (nodeA.x + nodeB.x) / 2
       const midY = (nodeA.y + nodeB.y) / 2
@@ -2329,7 +2342,7 @@ const drawNetwork = () => {
     // Determine color based on sentiment with gradient
     let color = '#6c757d' // default gray
     let gradientColor = '#5a6268'
-    
+
     if (node.klasifikasi_sikap?.includes('Pro-Aktif')) {
       color = '#28a745' // green
       gradientColor = '#20c997'
@@ -2364,8 +2377,8 @@ const drawNetwork = () => {
     ctx.stroke()
 
     // Draw initials in white
-    const initials = node.nama_panggilan 
-      ? node.nama_panggilan.substring(0, 2).toUpperCase() 
+    const initials = node.nama_panggilan
+      ? node.nama_panggilan.substring(0, 2).toUpperCase()
       : node.nama_lengkap.substring(0, 2).toUpperCase()
     ctx.fillStyle = '#fff'
     ctx.font = 'bold 14px Arial'
@@ -2381,7 +2394,7 @@ const drawNetwork = () => {
     // Truncate long names
     const shortName = displayName.length > 12 ? displayName.substring(0, 10) + '...' : displayName
     ctx.fillText(shortName, node.x, node.y + 35)
-    
+
     // Draw role below name - more compact
     ctx.font = '8px Arial'
     ctx.fillStyle = '#666'
@@ -2427,7 +2440,85 @@ onMounted(() => {
 }
 
 .card {
-  box-shadow: 0 0 1px rgba(0,0,0,.125), 0 1px 3px rgba(0,0,0,.2);
+  box-shadow: 0 0 1px rgba(0, 0, 0, .125), 0 1px 3px rgba(0, 0, 0, .2);
+}
+
+/* Clean Tab Styling */
+.nav-tabs {
+  border-bottom: 2px solid #dee2e6;
+}
+
+.nav-tabs .nav-link {
+  background: transparent;
+  border: none;
+  color: #6c757d;
+  padding: 0.75rem 1.25rem;
+  font-weight: 500;
+  transition: all 0.2s ease;
+  border-bottom: 3px solid transparent;
+  margin-bottom: -2px;
+}
+
+.nav-tabs .nav-link:hover {
+  color: #495057;
+  background: transparent;
+  border-color: transparent;
+  border-bottom-color: #adb5bd;
+}
+
+.nav-tabs .nav-link.active {
+  color: #007bff;
+  background: transparent;
+  border-color: transparent;
+  border-bottom-color: #007bff;
+  font-weight: 600;
+}
+
+.nav-tabs .nav-link i {
+  margin-right: 0.5rem;
+}
+
+.card-header {
+  background: #fff;
+  border-bottom: none;
+  padding: 1rem 1.25rem 0;
+}
+
+/* Clean Badge Styling */
+.badge {
+  font-weight: 500;
+  background-color: transparent !important;
+  border: 1px solid transparent;
+}
+
+.badge.bg-success {
+  color: #198754;
+  border-color: #198754;
+}
+
+.badge.bg-info {
+  color: #0dcaf0;
+  border-color: #0dcaf0;
+}
+
+.badge.bg-warning {
+  color: #ffc107;
+  border-color: #ffc107;
+}
+
+.badge.bg-danger {
+  color: #dc3545;
+  border-color: #dc3545;
+}
+
+.badge.bg-secondary {
+  color: #6c757d;
+  border-color: #6c757d;
+}
+
+.badge.bg-primary {
+  color: #0d6efd;
+  border-color: #0d6efd;
 }
 
 /* Quadrant Matrix Styles */
@@ -2441,8 +2532,8 @@ onMounted(() => {
   position: relative;
   width: 100%;
   height: 100%;
-  background: linear-gradient(to right, #f8f9fa 50%, #ffffff 50%), 
-              linear-gradient(to bottom, #ffffff 50%, #f8f9fa 50%);
+  background: linear-gradient(to right, #f8f9fa 50%, #ffffff 50%),
+    linear-gradient(to bottom, #ffffff 50%, #f8f9fa 50%);
   border: 2px solid #dee2e6;
   border-radius: 8px;
 }
@@ -2534,12 +2625,12 @@ onMounted(() => {
   cursor: pointer;
   transition: all 0.3s ease;
   z-index: 10;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
 }
 
 .stakeholder-dot:hover {
   transform: translate(-50%, -50%) scale(1.3);
-  box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
   z-index: 20;
 }
 
@@ -2577,8 +2668,7 @@ onMounted(() => {
 }
 
 .document-link-item:hover {
-  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
   transform: translateY(-2px);
 }
 </style>
-
