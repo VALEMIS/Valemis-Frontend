@@ -21,12 +21,6 @@
           @click="handleAlertClick(alert)">
           <div class="alert-indicator"></div>
 
-          <div class="alert-icon-wrapper">
-            <div class="alert-icon">
-              <i :class="getAlertIcon(alert.severity)"></i>
-            </div>
-          </div>
-
           <div class="alert-content">
             <div class="alert-header">
               <h4 class="alert-title">{{ alert.title }}</h4>
@@ -46,12 +40,7 @@
             <p class="alert-message">{{ alert.message }}</p>
             <div class="alert-footer">
               <span class="alert-time">
-                <i class="bi bi-clock"></i>
                 {{ formatTime(alert.timestamp) }}
-              </span>
-              <span class="alert-action">
-                <i class="bi bi-arrow-right-circle"></i>
-                Ambil Tindakan
               </span>
             </div>
           </div>
@@ -235,12 +224,10 @@ const handleAlertClick = (alert: any) => {
   background: white;
   border: 2px solid #e5e7eb;
   border-radius: 12px;
-  padding: 1.25rem;
+  padding: 0.875rem 1rem;
   cursor: pointer;
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   overflow: hidden;
-  display: flex;
-  gap: 1rem;
 }
 
 .alert-card::before {
@@ -285,50 +272,17 @@ const handleAlertClick = (alert: any) => {
   background: linear-gradient(180deg, #3b82f6 0%, #2563eb 100%);
 }
 
-.alert-icon-wrapper {
-  flex-shrink: 0;
-}
-
-.alert-icon {
-  width: 48px;
-  height: 48px;
-  border-radius: 12px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 1.5rem;
-}
-
-.alert-danger .alert-icon {
-  background: #fee2e2;
-  color: #dc2626;
-}
-
-.alert-warning .alert-icon {
-  background: #fef3c7;
-  color: #d97706;
-}
-
-.alert-info .alert-icon {
-  background: #dbeafe;
-  color: #2563eb;
-}
-
-.alert-content {
-  flex: 1;
-  min-width: 0;
-}
 
 .alert-header {
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
   gap: 0.75rem;
-  margin-bottom: 0.5rem;
+  margin-bottom: 0.375rem;
 }
 
 .alert-title {
-  font-size: 1rem;
+  font-size: 0.9375rem;
   font-weight: 700;
   color: #111827;
   margin: 0;
@@ -336,7 +290,7 @@ const handleAlertClick = (alert: any) => {
 }
 
 .project-badge-wrapper {
-  margin: 0.5rem 0;
+  margin: 0.375rem 0;
 }
 
 .project-badge {
@@ -382,9 +336,9 @@ const handleAlertClick = (alert: any) => {
 }
 
 .alert-message {
-  font-size: 0.875rem;
+  font-size: 0.8125rem;
   color: #6b7280;
-  margin: 0 0 0.75rem 0;
+  margin: 0 0 0.5rem 0;
   line-height: 1.5;
 }
 

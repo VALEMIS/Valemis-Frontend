@@ -145,15 +145,15 @@ export const alertsCategoriesData: AlertCategory[] = [
         id: 2,
         severity: 'critical',
         module: 'acquisition',
-        title: 'Negosiasi Terlambat - Project Alpha',
-        message: '5 bidang terhenti dalam negosiasi lebih dari 90 hari di Project Alpha',
+        title: 'Negosiasi Terlambat - Project MBB1',
+        message: '5 bidang terhenti dalam negosiasi lebih dari 90 hari di Project MBB1',
         count: 5,
         actionLabel: 'Lihat Bidang',
         actionRoute: '/project/7/land-acquisition',
         timestamp: new Date('2026-01-01'),
         dismissible: false,
-        project_id: 7, // Specific to Project Alpha (ID: 7)
-        project_name: 'Project Alpha'
+        project_id: 7,
+        project_name: 'Project MBB1'
       },
       {
         id: 3,
@@ -192,29 +192,29 @@ export const alertsCategoriesData: AlertCategory[] = [
         id: 5,
         severity: 'warning',
         module: 'inventory',
-        title: 'Sertifikat Segera Berakhir - Project Beta',
-        message: '4 sertifikat tanah akan berakhir dalam 6 bulan di Project Beta',
+        title: 'Sertifikat Segera Berakhir - Project MBB1',
+        message: '4 sertifikat tanah akan berakhir dalam 6 bulan di Project MBB1',
         count: 4,
         actionLabel: 'Lihat Lahan',
         actionRoute: '/project/8/land-inventory',
         timestamp: new Date('2026-01-01'),
         dismissible: true,
         project_id: 8,
-        project_name: 'Project Beta'
+        project_name: 'Project MBB1'
       },
       {
         id: 6,
         severity: 'warning',
         module: 'acquisition',
-        title: 'Negosiasi Terhenti - Project Alpha',
-        message: '7 bidang dalam negosiasi lebih dari 60 hari di Project Alpha',
+        title: 'Negosiasi Terhenti - Project MBB1',
+        message: '7 bidang dalam negosiasi lebih dari 60 hari di Project MBB1',
         count: 7,
         actionLabel: 'Lihat Bidang',
         actionRoute: '/project/7/land-acquisition',
         timestamp: new Date('2026-01-01'),
         dismissible: true,
         project_id: 7,
-        project_name: 'Project Alpha'
+        project_name: 'Project MBB1'
       }
     ]
   },
@@ -227,15 +227,15 @@ export const alertsCategoriesData: AlertCategory[] = [
         id: 7,
         severity: 'info',
         module: 'acquisition',
-        title: 'Penilaian Belum Lengkap - Project Gamma',
-        message: '12 bidang memerlukan penilaian sebelum negosiasi di Project Gamma',
+        title: 'Penilaian Belum Lengkap - Project MBB1',
+        message: '12 bidang memerlukan penilaian sebelum negosiasi di Project MBB1',
         count: 12,
         actionLabel: 'Lihat Bidang',
         actionRoute: '/project/9/land-acquisition',
         timestamp: new Date('2026-01-01'),
         dismissible: true,
         project_id: 9,
-        project_name: 'Project Gamma'
+        project_name: 'Project MBB1'
       },
       {
         id: 8,
@@ -274,29 +274,29 @@ export const alertsCategoriesData: AlertCategory[] = [
         id: 10,
         severity: 'monitoring',
         module: 'inventory',
-        title: 'Lahan Baru Diperoleh - Project Alpha',
-        message: '6 bidang baru diperoleh bulan ini di Project Alpha',
+        title: 'Lahan Baru Diperoleh - Project MBB1',
+        message: '6 bidang baru diperoleh bulan ini di Project MBB1',
         count: 6,
         actionLabel: 'Lihat Lahan',
         actionRoute: '/project/7/land-inventory',
         timestamp: new Date('2026-01-01'),
         dismissible: true,
         project_id: 7,
-        project_name: 'Project Alpha'
+        project_name: 'Project MBB1'
       },
       {
         id: 11,
         severity: 'monitoring',
         module: 'asset',
-        title: 'Aset Rumah Tangga Besar - Project Beta',
-        message: '3 rumah tangga dengan >10 anggota keluarga terdeteksi di Project Beta',
+        title: 'Aset Rumah Tangga Besar - Project MBB1',
+        message: '3 rumah tangga dengan >10 anggota keluarga terdeteksi di Project MBB1',
         count: 3,
         actionLabel: 'Lihat Aset',
         actionRoute: '/project/8/asset-inventory',
         timestamp: new Date('2026-01-01'),
         dismissible: true,
         project_id: 8,
-        project_name: 'Project Beta'
+        project_name: 'Project MBB1'
       },
       {
         id: 12,
