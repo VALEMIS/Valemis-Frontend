@@ -1176,28 +1176,28 @@ const initAssetMap = () => {
 
   wmsLayerAsset.addTo(assetMap);
 
-  var acquisitionLegend = L.control({ position: 'bottomright' });
+  // var acquisitionLegend = L.control({ position: 'bottomright' });
 
-  acquisitionLegend.onAdd = function () {
-    const div = L.DomUtil.create('div', 'legend');
+  // acquisitionLegend.onAdd = function () {
+  //   const div = L.DomUtil.create('div', 'legend');
     
-    div.innerHTML = `
-    <div class="card p-2">
-      <h6>Asset</h6>
-      <img
-        src="${gsUrl}/vector_valemis/wms?REQUEST=GetLegendGraphic&VERSION=1.0.0&FORMAT=image/png&WIDTH=20&HEIGHT=20&LAYER=vector_valemis:census_kepala_keluarga&STYLE=sld_asset_point" alt="Legend"
-      />
-      <h6>IUPK</h6>
-      <img
-        src="${gsUrl}/vector_valemis/wms?REQUEST=GetLegendGraphic&VERSION=1.0.0&FORMAT=image/png&WIDTH=20&HEIGHT=20&LAYER=vector_valemis:theme_eab3f65a&STYLE=sld_iupk_3" alt="Legend"
-      />
-    </div>
-    `;
+  //   div.innerHTML = `
+  //   <div class="card p-2">
+  //     <h6>Asset</h6>
+  //     <img
+  //       src="${gsUrl}/vector_valemis/wms?REQUEST=GetLegendGraphic&VERSION=1.0.0&FORMAT=image/png&WIDTH=20&HEIGHT=20&LAYER=vector_valemis:census_kepala_keluarga&STYLE=sld_asset_point" alt="Legend"
+  //     />
+  //     <h6>IUPK</h6>
+  //     <img
+  //       src="${gsUrl}/vector_valemis/wms?REQUEST=GetLegendGraphic&VERSION=1.0.0&FORMAT=image/png&WIDTH=20&HEIGHT=20&LAYER=vector_valemis:theme_eab3f65a&STYLE=sld_iupk_3" alt="Legend"
+  //     />
+  //   </div>
+  //   `;
 
-    return div;
-  };
+  //   return div;
+  // };
 
-  acquisitionLegend.addTo(assetMap);
+  // acquisitionLegend.addTo(assetMap);
 }
 
 const viewOnMap = (asset: Asset) => {
