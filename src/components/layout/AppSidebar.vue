@@ -84,12 +84,12 @@
             </router-link>
           </li>
 
-          <!-- 6. Stakeholder Management Module -->
+          <!-- 6. Stakeholder Mapping Module -->
           <li class="nav-item">
             <router-link to="/stakeholder-management/advanced" class="nav-link"
               :class="{ active: route.path.startsWith('/stakeholder-management') }">
               <i class="nav-icon pi pi-users"></i>
-              <span>Stakeholder Management</span>
+              <span>Stakeholder Mapping</span>
             </router-link>
           </li>
 
