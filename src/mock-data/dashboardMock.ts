@@ -25,7 +25,7 @@ export const kpiCardsData: KPICard[] = [
     icon: 'bi bi-map',
     iconColor: '#3b82f6',
     trend: { value: 12, isPositive: true },
-    targetRoute: '/project/7/land-acquisition'
+    targetRoute: '/project/8/land-acquisition'
   },
   {
     id: 'lahan-bebas',
@@ -35,7 +35,7 @@ export const kpiCardsData: KPICard[] = [
     icon: 'bi bi-check-circle',
     iconColor: '#22c55e',
     progress: 78,
-    targetRoute: '/project/7/land-acquisition'
+    targetRoute: '/project/8/land-acquisition'
   },
   {
     id: 'dalam-proses',
@@ -43,7 +43,7 @@ export const kpiCardsData: KPICard[] = [
     value: 52,
     icon: 'bi bi-clock-history',
     iconColor: '#eab308',
-    targetRoute: '/project/7/land-acquisition'
+    targetRoute: '/project/8/land-acquisition'
   },
   {
     id: 'sengketa',
@@ -64,7 +64,7 @@ export const kpiCardsData: KPICard[] = [
     icon: 'bi bi-cash-stack',
     iconColor: '#06b6d4',
     trend: { value: 8, isPositive: false },
-    targetRoute: '/project/7/land-acquisition'
+    targetRoute: '/project/8/land-acquisition'
   },
   {
     id: 'biaya-m2',
@@ -73,7 +73,7 @@ export const kpiCardsData: KPICard[] = [
     unit: 'IDR/m²',
     icon: 'bi bi-calculator',
     iconColor: '#6b7280',
-    targetRoute: '/project/7/land-acquisition'
+    targetRoute: '/project/8/land-acquisition'
   },
 
   // Compliance KPIs
@@ -149,10 +149,10 @@ export const alertsCategoriesData: AlertCategory[] = [
         message: '5 bidang terhenti dalam negosiasi lebih dari 90 hari di Project MBB1',
         count: 5,
         actionLabel: 'Lihat Bidang',
-        actionRoute: '/project/7/land-acquisition',
+        actionRoute: '/project/8/land-acquisition',
         timestamp: new Date('2026-01-01'),
         dismissible: false,
-        project_id: 7,
+        project_id: 8,
         project_name: 'Project MBB1'
       },
       {
@@ -210,10 +210,10 @@ export const alertsCategoriesData: AlertCategory[] = [
         message: '7 bidang dalam negosiasi lebih dari 60 hari di Project MBB1',
         count: 7,
         actionLabel: 'Lihat Bidang',
-        actionRoute: '/project/7/land-acquisition',
+        actionRoute: '/project/8/land-acquisition',
         timestamp: new Date('2026-01-01'),
         dismissible: true,
-        project_id: 7,
+        project_id: 8,
         project_name: 'Project MBB1'
       }
     ]
@@ -278,10 +278,10 @@ export const alertsCategoriesData: AlertCategory[] = [
         message: '6 bidang baru diperoleh bulan ini di Project MBB1',
         count: 6,
         actionLabel: 'Lihat Lahan',
-        actionRoute: '/project/7/land-inventory',
+        actionRoute: '/project/8/land-inventory',
         timestamp: new Date('2026-01-01'),
         dismissible: true,
-        project_id: 7,
+        project_id: 8,
         project_name: 'Project MBB1'
       },
       {
