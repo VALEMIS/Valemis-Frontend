@@ -431,6 +431,7 @@ import { censusKepalaKeluargaApi, censusQuestionsApi, type CensusKepalaKeluarga 
 import DataTable from 'primevue/datatable'
 import Column from 'primevue/column'
 import CensusFormModal from '../components/CensusFormModal.vue'
+import {addWms} from "../utils/addWms.js"
 import * as XLSX from 'xlsx'
 const gsUrl = import.meta.env.VITE_APP_API_GS_URL
 interface Asset {
@@ -1028,7 +1029,7 @@ const toggleView = () => {
   showMap.value = !showMap.value
 }
 
-const initAssetMap = () => {
+const initAssetMap = async () => {
   if (assetMap) {
     assetMap.remove()
   }
@@ -1137,32 +1138,9 @@ const initAssetMap = () => {
   // );
 
   // wmsLayer.addTo(assetMap);
-  const wmsLayerBatas = L.tileLayer.wms(
-    gsUrl + "/vector_valemis/wms",
-    {
-      layers: "	vector_valemis:theme_ea895991",
-      format: "image/png",
-      transparent: true,
-      styles: "Style Batas Desa",
-      version: "1.1.0"
-    }
-  );
+  await addWms(assetMap,projectId.value)
 
-  wmsLayerBatas.addTo(assetMap);
-
-  const wmsLayerIUPK = L.tileLayer.wms(
-    gsUrl + "/vector_valemis/wms",
-    {
-      layers: "	vector_valemis:theme_eab3f65a",
-      format: "image/png",
-      transparent: true,
-      version: "1.1.0",
-      styles: "sld_iupk_3",
-      crs: L.CRS.EPSG4326,
-    }
-  );
-
-  wmsLayerIUPK.addTo(assetMap);
+  // wmsLayerIUPK.addTo(assetMap);
   const wmsLayerAsset = L.tileLayer.wms(
     gsUrl + "/vector_valemis/wms",
     {

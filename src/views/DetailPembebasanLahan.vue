@@ -287,6 +287,7 @@ import "../utils/drawMap.js"
 import router from '../router/index.js'
 import wellknown from "wellknown"
 import { useRoute } from 'vue-router'
+import {addWms} from "../utils/addWms.js"
 const route = useRoute()
 const projectId = route.params.id_project
 const uploadGeometry = null
@@ -296,6 +297,7 @@ const gsUrl = import.meta.env.VITE_APP_API_GS_URL
 
 let mpwkt
 let map = null
+let modalMap = null
 let isEditMode = false
 let acquisitionParcel = ref([])
 let acquisitionParcelCompute = ref([])
@@ -305,6 +307,8 @@ const acquisition = ref([])
 const projects = ref([])
 let uploadedGeojson = null
 let selectedGeometry = null
+const selectedPersil = ref(null)
+let wmsLayerAcquisitionSelected = null
 const fetchAcquisition = async () => {
   const res = await axios.get(apiUrl+`/LandAcquisition/?id_project=${projectId}`)
   acquisition.value = res.data
@@ -484,9 +488,9 @@ async function saveParcel() {
     status: formData.value.status,
     jumlah_bebas: formData.value.jumlah_bebas,
     biaya_pembebasan: formData.value.biaya_pembebasan,
-    geom: wkt
+    geom: wkt == null ? acquisition.value.geom : wkt
   }
-console.log(payload,isEditMode)
+// console.log(payload,isEditMode)
   if (isEditMode) {
     // UPDATE
     await axios.put(
@@ -544,11 +548,6 @@ onMounted(async () => {
     })
     })
   })
-
-  
-
-  // console.log(acquisitionParcel.value)
-
   await initMainMap()
 })
 async function initMainMap(){
@@ -557,24 +556,7 @@ async function initMainMap(){
   L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
     attribution: '&copy; OpenStreetMap contributors'
   }).addTo(map)
-
-  const wmsLayer = L.tileLayer.wms(
-    gsUrl+"/raster_valemis/wms",
-    {
-      layers: "raster_valemis:orthophoto_mbb1",
-      format: "image/png",
-      transparent: true,
-      version: "1.1.0"
-    }
-  );
-  wmsLayer.addTo(map);
-  const resProject = await axios.get(apiUrl+`/Project/${projectId}`)
-  
-  if (resProject.data.geom) {
-    const geojson = wellknown.parse(resProject.data.geom)
-    const geojsonLayerProject = new L.GeoJSON(geojson).addTo(map)
-    map.fitBounds(geojsonLayerProject.getBounds())
-  }
+  await addWms(map,projectId)
   const wmsLayerAcquisition = L.tileLayer.wms(
     gsUrl+"/vector_valemis/wms",
     {
@@ -600,13 +582,8 @@ async function initMainMap(){
     }
   );
 
-const res = await axios.get(url,{
-  
-   headers: {
-      "Authorization": "Basic " + btoa("admin:geoserver")
-    }
-})
-console.log("SDFSDF",res)
+// const res = await axios.get(url)
+
   fetch(url)
     .then(res => res.json())
     .then(data => {
@@ -614,26 +591,48 @@ console.log("SDFSDF",res)
       if (!data.features.length) return;
 
       const props = data.features[0].properties;
-
+      selectedPersil.value = data.features[0].id
+      console.log(props.id_parcel)
       L.popup()
         .setLatLng(e.latlng)
         .setContent(`
-          <b>Koder:</b> ${props.kode_parcel}<br>
+          <b>Kode:</b> ${props.kode_parcel}<br>
           <b>Nama Pemilik:</b> ${props.nama_pemilik}<br>
           <b>Nama Pemilik:</b> ${props.desa}<br>
-          <b>Nama Pemilik:</b> ${props.luas}<br>
-          <b>Nama Pemilik:</b> ${props.status}<br>
-          <b>Nama Pemilik:</b> ${props.jumlah_bebas}<br>
-          <b>Nama Pemilik:</b> ${props.biaya_pembebasan}<br>
-          <b>Nama Pemilik:</b> ${props.tanggal_negosiasi}<br>
-          <b>Nama Pemilik:</b> ${props.id_asset.id_asset}<br>
+          
 
         `)
         .openOn(map);
+// <b>Nama Pemilik:</b> ${props.luas}<br>
+          // <b>Nama Pemilik:</b> ${props.status}<br>
+          // <b>Nama Pemilik:</b> ${props.jumlah_bebas}<br>
+          // <b>Nama Pemilik:</b> ${props.biaya_pembebasan}<br>
+          // <b>Nama Pemilik:</b> ${props.tanggal_negosiasi}<br>
+          // <b>Nama Pemilik:</b> ${props.id_asset.id_asset}<br>
+          if (wmsLayerAcquisitionSelected) {
+            map.removeLayer(wmsLayerAcquisitionSelected);
+          }
+          console.log(selectedPersil.value)
+          const cql = encodeURIComponent(
+            `id_project_id=${projectId} AND id_parcel=${selectedPersil.value}`
+          )
 
-    });
-});
+          wmsLayerAcquisitionSelected = L.tileLayer.wms(
+            gsUrl + "/vector_valemis/wms",
+            {
+              layers: "vector_valemis:tbl_acquisition",
+              format: "image/png",
+              transparent: true,
+              version: "1.1.0",
+              featureID:selectedPersil.value,
+              styles: "sld_persil_selected",
+              crs: L.CRS.EPSG4326
+            }
+          ).addTo(map)
 
+          
+      });
+  });
   wmsLayerAcquisition.addTo(map);
   var acquisitionLegend = L.control({ position: 'bottomright' });
 
@@ -650,10 +649,7 @@ console.log("SDFSDF",res)
     `;
     return div;
   };
-
   acquisitionLegend.addTo(map);
-  
-
 }
 function getFeatureInfoUrl(map, layer, latlng, params) {
 
@@ -684,20 +680,21 @@ function getFeatureInfoUrl(map, layer, latlng, params) {
     true
   );
 }
-function initMap() {
-  map = L.map("map-modal").setView([-2, 118], 5)
+async function initMap() {
+  modalMap = L.map("map-modal").setView([-2, 118], 5)
 
   L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png")
-    .addTo(map)
+    .addTo(modalMap)
 
-  map.pm.addControls({
+  modalMap.pm.addControls({
     position: 'topleft',
     drawCircleMarker: false,
     rotateMode: false,
   })
 
-
-  mpwkt = new LeafletMultiPolygonWKT(map)
+  // watch()
+  mpwkt = new LeafletMultiPolygonWKT(modalMap)
+  await addWms(modalMap,projectId)
   const wmsLayerAcquisition = L.tileLayer.wms(
     gsUrl+"/vector_valemis/wms",
     {
@@ -711,20 +708,7 @@ function initMap() {
       tiled:false
     }
   );
-
-  wmsLayerAcquisition.addTo(landMap);
-  const wmsLayerProject = L.tileLayer.wms(
-    gsUrl+"/vector_valemis/wms",
-    {
-      layers: "vector_valemis:tbl_project",
-      format: "image/png",
-      transparent: true,
-      version: "1.1.0",
-      styles:"sld_project",
-    }
-  );
-
-  wmsLayerProject.addTo(landMap);
+  wmsLayerAcquisition.addTo(modalMap)
 }
 function handleGeoJsonUpload(event) {
   const target = event.target 

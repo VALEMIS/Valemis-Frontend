@@ -131,7 +131,7 @@
           </div>
         </div>
 
-        <div v-if="showMap" class="row mb-3">
+        <!-- <div v-if="showMap" class="row mb-3"> -->
           <div class="col-12">
             <div class="card">
               <div class="card-header">
@@ -142,9 +142,9 @@
               </div>
             </div>
           </div>
-        </div>
+        <!-- </div> -->
 
-        <div v-else class="row">
+        <!-- <div v-else class="row"> -->
           <div class="col-12">
             <div class="card">
               <div class="card-header">
@@ -220,7 +220,7 @@
               </div>
             </div>
           </div>
-        </div>
+        <!-- </div> -->
 
         <div class="row mt-3">
           <div class="col-md-6">
@@ -426,6 +426,7 @@ import RasterUpload from '../components/LandInventoryComp/RasterUpload.vue';
 import ThemeMapUpload from '../components/LandInventoryComp/ThemeMapUpload.vue';
 import DocumentModal from '../components/LandInventoryComp/DocumentModal.vue';
 import "../utils/drawMap.js"
+import {addWms} from "../utils/addWms.js"
 import { useRoute } from 'vue-router'
 
 const apiUrl = import.meta.env.VITE_APP_API_SPATIAL_URL
@@ -463,7 +464,7 @@ interface FormData {
 
 const selectedCategory = ref<string>('all')
 const selectedCertificate = ref<string>('all')
-const showMap = ref<boolean>(false)  // Default to show map first
+const showMap = ref<boolean>(true)  // Default to show map first
 const landMapContainer = ref<HTMLElement | null>(null)
 const mapContainer = ref<HTMLElement | null>(null)
 const landModalRef = ref<HTMLElement | null>(null)
@@ -576,11 +577,6 @@ onMounted(() => {
   // map.fitBounds(geojsonLayerProject.getBounds())
   // }
   initMap()
-  console.log('Land Inventory Mounted')
-  console.log('Total Lands:', lands.value.length)
-  console.log('Lands Data:', lands.value)
-  console.log('Filtered Lands:', filteredLands.value.length)
-  console.log('Total Stats:', totalStats.value)
 })
 
 onUnmounted(() => {
@@ -590,11 +586,7 @@ onUnmounted(() => {
   }
 })
 
-const toggleView = () => {
-  showMap.value = !showMap.value
-}
-
-const initLandMap = () => {
+const initLandMap = async () => {
   if (landMap) {
     landMap.remove()
   }
@@ -612,30 +604,7 @@ const initLandMap = () => {
     maxZoom: 19
   }).addTo(landMap)
 
-  const wmsLayer = L.tileLayer.wms(
-    gsUrl + "/raster_valemis/wms",
-    {
-      layers: "raster_valemis:fotoudara_vale",
-      format: "image/png",
-      transparent: true,
-      version: "1.1.0"
-    }
-  );
-
-  wmsLayer.addTo(landMap);
-
-  const wmsLayerIupk = L.tileLayer.wms(
-    gsUrl + "/vector_valemis/wms",
-    {
-      layers: "vector_valemis:IUPK Vale",
-      format: "image/png",
-      transparent: true,
-      version: "1.1.0",
-      styles: "sld_iupk",
-    }
-  );
-
-  wmsLayerIupk.addTo(landMap);
+  await addWms(landMap,projectId)
 
   const wmsLayerProject = L.tileLayer.wms(
     gsUrl + "/vector_valemis/wms",
@@ -644,48 +613,22 @@ const initLandMap = () => {
       format: "image/png",
       transparent: true,
       version: "1.1.0",
-      styles: "sld_project",
+      styles: "sld_projek",
     }
   );
 
   wmsLayerProject.addTo(landMap);
 
-  const wmsLayerPersil = L.tileLayer.wms(
-    gsUrl + "/vector_valemis/wms",
-    {
-      layers: "vector_valemis:PERSIL",
-      format: "image/png",
-      transparent: true,
-      version: "1.1.0",
-      styles: "sld_persil",
-    }
-  );
-
-  wmsLayerPersil.addTo(landMap);
-
-  const wmsLayerTanaman = L.tileLayer.wms(
-    gsUrl + "/vector_valemis/wms",
-    {
-      layers: "vector_valemis:TITIK SURVEY TANAMAN",
-      format: "image/png",
-      transparent: true,
-      version: "1.1.0",
-      styles: "sld_tanaman",
-    }
-  );
-
-  wmsLayerTanaman.addTo(landMap);
 
 
-
-  let geojsonLayerProject
-  // if (lands.value.length>0) {
-  lands.value.forEach((e) => {
-    if (e.geom != null) {
-      console.log(wellknown.parse(e.geom))
-      L.geoJSON(wellknown.parse(e.geom)).addTo(landMap)
-    }
-  })
+  // let geojsonLayerProject
+  // // if (lands.value.length>0) {
+  // lands.value.forEach((e) => {
+  //   if (e.geom != null) {
+  //     console.log(wellknown.parse(e.geom))
+  //     L.geoJSON(wellknown.parse(e.geom)).addTo(landMap)
+  //   }
+  // })
 
 }
 function initMap() {
