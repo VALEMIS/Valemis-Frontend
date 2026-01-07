@@ -75,8 +75,8 @@
               <div class="card-header">
                 <h3 class="card-title"><i class="bi bi-table"></i> Daftar Asset Inventory</h3>
                 <div class="card-tools">
-                  <button class="btn btn-success btn-sm me-2" @click="exportToCsv" title="Download CSV">
-                    <i class="bi bi-file-earmark-spreadsheet"></i> Download CSV
+                  <button class="btn btn-success btn-sm me-2" @click="exportToExcel" title="Download Excel">
+                    <i class="bi bi-file-earmark-spreadsheet"></i> Download Excel
                   </button>
                   <button class="btn btn-primary btn-sm" @click="addAsset" data-bs-toggle="modal"
                     data-bs-target="#censusModal">
@@ -431,6 +431,7 @@ import { censusKepalaKeluargaApi, censusQuestionsApi, type CensusKepalaKeluarga 
 import DataTable from 'primevue/datatable'
 import Column from 'primevue/column'
 import CensusFormModal from '../components/CensusFormModal.vue'
+import * as XLSX from 'xlsx'
 const gsUrl = import.meta.env.VITE_APP_API_GS_URL
 interface Asset {
   id: number
@@ -1180,7 +1181,7 @@ const initAssetMap = () => {
 
   // acquisitionLegend.onAdd = function () {
   //   const div = L.DomUtil.create('div', 'legend');
-    
+
   //   div.innerHTML = `
   //   <div class="card p-2">
   //     <h6>Asset</h6>
@@ -1639,7 +1640,7 @@ const formatRupiah = (value: number): string => {
 }
 
 // Export to CSV
-const exportToCsv = async () => {
+const exportToExcel = async () => {
   try {
     // Define field mapping with headers - ALL fields from census modal
     const fieldMapping = [
@@ -1886,43 +1887,28 @@ const exportToCsv = async () => {
       { header: 'Notes', field: 'notes' }
     ]
 
-    // Extract headers
-    const headers = fieldMapping.map(f => f.header)
-
-    // Map data to CSV rows
-    const rows = filteredAssets.value.map(asset => {
-      return fieldMapping.map(({ field }) => {
+    // Prepare data for Excel
+    const excelData = filteredAssets.value.map(asset => {
+      const row: any = {}
+      fieldMapping.forEach(({ header, field }) => {
         const value = (asset as any)[field]
         // Handle null/undefined
-        if (value === null || value === undefined || value === '') return '-'
-        // Convert to string and escape
-        const stringValue = String(value)
-        if (stringValue.includes(',') || stringValue.includes('"') || stringValue.includes('\n')) {
-          return `"${stringValue.replace(/"/g, '""')}"`
-        }
-        return stringValue
+        row[header] = (value === null || value === undefined || value === '') ? '-' : value
       })
+      return row
     })
 
-    // Combine headers and rows
-    const csvContent = [
-      headers.join(','),
-      ...rows.map(row => row.join(','))
-    ].join('\n')
+    // Create worksheet from data
+    const worksheet = XLSX.utils.json_to_sheet(excelData)
 
-    // Create blob and download
-    const blob = new Blob(['\ufeff' + csvContent], { type: 'text/csv;charset=utf-8;' })
-    const link = document.createElement('a')
-    const url = URL.createObjectURL(blob)
+    // Create workbook and add the worksheet
+    const workbook = XLSX.utils.book_new()
+    XLSX.utils.book_append_sheet(workbook, worksheet, 'Asset Inventory')
 
-    link.setAttribute('href', url)
-    link.setAttribute('download', `asset-inventory-${new Date().toISOString().split('T')[0]}.csv`)
-    link.style.visibility = 'hidden'
-    document.body.appendChild(link)
-    link.click()
-    document.body.removeChild(link)
+    // Generate Excel file and trigger download
+    XLSX.writeFile(workbook, `asset-inventory-${new Date().toISOString().split('T')[0]}.xlsx`)
 
-    alert('Data berhasil didownload dalam format CSV!')
+    alert('Data berhasil didownload dalam format Excel!')
   } catch (err) {
     alert('Gagal mendownload data: ' + (err instanceof Error ? err.message : 'Unknown error'))
     console.error('Export error:', err)

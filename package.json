@@ -27,7 +27,8 @@
     "vue-leaflet": "^0.1.0",
     "vue-router": "^4.6.3",
     "wellknown": "^0.5.0",
-    "wkt-to-gml": "^0.0.2"
+    "wkt-to-gml": "^0.0.2",
+    "xlsx": "^0.18.5"
   },
   "devDependencies": {
     "@types/bootstrap": "^5.2.10",
