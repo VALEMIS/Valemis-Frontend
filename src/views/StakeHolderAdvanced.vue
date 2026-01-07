@@ -2415,6 +2415,47 @@ onMounted(() => {
   box-shadow: 0 0 1px rgba(0, 0, 0, .125), 0 1px 3px rgba(0, 0, 0, .2);
 }
 
+/* Clean Tab Styling */
+.nav-tabs {
+  border-bottom: 2px solid #dee2e6;
+}
+
+.nav-tabs .nav-link {
+  background: transparent;
+  border: none;
+  color: #6c757d;
+  padding: 0.75rem 1.25rem;
+  font-weight: 500;
+  transition: all 0.2s ease;
+  border-bottom: 3px solid transparent;
+  margin-bottom: -2px;
+}
+
+.nav-tabs .nav-link:hover {
+  color: #495057;
+  background: transparent;
+  border-color: transparent;
+  border-bottom-color: #adb5bd;
+}
+
+.nav-tabs .nav-link.active {
+  color: #007bff;
+  background: transparent;
+  border-color: transparent;
+  border-bottom-color: #007bff;
+  font-weight: 600;
+}
+
+.nav-tabs .nav-link i {
+  margin-right: 0.5rem;
+}
+
+.card-header {
+  background: #fff;
+  border-bottom: none;
+  padding: 1rem 1.25rem 0;
+}
+
 /* Quadrant Matrix Styles */
 .quadrant-container {
   width: 100%;
