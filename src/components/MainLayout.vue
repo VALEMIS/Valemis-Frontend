@@ -4,14 +4,12 @@
     <main class="app-main">
       <router-view />
     </main>
-    <AppFooter />
   </div>
 </template>
 
 <script setup lang="ts">
 import { onMounted } from 'vue'
 import AppSidebar from './layout/AppSidebar.vue'
-import AppFooter from './layout/AppFooter.vue'
 
 onMounted(() => {
   // Initialize OverlayScrollbars for sidebar
@@ -28,5 +26,4 @@ onMounted(() => {
 })
 </script>
 
-<style scoped>
-</style>
+<style scoped></style>
