@@ -528,6 +528,7 @@ export const litigationTrendChart: ChartConfig = {
 export const influenceMatrixChart: ChartConfig = {
   type: 'scatter',
   data: {
+    labels: [],
     datasets: [
       {
         label: 'Stakeholders',

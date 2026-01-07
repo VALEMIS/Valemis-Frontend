@@ -130,6 +130,7 @@ import { useRoute, useRouter } from 'vue-router'
 import { computed, watch, ref } from 'vue';
 import axios from 'axios';
 
+const API_URL = import.meta.env.VITE_APP_API_SPATIAL_URL
 const projectMeta = ref<any>(null)
 const loadingProject = ref(false)
 const showAccountMenu = ref(false)
@@ -162,7 +163,7 @@ watch(
     loadingProject.value = true
     try {
       const res = await axios.get(
-        `http://spatial.valemis.id/api/spatial/Project/${newId}`
+        `${API_URL}/Project/${newId}`
       )
       projectMeta.value = res.data
     } catch (err) {

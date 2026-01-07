@@ -30,8 +30,11 @@
     "wkt-to-gml": "^0.0.2"
   },
   "devDependencies": {
+    "@types/bootstrap": "^5.2.10",
     "@types/leaflet-draw": "^1.0.13",
     "@types/node": "^24.10.1",
+    "@types/shpjs": "^3.4.7",
+    "@types/wellknown": "^0.5.8",
     "@vitejs/plugin-vue": "^6.0.2",
     "@vue/tsconfig": "^0.8.1",
     "autoprefixer": "^10.4.14",

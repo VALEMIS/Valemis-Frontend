@@ -10,6 +10,7 @@
 export interface KPICard {
   id: string
   title: string
+  subtitle?: string
   value: number | string
   unit?: string
   icon: string
@@ -63,8 +64,10 @@ export interface Alert {
   count?: number
   actionLabel?: string
   actionRoute?: string
-  timestamp?: Date
+  timestamp: Date
   dismissible?: boolean
+  project_id?: number | null
+  project_name?: string
 }
 
 export interface AlertCategory {
@@ -134,11 +137,15 @@ export interface ChartFilter {
 }
 
 export interface ChartDataset {
-  label: string
-  data: number[]
+  label?: string
+  data: number[] | { x: number; y: number }[]
   backgroundColor?: string | string[]
   borderColor?: string | string[]
   borderWidth?: number
+  fill?: boolean
+  borderDash?: number[]
+  pointBackgroundColor?: string | string[]
+  pointRadius?: number
 }
 
 export interface ChartConfig {

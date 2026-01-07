@@ -34,7 +34,7 @@ export function useProject() {
 
             // Auto-select first project if none selected
             if (!currentProject.value && projects.value.length > 0) {
-                currentProject.value = projects.value[0]
+                currentProject.value = projects.value[0] || null
             }
 
             return projects.value

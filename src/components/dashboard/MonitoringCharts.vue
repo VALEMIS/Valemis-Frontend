@@ -72,7 +72,7 @@ onMounted(() => {
             padding: 15,
             font: {
               size: 12,
-              weight: '500'
+              weight: 500
             },
             color: '#6b7280',
             usePointStyle: true,
@@ -151,7 +151,7 @@ onMounted(() => {
             color: '#6b7280',
             font: {
               size: 12,
-              weight: '500'
+              weight: 500
             }
           }
         },
@@ -164,7 +164,7 @@ onMounted(() => {
             color: '#6b7280',
             font: {
               size: 12,
-              weight: '500'
+              weight: 500
             }
           }
         }
