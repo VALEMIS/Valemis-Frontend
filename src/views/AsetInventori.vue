@@ -26,10 +26,9 @@
                 <label class="form-label"><strong>Filter per Desa</strong></label>
                 <select v-model="selectedVillage" class="form-select" @change="filterByVillage">
                   <option value="all">Semua Desa</option>
-                  <option value="Desa Sorowako">Desa Sorowako</option>
-                  <option value="Desa Magani">Desa Magani</option>
-                  <option value="Desa Wewangriu">Desa Wewangriu</option>
-                  <option value="Desa Nikkel">Desa Nikkel</option>
+                  <option v-for="village in uniqueVillages" :key="village" :value="village">
+                    {{ village }}
+                  </option>
                 </select>
               </div>
             </div>
@@ -984,9 +983,16 @@ const filteredAssets = computed(() => {
   return assets.value.filter(asset => asset.desa === selectedVillage.value)
 })
 
+// Get unique villages from data
+const uniqueVillages = computed(() => {
+  const villages = assets.value
+    .map(asset => asset.desa)
+    .filter((desa): desa is string => !!desa) // Filter out null/undefined and type guard
+  return [...new Set(villages)].sort() // Remove duplicates and sort
+})
+
 const villageSummary = computed(() => {
-  const villages = ['Desa Sorowako', 'Desa Magani', 'Desa Wewangriu', 'Desa Nikkel']
-  return villages.map(village => {
+  return uniqueVillages.value.map(village => {
     const villageAssets = assets.value.filter(a => a.desa === village)
     return {
       name: village,
