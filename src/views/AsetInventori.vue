@@ -153,9 +153,6 @@
                 <p class="mb-1"><strong>Total Asset:</strong> {{ village.totalAssets }}</p>
                 <p class="mb-1"><strong>Total KK:</strong> {{ village.totalKK }}</p>
                 <p class="mb-1"><strong>Luas Total:</strong> {{ village.totalArea.toLocaleString() }} m²</p>
-                <button class="btn btn-sm btn-primary mt-2" @click="selectVillageFilter(village.name)">
-                  <i class="bi bi-filter"></i> Filter
-                </button>
               </div>
             </div>
           </div>
