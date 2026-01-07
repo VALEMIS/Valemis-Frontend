@@ -1051,125 +1051,125 @@ const initAssetMap = () => {
   }).addTo(assetMap)
 
   // Add markers
-//   filteredAssets.value.forEach(asset => {
-//     // Parse coordinates from "lat, lng" format
-//     let lat = -2.565, lng = 121.345 // default coordinates
-//     if (asset.koordinat) {
-//       const parts = asset.koordinat.split(',').map(c => parseFloat(c.trim()))
-//       if (parts.length === 2 && parts[0] !== undefined && !isNaN(parts[0]) && parts[1] !== undefined && !isNaN(parts[1])) {
-//         lat = parts[0]
-//         lng = parts[1]
-//       }
-//     }
+  //   filteredAssets.value.forEach(asset => {
+  //     // Parse coordinates from "lat, lng" format
+  //     let lat = -2.565, lng = 121.345 // default coordinates
+  //     if (asset.koordinat) {
+  //       const parts = asset.koordinat.split(',').map(c => parseFloat(c.trim()))
+  //       if (parts.length === 2 && parts[0] !== undefined && !isNaN(parts[0]) && parts[1] !== undefined && !isNaN(parts[1])) {
+  //         lat = parts[0]
+  //         lng = parts[1]
+  //       }
+  //     }
 
-//     const houseIcon = L.divIcon({
-//       className: 'custom-house-marker',
-//       html: `<div style="background: #dc3545; width: 16px; height: 16px; border-radius: 50%; border: 3px solid white; box-shadow: 0 2px 4px rgba(0,0,0,0.3);"></div>`,
-//       iconSize: [16, 16],
-//       iconAnchor: [8, 8]
-//     })
+  //     const houseIcon = L.divIcon({
+  //       className: 'custom-house-marker',
+  //       html: `<div style="background: #dc3545; width: 16px; height: 16px; border-radius: 50%; border: 3px solid white; box-shadow: 0 2px 4px rgba(0,0,0,0.3);"></div>`,
+  //       iconSize: [16, 16],
+  //       iconAnchor: [8, 8]
+  //     })
 
-//     const marker = L.marker([lat, lng], { icon: houseIcon }).addTo(assetMap!)
+  //     const marker = L.marker([lat, lng], { icon: houseIcon }).addTo(assetMap!)
 
-//     const fullName = [asset.nama_depan, asset.nama_tengah, asset.nama_belakang].filter(Boolean).join(' ') || '-'
+  //     const fullName = [asset.nama_depan, asset.nama_tengah, asset.nama_belakang].filter(Boolean).join(' ') || '-'
 
-//     marker.bindPopup(`
-//       <div style="min-width: 200px;">
-//         <h6><strong>${fullName}</strong></h6>
-//         <p class="mb-1"><small><strong>ID RT:</strong> ${asset.id_rumah_tangga || '-'}</small></p>
-//         <p class="mb-1"><small><strong>Desa:</strong> ${asset.desa || '-'}</small></p>
-//         <p class="mb-0"><small><strong>Pekerjaan:</strong> ${asset.pekerjaan_utama || '-'}</small></p>
-//       </div>
-//     `)
-//   }
-// )
+  //     marker.bindPopup(`
+  //       <div style="min-width: 200px;">
+  //         <h6><strong>${fullName}</strong></h6>
+  //         <p class="mb-1"><small><strong>ID RT:</strong> ${asset.id_rumah_tangga || '-'}</small></p>
+  //         <p class="mb-1"><small><strong>Desa:</strong> ${asset.desa || '-'}</small></p>
+  //         <p class="mb-0"><small><strong>Pekerjaan:</strong> ${asset.pekerjaan_utama || '-'}</small></p>
+  //       </div>
+  //     `)
+  //   }
+  // )
 
-//   // Draw IUPK Valemis boundary (larger area encompassing all villages)
-//   const iupkBoundary: [number, number][] = [
-//     [-2.556, 121.338],  // Northwest corner
-//     [-2.556, 121.353],  // Northeast corner
-//     [-2.574, 121.353],  // Southeast corner
-//     [-2.574, 121.338],  // Southwest corner
-//     [-2.556, 121.338]   // Close the polygon
-//   ]
+  //   // Draw IUPK Valemis boundary (larger area encompassing all villages)
+  //   const iupkBoundary: [number, number][] = [
+  //     [-2.556, 121.338],  // Northwest corner
+  //     [-2.556, 121.353],  // Northeast corner
+  //     [-2.574, 121.353],  // Southeast corner
+  //     [-2.574, 121.338],  // Southwest corner
+  //     [-2.556, 121.338]   // Close the polygon
+  //   ]
 
-//   L.polygon(iupkBoundary, {
-//     color: '#0d6efd',        // Blue border
-//     weight: 3,               // Thicker border for visibility
-//     fillColor: '#0d6efd',    // Blue fill
-//     fillOpacity: 0.05,       // Very low opacity to not obscure villages
-//     dashArray: '10, 5'       // Dashed line for distinction
-//   }).addTo(assetMap!).bindPopup(`
-//     <div style="min-width: 200px;">
-//       <h6><strong>Area IUPK Valemis</strong></h6>
-//       <p class="mb-1"><small>Izin Usaha Pertambangan Khusus</small></p>
-//       <p class="mb-0"><small>Mencakup 4 desa: Sorowako, Magani, Wewangriu, Nikkel</small></p>
-//     </div>
-//   `)
+  //   L.polygon(iupkBoundary, {
+  //     color: '#0d6efd',        // Blue border
+  //     weight: 3,               // Thicker border for visibility
+  //     fillColor: '#0d6efd',    // Blue fill
+  //     fillOpacity: 0.05,       // Very low opacity to not obscure villages
+  //     dashArray: '10, 5'       // Dashed line for distinction
+  //   }).addTo(assetMap!).bindPopup(`
+  //     <div style="min-width: 200px;">
+  //       <h6><strong>Area IUPK Valemis</strong></h6>
+  //       <p class="mb-1"><small>Izin Usaha Pertambangan Khusus</small></p>
+  //       <p class="mb-0"><small>Mencakup 4 desa: Sorowako, Magani, Wewangriu, Nikkel</small></p>
+  //     </div>
+  //   `)
 
-//   // Draw village polygons
-//   const villagePolygons: Record<string, [number, number][]> = {
-//     'Desa Sorowako': [[-2.558, 121.340], [-2.559, 121.344], [-2.562, 121.345], [-2.563, 121.343], [-2.561, 121.339], [-2.559, 121.339], [-2.558, 121.340]],
-//     'Desa Magani': [[-2.559, 121.345], [-2.560, 121.349], [-2.563, 121.350], [-2.564, 121.347], [-2.562, 121.344], [-2.560, 121.344], [-2.559, 121.345]],
-//     'Desa Wewangriu': [[-2.567, 121.341], [-2.568, 121.345], [-2.571, 121.346], [-2.572, 121.343], [-2.570, 121.340], [-2.568, 121.340], [-2.567, 121.341]],
-//     'Desa Nikkel': [[-2.568, 121.347], [-2.569, 121.351], [-2.572, 121.352], [-2.573, 121.349], [-2.571, 121.346], [-2.569, 121.346], [-2.568, 121.347]]
-//   }
+  //   // Draw village polygons
+  //   const villagePolygons: Record<string, [number, number][]> = {
+  //     'Desa Sorowako': [[-2.558, 121.340], [-2.559, 121.344], [-2.562, 121.345], [-2.563, 121.343], [-2.561, 121.339], [-2.559, 121.339], [-2.558, 121.340]],
+  //     'Desa Magani': [[-2.559, 121.345], [-2.560, 121.349], [-2.563, 121.350], [-2.564, 121.347], [-2.562, 121.344], [-2.560, 121.344], [-2.559, 121.345]],
+  //     'Desa Wewangriu': [[-2.567, 121.341], [-2.568, 121.345], [-2.571, 121.346], [-2.572, 121.343], [-2.570, 121.340], [-2.568, 121.340], [-2.567, 121.341]],
+  //     'Desa Nikkel': [[-2.568, 121.347], [-2.569, 121.351], [-2.572, 121.352], [-2.573, 121.349], [-2.571, 121.346], [-2.569, 121.346], [-2.568, 121.347]]
+  //   }
 
-//   Object.entries(villagePolygons).forEach(([villageName, coords]) => {
-//     if (selectedVillage.value === 'all' || selectedVillage.value === villageName) {
-//       L.polygon(coords, {
-//         color: '#dc3545',
-//         weight: 2,
-//         fillColor: '#dc3545',
-//         fillOpacity: 0.1
-//       }).addTo(assetMap!).bindPopup(`<strong>${villageName}</strong>`)
-//     }
-//   })
-    // const wmsLayer = L.tileLayer.wms(
-    //   gsUrl+"/raster_valemis/wms",
-    //   {
-    //     layers: "raster_valemis:orthophoto_mbb1",
-    //     format: "image/png",
-    //     transparent: true,
-    //     version: "1.1.0"
-    //   }
-    // );
+  //   Object.entries(villagePolygons).forEach(([villageName, coords]) => {
+  //     if (selectedVillage.value === 'all' || selectedVillage.value === villageName) {
+  //       L.polygon(coords, {
+  //         color: '#dc3545',
+  //         weight: 2,
+  //         fillColor: '#dc3545',
+  //         fillOpacity: 0.1
+  //       }).addTo(assetMap!).bindPopup(`<strong>${villageName}</strong>`)
+  //     }
+  //   })
+  // const wmsLayer = L.tileLayer.wms(
+  //   gsUrl+"/raster_valemis/wms",
+  //   {
+  //     layers: "raster_valemis:orthophoto_mbb1",
+  //     format: "image/png",
+  //     transparent: true,
+  //     version: "1.1.0"
+  //   }
+  // );
 
-    // wmsLayer.addTo(assetMap);
-    const wmsLayerBatas = L.tileLayer.wms(
-      gsUrl+"/vector_valemis/wms",
-      {
-        layers: "	vector_valemis:theme_ea895991",
-        format: "image/png",
-        transparent: true,
-        styles:"Style Batas Desa",
-        version: "1.1.0"
-      }
-    );
+  // wmsLayer.addTo(assetMap);
+  const wmsLayerBatas = L.tileLayer.wms(
+    gsUrl + "/vector_valemis/wms",
+    {
+      layers: "	vector_valemis:theme_ea895991",
+      format: "image/png",
+      transparent: true,
+      styles: "Style Batas Desa",
+      version: "1.1.0"
+    }
+  );
 
-    wmsLayerBatas.addTo(assetMap);
-  
+  wmsLayerBatas.addTo(assetMap);
+
   const wmsLayerIUPK = L.tileLayer.wms(
-    gsUrl+"/vector_valemis/wms",
+    gsUrl + "/vector_valemis/wms",
     {
       layers: "	vector_valemis:theme_eab3f65a",
       format: "image/png",
       transparent: true,
       version: "1.1.0",
-      styles:"sld_iupk_3",
+      styles: "sld_iupk_3",
       crs: L.CRS.EPSG4326,
     }
   );
 
   wmsLayerIUPK.addTo(assetMap);
   const wmsLayerAsset = L.tileLayer.wms(
-    gsUrl+"/vector_valemis/wms",
+    gsUrl + "/vector_valemis/wms",
     {
       layers: "	vector_valemis:census_kepala_keluarga",
       format: "image/png",
       transparent: true,
       version: "1.1.0",
-      styles:"sld_asset_point",
+      styles: "sld_asset_point",
       crs: L.CRS.EPSG4326,
     }
   );
