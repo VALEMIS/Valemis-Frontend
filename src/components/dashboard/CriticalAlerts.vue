@@ -8,14 +8,10 @@
           <span v-if="recentAlerts.length > 0" class="alert-count">{{ recentAlerts.length }}</span>
         </div>
         <div>
-          <h3 class="section-title">Recent Alerts</h3>
-          <p class="section-subtitle">Tasks requiring immediate attention</p>
+          <h3 class="section-title">Peringatan Terkini</h3>
+          <p class="section-subtitle">Tugas yang memerlukan perhatian segera</p>
         </div>
       </div>
-      <router-link to="/alerts" class="view-all-link">
-        View All
-        <i class="bi bi-arrow-right"></i>
-      </router-link>
     </div>
 
     <!-- Alert Cards List -->
@@ -55,7 +51,7 @@
               </span>
               <span class="alert-action">
                 <i class="bi bi-arrow-right-circle"></i>
-                Take Action
+                Ambil Tindakan
               </span>
             </div>
           </div>
@@ -67,8 +63,8 @@
         <div class="empty-icon">
           <i class="bi bi-check-circle"></i>
         </div>
-        <h4 class="empty-title">All Clear!</h4>
-        <p class="empty-message">No alerts at this time. Everything is running smoothly.</p>
+        <h4 class="empty-title">Semua Aman!</h4>
+        <p class="empty-message">Tidak ada peringatan saat ini. Semua berjalan lancar.</p>
       </div>
     </div>
   </div>
@@ -108,10 +104,12 @@ const getAlertIcon = (severity: string) => {
 // Get severity label
 const getSeverityLabel = (severity: string) => {
   const labelMap: Record<string, string> = {
-    'danger': 'Urgent',
-    'warning': 'Warning',
+    'critical': 'Kritis',
+    'danger': 'Mendesak',
+    'warning': 'Peringatan',
     'info': 'Info',
-    'success': 'Success'
+    'monitoring': 'Monitoring',
+    'success': 'Berhasil'
   }
   return labelMap[severity] || severity
 }
@@ -122,11 +120,11 @@ const formatTime = (date: Date) => {
   const diff = now.getTime() - date.getTime()
   const minutes = Math.floor(diff / 60000)
 
-  if (minutes < 1) return 'Just now'
-  if (minutes < 60) return `${minutes}m ago`
+  if (minutes < 1) return 'Baru saja'
+  if (minutes < 60) return `${minutes} menit lalu`
   const hours = Math.floor(minutes / 60)
-  if (hours < 24) return `${hours}h ago`
-  return `${Math.floor(hours / 24)}d ago`
+  if (hours < 24) return `${hours} jam lalu`
+  return `${Math.floor(hours / 24)} hari lalu`
 }
 
 // Handle alert click

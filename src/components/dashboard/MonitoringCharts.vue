@@ -7,8 +7,8 @@
           <i class="bi bi-pie-chart-fill"></i>
         </div>
         <div>
-          <h3 class="section-title">Data Visualization</h3>
-          <p class="section-subtitle">Distribution and trends analysis</p>
+          <h3 class="section-title">Visualisasi Data</h3>
+          <p class="section-subtitle">Analisis distribusi dan tren</p>
         </div>
       </div>
     </div>
@@ -17,7 +17,7 @@
     <div class="charts-container">
       <!-- Pie Chart -->
       <div class="chart-card">
-        <h4 class="chart-title">Status Distribution</h4>
+        <h4 class="chart-title">Distribusi Status</h4>
         <div class="chart-wrapper pie-chart-wrapper">
           <canvas id="status-pie-chart"></canvas>
         </div>
@@ -25,7 +25,7 @@
 
       <!-- Bar Chart -->
       <div class="chart-card">
-        <h4 class="chart-title">Monthly Progress</h4>
+        <h4 class="chart-title">Progres Bulanan</h4>
         <div class="chart-wrapper bar-chart-wrapper">
           <canvas id="progress-bar-chart"></canvas>
         </div>
@@ -105,9 +105,9 @@ onMounted(() => {
 
   // Bar Chart - Monthly Progress
   const barChartData = {
-    labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
+    labels: ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun'],
     datasets: [{
-      label: 'Completed',
+      label: 'Selesai',
       data: [12, 19, 15, 25, 22, 30],
       backgroundColor: '#3b82f6',
       borderRadius: 6,
@@ -135,7 +135,7 @@ onMounted(() => {
           cornerRadius: 8,
           callbacks: {
             label: function (context: any) {
-              return `Completed: ${context.parsed.y} parcels`
+              return `Selesai: ${context.parsed.y} bidang`
             }
           }
         }

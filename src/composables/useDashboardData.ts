@@ -22,7 +22,7 @@ export function useDashboardData() {
       // Acquisition KPIs
       {
         id: 'total-parcels',
-        title: 'Total Parcels',
+        title: 'Total Bidang Tanah',
         value: 245,
         icon: 'bi bi-map',
         iconColor: '#3b82f6',
@@ -41,7 +41,7 @@ export function useDashboardData() {
       },
       {
         id: 'dalam-proses',
-        title: 'Parcel Dalam Proses',
+        title: 'Bidang Dalam Proses',
         value: 52,
         icon: 'bi bi-clock-history',
         iconColor: '#eab308',
@@ -49,11 +49,11 @@ export function useDashboardData() {
       },
       {
         id: 'sengketa',
-        title: 'Parcel Sengketa',
+        title: 'Bidang Sengketa',
         value: 8,
         icon: 'bi bi-exclamation-triangle',
         iconColor: '#ef4444',
-        badge: { label: 'High Priority', severity: 'danger' },
+        badge: { label: 'Prioritas Tinggi', severity: 'danger' },
         targetRoute: '/land-litigasi'
       },
       // Financial KPIs
@@ -79,28 +79,28 @@ export function useDashboardData() {
       // Compliance KPIs
       {
         id: 'compliance-rate',
-        title: 'Compliance Rate',
+        title: 'Tingkat Kepatuhan',
         value: 92,
         unit: '%',
         icon: 'bi bi-shield-check',
         iconColor: '#22c55e',
         progress: 92,
-        badge: { label: 'Excellent', severity: 'success' },
+        badge: { label: 'Sangat Baik', severity: 'success' },
         targetRoute: '/land-compliance'
       },
       {
         id: 'permits-expiring',
-        title: 'Permits Expiring Soon',
+        title: 'Izin Segera Berakhir',
         value: 5,
         icon: 'bi bi-calendar-x',
         iconColor: '#f97316',
-        badge: { label: '< 30 Days', severity: 'warning' },
+        badge: { label: '< 30 Hari', severity: 'warning' },
         targetRoute: '/land-compliance'
       },
       // Litigation KPIs
       {
         id: 'active-cases',
-        title: 'Active Cases',
+        title: 'Kasus Aktif',
         value: 14,
         icon: 'bi bi-gavel',
         iconColor: '#8b5cf6',
@@ -108,11 +108,11 @@ export function useDashboardData() {
       },
       {
         id: 'high-priority-cases',
-        title: 'High Priority Cases',
+        title: 'Kasus Prioritas Tinggi',
         value: 3,
         icon: 'bi bi-fire',
         iconColor: '#ef4444',
-        badge: { label: 'Critical', severity: 'danger' },
+        badge: { label: 'Kritis', severity: 'danger' },
         targetRoute: '/land-litigasi'
       }
     ]
