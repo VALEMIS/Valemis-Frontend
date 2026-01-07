@@ -23,66 +23,76 @@
         <!-- Statistics Cards -->
         <div class="row mb-3">
           <div class="col-lg-2 col-md-4">
-            <div class="card bg-danger text-white">
+            <div class="card stat-card border-start-danger">
               <div class="card-body">
                 <div class="d-flex justify-content-between align-items-center">
                   <div>
-                    <h5 class="mb-0">{{ litigationStats.negosiasiTahap1 }}</h5>
-                    <small>Tahap 1</small>
+                    <h5 class="mb-0 text-danger">{{ litigationStats.negosiasiTahap1 }}</h5>
+                    <small class="text-muted">Tahap 1</small>
                   </div>
-                  <i class="bi bi-1-circle" style="font-size: 2rem; opacity: 0.3;"></i>
+                  <div class="icon-box bg-danger-subtle text-danger">
+                    <i class="bi bi-1-circle"></i>
+                  </div>
                 </div>
               </div>
             </div>
           </div>
           <div class="col-lg-2 col-md-4">
-            <div class="card bg-warning text-dark">
+            <div class="card stat-card border-start-warning">
               <div class="card-body">
                 <div class="d-flex justify-content-between align-items-center">
                   <div>
-                    <h5 class="mb-0">{{ litigationStats.negosiasiTahap2 }}</h5>
-                    <small>Tahap 2</small>
+                    <h5 class="mb-0 text-warning">{{ litigationStats.negosiasiTahap2 }}</h5>
+                    <small class="text-muted">Tahap 2</small>
                   </div>
-                  <i class="bi bi-2-circle" style="font-size: 2rem; opacity: 0.3;"></i>
+                  <div class="icon-box bg-warning-subtle text-warning">
+                    <i class="bi bi-2-circle"></i>
+                  </div>
                 </div>
               </div>
             </div>
           </div>
           <div class="col-lg-2 col-md-4">
-            <div class="card bg-primary text-white">
+            <div class="card stat-card border-start-primary">
               <div class="card-body">
                 <div class="d-flex justify-content-between align-items-center">
                   <div>
-                    <h5 class="mb-0">{{ litigationStats.negosiasiTahap3 }}</h5>
-                    <small>Tahap 3</small>
+                    <h5 class="mb-0 text-primary">{{ litigationStats.negosiasiTahap3 }}</h5>
+                    <small class="text-muted">Tahap 3</small>
                   </div>
-                  <i class="bi bi-3-circle" style="font-size: 2rem; opacity: 0.3;"></i>
+                  <div class="icon-box bg-primary-subtle text-primary">
+                    <i class="bi bi-3-circle"></i>
+                  </div>
                 </div>
               </div>
             </div>
           </div>
           <div class="col-lg-3 col-md-6">
-            <div class="card bg-success text-white">
+            <div class="card stat-card border-start-success">
               <div class="card-body">
                 <div class="d-flex justify-content-between align-items-center">
                   <div>
-                    <h5 class="mb-0">{{ litigationStats.putusanClear }}</h5>
-                    <small>Putusan Clear</small>
+                    <h5 class="mb-0 text-success">{{ litigationStats.putusanClear }}</h5>
+                    <small class="text-muted">Putusan Clear</small>
                   </div>
-                  <i class="bi bi-check-circle" style="font-size: 2rem; opacity: 0.3;"></i>
+                  <div class="icon-box bg-success-subtle text-success">
+                    <i class="bi bi-check-circle"></i>
+                  </div>
                 </div>
               </div>
             </div>
           </div>
           <div class="col-lg-3 col-md-6">
-            <div class="card bg-info text-white">
+            <div class="card stat-card border-start-info">
               <div class="card-body">
                 <div class="d-flex justify-content-between align-items-center">
                   <div>
-                    <h5 class="mb-0">{{ litigationStats.putusanPengadilan }}</h5>
-                    <small>Putusan Pengadilan</small>
+                    <h5 class="mb-0 text-info">{{ litigationStats.putusanPengadilan }}</h5>
+                    <small class="text-muted">Putusan Pengadilan</small>
                   </div>
-                  <i class="bi bi-gavel" style="font-size: 2rem; opacity: 0.3;"></i>
+                  <div class="icon-box bg-info-subtle text-info">
+                    <i class="bi bi-gavel"></i>
+                  </div>
                 </div>
               </div>
             </div>
@@ -279,24 +289,13 @@
               <div class="row">
                 <div class="col-md-6 mb-3">
                   <label class="form-label"><strong>Kode Kasus</strong> <span class="text-danger">*</span></label>
-                  <input 
-                    type="text" 
-                    class="form-control" 
-                    v-model="formData.caseCode" 
-                    placeholder="Contoh: LIT-2025-001"
-                    :disabled="isEditMode"
-                    required 
-                  />
+                  <input type="text" class="form-control" v-model="formData.caseCode" placeholder="Contoh: LIT-2025-001"
+                    :disabled="isEditMode" required />
                 </div>
                 <div class="col-md-6 mb-3">
                   <label class="form-label"><strong>Kode Lahan</strong> <span class="text-danger">*</span></label>
-                  <input 
-                    type="text" 
-                    class="form-control" 
-                    v-model="formData.landCode" 
-                    placeholder="Contoh: LND-VALE-001"
-                    required 
-                  />
+                  <input type="text" class="form-control" v-model="formData.landCode" placeholder="Contoh: LND-VALE-001"
+                    required />
                 </div>
               </div>
 
@@ -314,36 +313,21 @@
                 </div>
                 <div class="col-md-6 mb-3">
                   <label class="form-label"><strong>Nama Penggugat</strong> <span class="text-danger">*</span></label>
-                  <input 
-                    type="text" 
-                    class="form-control" 
-                    v-model="formData.claimant" 
-                    placeholder="Nama penggugat"
-                    required 
-                  />
+                  <input type="text" class="form-control" v-model="formData.claimant" placeholder="Nama penggugat"
+                    required />
                 </div>
               </div>
 
               <div class="mb-3">
                 <label class="form-label"><strong>Deskripsi Kasus</strong> <span class="text-danger">*</span></label>
-                <textarea 
-                  class="form-control" 
-                  v-model="formData.description" 
-                  rows="3"
-                  placeholder="Deskripsi lengkap kasus"
-                  required
-                ></textarea>
+                <textarea class="form-control" v-model="formData.description" rows="3"
+                  placeholder="Deskripsi lengkap kasus" required></textarea>
               </div>
 
               <div class="row">
                 <div class="col-md-4 mb-3">
                   <label class="form-label"><strong>Tanggal Mulai</strong> <span class="text-danger">*</span></label>
-                  <input 
-                    type="date" 
-                    class="form-control" 
-                    v-model="formData.startDate" 
-                    required 
-                  />
+                  <input type="date" class="form-control" v-model="formData.startDate" required />
                 </div>
                 <div class="col-md-4 mb-3">
                   <label class="form-label"><strong>Status</strong> <span class="text-danger">*</span></label>
@@ -396,7 +380,8 @@
                 <div class="timeline-content">
                   <h6>Kasus Dibuka</h6>
                   <p class="mb-0"><small>{{ selectedCase.startDate }}</small></p>
-                  <p class="text-muted mb-0"><small>Kasus {{ selectedCase.caseCode }} dibuka untuk {{ selectedCase.claimant }}</small></p>
+                  <p class="text-muted mb-0"><small>Kasus {{ selectedCase.caseCode }} dibuka untuk {{
+                    selectedCase.claimant }}</small></p>
                 </div>
               </div>
               <div class="timeline-item" v-if="selectedCase.status.includes('Negosiasi')">
@@ -412,7 +397,8 @@
                 <div class="timeline-content">
                   <h6>Putusan Clear</h6>
                   <p class="mb-0"><small>{{ selectedCase.startDate }}</small></p>
-                  <p class="text-muted mb-0"><small>Kasus diselesaikan dengan keputusan clear/bisa diselesaikan secara kekeluargaan</small></p>
+                  <p class="text-muted mb-0"><small>Kasus diselesaikan dengan keputusan clear/bisa diselesaikan secara
+                      kekeluargaan</small></p>
                 </div>
               </div>
               <div class="timeline-item" v-if="selectedCase.status === 'Putusan Pengadilan'">
@@ -494,15 +480,15 @@ const litigations = ref<Litigation[]>([
 
 const filteredLitigations = computed(() => {
   let result = litigations.value
-  
+
   if (selectedStatus.value !== 'all') {
     result = result.filter(l => l.status === selectedStatus.value)
   }
-  
+
   if (selectedType.value !== 'all') {
     result = result.filter(l => l.caseType === selectedType.value)
   }
-  
+
   return result
 })
 
@@ -723,5 +709,108 @@ const exportData = async () => {
   padding: 10px 15px;
   background: #f8f9fa;
   border-radius: 4px;
+}
+
+/* Stat Cards */
+.stat-card {
+  border: none;
+  border-radius: 12px;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.05);
+  transition: all 0.3s ease;
+  overflow: hidden;
+  height: 100%;
+}
+
+.stat-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+}
+
+.border-start-primary {
+  border-left: 4px solid #0d6efd !important;
+}
+
+.border-start-success {
+  border-left: 4px solid #198754 !important;
+}
+
+.border-start-warning {
+  border-left: 4px solid #ffc107 !important;
+}
+
+.border-start-danger {
+  border-left: 4px solid #dc3545 !important;
+}
+
+.border-start-info {
+  border-left: 4px solid #0dcaf0 !important;
+}
+
+/* Icon Box */
+.icon-box {
+  width: 48px;
+  height: 48px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.5rem;
+}
+
+.bg-primary-subtle {
+  background-color: rgba(13, 110, 253, 0.1);
+}
+
+.bg-success-subtle {
+  background-color: rgba(25, 135, 84, 0.1);
+}
+
+.bg-warning-subtle {
+  background-color: rgba(255, 193, 7, 0.1);
+}
+
+.bg-danger-subtle {
+  background-color: rgba(220, 53, 69, 0.1);
+}
+
+.bg-info-subtle {
+  background-color: rgba(13, 202, 240, 0.1);
+}
+
+/* Clean Badge Styling */
+.badge {
+  font-weight: 500;
+  background-color: transparent !important;
+  border: 1px solid transparent;
+}
+
+.badge.bg-success {
+  color: #198754;
+  border-color: #198754;
+}
+
+.badge.bg-info {
+  color: #0dcaf0;
+  border-color: #0dcaf0;
+}
+
+.badge.bg-warning {
+  color: #ffc107;
+  border-color: #ffc107;
+}
+
+.badge.bg-danger {
+  color: #dc3545;
+  border-color: #dc3545;
+}
+
+.badge.bg-secondary {
+  color: #6c757d;
+  border-color: #6c757d;
+}
+
+.badge.bg-primary {
+  color: #0d6efd;
+  border-color: #0d6efd;
 }
 </style>
