@@ -22,53 +22,61 @@
       <div class="container-fluid">
         <div class="row mb-3">
           <div class="col-lg-3 col-md-6">
-            <div class="card bg-primary text-white">
+            <div class="card stat-card border-start-primary">
               <div class="card-body">
                 <div class="d-flex justify-content-between align-items-center">
                   <div>
-                    <h3 class="mb-0">{{ totalStats.total.toLocaleString() }}</h3>
-                    <small>Total Lahan (Ha)</small>
+                    <h3 class="mb-0 text-primary">{{ totalStats.total.toLocaleString() }}</h3>
+                    <small class="text-muted">Total Lahan (Ha)</small>
                   </div>
-                  <i class="bi bi-map" style="font-size: 3rem; opacity: 0.3;"></i>
+                  <div class="icon-box bg-primary-subtle text-primary">
+                    <i class="bi bi-map"></i>
+                  </div>
                 </div>
               </div>
             </div>
           </div>
           <div class="col-lg-3 col-md-6">
-            <div class="card bg-success text-white">
+            <div class="card stat-card border-start-success">
               <div class="card-body">
                 <div class="d-flex justify-content-between align-items-center">
                   <div>
-                    <h3 class="mb-0">{{ totalStats.milikVale.toLocaleString() }}</h3>
-                    <small>Milik Vale (Ha)</small>
+                    <h3 class="mb-0 text-success">{{ totalStats.milikVale.toLocaleString() }}</h3>
+                    <small class="text-muted">Milik Vale (Ha)</small>
                   </div>
-                  <i class="bi bi-check-circle" style="font-size: 3rem; opacity: 0.3;"></i>
+                  <div class="icon-box bg-success-subtle text-success">
+                    <i class="bi bi-check-circle"></i>
+                  </div>
                 </div>
               </div>
             </div>
           </div>
           <div class="col-lg-3 col-md-6">
-            <div class="card bg-warning text-white">
+            <div class="card stat-card border-start-warning">
               <div class="card-body">
                 <div class="d-flex justify-content-between align-items-center">
                   <div>
-                    <h3 class="mb-0">{{ totalStats.acquired.toLocaleString() }}</h3>
-                    <small>Acquired (Ha)</small>
+                    <h3 class="mb-0 text-warning">{{ totalStats.acquired.toLocaleString() }}</h3>
+                    <small class="text-muted">Acquired (Ha)</small>
                   </div>
-                  <i class="bi bi-arrow-down-circle" style="font-size: 3rem; opacity: 0.3;"></i>
+                  <div class="icon-box bg-warning-subtle text-warning">
+                    <i class="bi bi-arrow-down-circle"></i>
+                  </div>
                 </div>
               </div>
             </div>
           </div>
           <div class="col-lg-3 col-md-6">
-            <div class="card bg-info text-white">
+            <div class="card stat-card border-start-info">
               <div class="card-body">
                 <div class="d-flex justify-content-between align-items-center">
                   <div>
-                    <h3 class="mb-0">{{ totalStats.parcels }}</h3>
-                    <small>Total Parcel</small>
+                    <h3 class="mb-0 text-info">{{ totalStats.parcels }}</h3>
+                    <small class="text-muted">Total Parcel</small>
                   </div>
-                  <i class="bi bi-grid-3x3" style="font-size: 3rem; opacity: 0.3;"></i>
+                  <div class="icon-box bg-info-subtle text-info">
+                    <i class="bi bi-grid-3x3"></i>
+                  </div>
                 </div>
               </div>
             </div>
@@ -174,17 +182,14 @@
                       <td><strong>{{ land.locationName }}</strong></td>
                       <td><span class="badge" :class="getCategoryClass(land.category)">{{ land.category }}</span></td>
                       <td class="text-end">{{ land.area.toLocaleString() }}</td>
-                      <td><span class="badge" :class="getCertificateClass(land.certificate)">{{ land.certificate }}</span></td>
+                      <td><span class="badge" :class="getCertificateClass(land.certificate)">{{ land.certificate
+                      }}</span></td>
                       <td><small>{{ land.certificateNo || '-' }}</small></td>
                       <td><small class="text-muted">{{ land.coordinates }}</small></td>
                       <td class="text-center">{{ land.acquisitionYear || '-' }}</td>
                       <td>
-                        <button 
-                          v-if="land.documents.length >= 0" 
-                          class="btn btn-sm btn-outline-secondary"
-                          @click="viewDocuments(land)"
-                          title="Lihat Dokumen"
-                        >
+                        <button v-if="land.documents.length >= 0" class="btn btn-sm btn-outline-secondary"
+                          @click="viewDocuments(land)" title="Lihat Dokumen">
                           <i class="bi bi-file-earmark-text"></i> {{ land.documents.length }} file
                         </button>
                         <small v-else class="text-muted">-</small>
@@ -270,7 +275,7 @@
           </div>
         </div>
         <!-- DATA UPLOAD LAIN LAIN -->
-        <div class="row"> 
+        <div class="row">
           <div class="row mt-3">
             <div class="col-md-6">
               <raster-upload :id_project="projectId" />
@@ -278,7 +283,7 @@
             <div class="col-md-6">
               <theme-map-upload :id_project="projectId" />
             </div>
-            
+
           </div>
         </div>
       </div>
@@ -286,7 +291,7 @@
 
     <div class="modal fade" id="landModal" tabindex="-1" ref="landModalRef">
       <div class="modal-dialog modal-lg">
-      <div class="modal-content">
+        <div class="modal-content">
           <div class="modal-header">
             <h5 class="modal-title">
               {{ isEditMode ? 'Edit Lahan' : 'Tambah Lahan Baru' }}
@@ -298,24 +303,13 @@
               <div class="row">
                 <div class="col-md-6 mb-3">
                   <label class="form-label"><strong>Kode Lahan</strong> <span class="text-danger">*</span></label>
-                  <input 
-                    type="text" 
-                    class="form-control" 
-                    v-model="formData.code" 
-                    placeholder="Contoh: LND-VALE-001"
-                    :disabled="isEditMode"
-                    required 
-                  />
+                  <input type="text" class="form-control" v-model="formData.code" placeholder="Contoh: LND-VALE-001"
+                    :disabled="isEditMode" required />
                 </div>
                 <div class="col-md-6 mb-3">
                   <label class="form-label"><strong>Nama Lokasi</strong> <span class="text-danger">*</span></label>
-                  <input 
-                    type="text" 
-                    class="form-control" 
-                    v-model="formData.locationName" 
-                    placeholder="Nama lokasi lahan"
-                    required 
-                  />
+                  <input type="text" class="form-control" v-model="formData.locationName"
+                    placeholder="Nama lokasi lahan" required />
                 </div>
               </div>
 
@@ -333,21 +327,15 @@
                 </div>
                 <div class="col-md-6 mb-3">
                   <label class="form-label"><strong>Luas (Ha)</strong> <span class="text-danger">*</span></label>
-                  <input 
-                    type="number" 
-                    class="form-control" 
-                    v-model.number="formData.area" 
-                    placeholder="Contoh: 125.5"
-                    step="0.01"
-                    min="0.01"
-                    required 
-                  />
+                  <input type="number" class="form-control" v-model.number="formData.area" placeholder="Contoh: 125.5"
+                    step="0.01" min="0.01" required />
                 </div>
               </div>
 
               <div class="row">
                 <div class="col-md-6 mb-3">
-                  <label class="form-label"><strong>Status Sertifikat</strong> <span class="text-danger">*</span></label>
+                  <label class="form-label"><strong>Status Sertifikat</strong> <span
+                      class="text-danger">*</span></label>
                   <select class="form-select" v-model="formData.certificate" required>
                     <option value="">Pilih Status</option>
                     <option value="0">SHM (Sertifikat Hak Milik)</option>
@@ -358,30 +346,20 @@
                 </div>
                 <div class="col-md-6 mb-3">
                   <label class="form-label"><strong>No. Sertifikat</strong></label>
-                  <input 
-                    type="text" 
-                    class="form-control" 
-                    v-model="formData.certificateNo" 
-                    placeholder="Nomor sertifikat"
-                  />
+                  <input type="text" class="form-control" v-model="formData.certificateNo"
+                    placeholder="Nomor sertifikat" />
                 </div>
               </div>
 
               <div class="row">
-                
+
                 <div class="col-md-4 mb-3">
                   <label class="form-label"><strong>Tahun Akuisisi</strong></label>
-                  <input 
-                    type="number" 
-                    class="form-control" 
-                    v-model.number="formData.acquisitionYear" 
-                    placeholder="2024"
-                    min="1900"
-                    :max="new Date().getFullYear()"
-                  />
+                  <input type="number" class="form-control" v-model.number="formData.acquisitionYear" placeholder="2024"
+                    min="1900" :max="new Date().getFullYear()" />
                 </div>
               </div>
-              <div id="maps"  ref="mapContainer" style="height: 400px;"></div>
+              <div id="maps" ref="mapContainer" style="height: 400px;"></div>
               <div class="mb-3 mt-3">
                 <label class="form-label"><strong><i class="bi bi-file-earmark-text"></i> Dokumen Lahan</strong></label>
 
@@ -393,31 +371,19 @@
                     placeholder="Nama file dokumen (contoh: SHM-001-2020.pdf)"
                     @keyup.enter="addDocument"
                   /> -->
-                  <input 
-                    type="file" 
-                    class="btn btn-outline-primary" 
-                    multiple
-                    @change="addDocument"
-                  >
-                    <!-- <i class="bi bi-plus-circle"></i> Tambah -->
+                  <input type="file" class="btn btn-outline-primary" multiple @change="addDocument">
+                  <!-- <i class="bi bi-plus-circle"></i> Tambah -->
                   </input>
                 </div>
                 <div v-if="newDocument.length > 0" class="border rounded p-2">
                   <small class="text-muted d-block mb-2">Daftar Dokumen:</small>
                   <div class="d-flex flex-wrap gap-1">
-                    <span 
-                      v-for="(doc, idx) in newDocument" 
-                      :key="idx"
-                      class="badge bg-secondary d-inline-flex align-items-center"
-                    >
+                    <span v-for="(doc, idx) in newDocument" :key="idx"
+                      class="badge bg-secondary d-inline-flex align-items-center">
                       <i class="bi bi-file-earmark-text me-1"></i>
                       {{ doc.name }}
-                      <button 
-                        type="button" 
-                        class="btn-close btn-close-white ms-2" 
-                        style="font-size: 0.7rem;"
-                        @click="removeDocument(idx)"
-                      ></button>
+                      <button type="button" class="btn-close btn-close-white ms-2" style="font-size: 0.7rem;"
+                        @click="removeDocument(idx)"></button>
                     </span>
                   </div>
                 </div>
@@ -437,13 +403,8 @@
         </div>
       </div>
     </div>
-    <DocumentModal
-      :documents="selectedDocuments"
-      :landId="selectedLandId"
-      :show="showDocModal"
-      @close="showDocModal = false"
-      @refresh="refreshFetch()"
-    />
+    <DocumentModal :documents="selectedDocuments" :landId="selectedLandId" :show="showDocModal"
+      @close="showDocModal = false" @refresh="refreshFetch()" />
 
   </div>
 </template>
@@ -464,7 +425,7 @@ import 'bootstrap/dist/js/bootstrap.bundle.min.js'
 import RasterUpload from '../components/LandInventoryComp/RasterUpload.vue';
 import ThemeMapUpload from '../components/LandInventoryComp/ThemeMapUpload.vue';
 import DocumentModal from '../components/LandInventoryComp/DocumentModal.vue';
-import "../utils/drawMap.js"  
+import "../utils/drawMap.js"
 import { useRoute } from 'vue-router'
 
 const apiUrl = import.meta.env.VITE_APP_API_SPATIAL_URL
@@ -483,7 +444,7 @@ interface Land {
   coordinates: string
   acquisitionYear: number | null
   documents: string[]
-  geom:any
+  geom: any
 }
 import wellknown from "wellknown"
 interface FormData {
@@ -530,7 +491,7 @@ const formData = ref<FormData>({
 
 const lands = ref<Land[]>([])
 const fetchProjects = async () => {
-  const res = await axios.get<any[]>(apiUrl+`/LandInventory/?id_project=${projectId}`)
+  const res = await axios.get<any[]>(apiUrl + `/LandInventory/?id_project=${projectId}`)
   projects.value = res.data
   console.log(res.data)
   lands.value = res.data.map(e => ({
@@ -545,25 +506,25 @@ const fetchProjects = async () => {
     documents: e.documents || [],
     geom: e.geom || null
   }
-  
-))
-// console.log(lands.value)
-  
+
+  ))
+  // console.log(lands.value)
+
 }
-async function refreshFetch(){
+async function refreshFetch() {
   await fetchProjects()
 }
 const filteredLands = computed(() => {
   let result = lands.value
-  
+
   if (selectedCategory.value !== 'all') {
     result = result.filter(l => l.category === selectedCategory.value)
   }
-  
+
   if (selectedCertificate.value !== 'all') {
     result = result.filter(l => l.certificate === selectedCertificate.value)
   }
-  
+
   return result
 })
 
@@ -575,7 +536,7 @@ const totalStats = computed(() => {
   const total = lands.value.reduce((sum, l) => sum + l.area, 0)
   const milikVale = lands.value.filter(l => l.category === 'Vale Owned').reduce((sum, l) => sum + l.area, 0)
   const acquired = lands.value.filter(l => l.category === 'Acquired').reduce((sum, l) => sum + l.area, 0)
-  
+
   return {
     total: parseFloat(total.toFixed(2)),
     milikVale: parseFloat(milikVale.toFixed(2)),
@@ -610,9 +571,9 @@ const certificateBreakdown = computed(() => {
 
 onMounted(() => {
   fetchProjects()
-  
-    
-    // map.fitBounds(geojsonLayerProject.getBounds())
+
+
+  // map.fitBounds(geojsonLayerProject.getBounds())
   // }
   initMap()
   console.log('Land Inventory Mounted')
@@ -641,18 +602,18 @@ const initLandMap = () => {
   if (!landMapContainer.value) return
 
   landMap = L.map('land-map').setView([-2.5650, 121.3450], 12)
-  landMap.pm.addControls({  
-    position: 'topleft',  
+  landMap.pm.addControls({
+    position: 'topleft',
     drawCircleMarker: false,
     rotateMode: false,
-  }); 
+  });
   L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
     attribution: '© OpenStreetMap contributors',
     maxZoom: 19
   }).addTo(landMap)
 
   const wmsLayer = L.tileLayer.wms(
-    gsUrl+"/raster_valemis/wms",
+    gsUrl + "/raster_valemis/wms",
     {
       layers: "raster_valemis:fotoudara_vale",
       format: "image/png",
@@ -664,63 +625,63 @@ const initLandMap = () => {
   wmsLayer.addTo(landMap);
 
   const wmsLayerIupk = L.tileLayer.wms(
-    gsUrl+"/vector_valemis/wms",
+    gsUrl + "/vector_valemis/wms",
     {
       layers: "vector_valemis:IUPK Vale",
       format: "image/png",
       transparent: true,
       version: "1.1.0",
-      styles:"sld_iupk",
+      styles: "sld_iupk",
     }
   );
 
   wmsLayerIupk.addTo(landMap);
 
   const wmsLayerProject = L.tileLayer.wms(
-    gsUrl+"/vector_valemis/wms",
+    gsUrl + "/vector_valemis/wms",
     {
       layers: "vector_valemis:tbl_project",
       format: "image/png",
       transparent: true,
       version: "1.1.0",
-      styles:"sld_project",
+      styles: "sld_project",
     }
   );
 
   wmsLayerProject.addTo(landMap);
 
   const wmsLayerPersil = L.tileLayer.wms(
-    gsUrl+"/vector_valemis/wms",
+    gsUrl + "/vector_valemis/wms",
     {
       layers: "vector_valemis:PERSIL",
       format: "image/png",
       transparent: true,
       version: "1.1.0",
-      styles:"sld_persil",
+      styles: "sld_persil",
     }
   );
 
   wmsLayerPersil.addTo(landMap);
 
   const wmsLayerTanaman = L.tileLayer.wms(
-    gsUrl+"/vector_valemis/wms",
+    gsUrl + "/vector_valemis/wms",
     {
       layers: "vector_valemis:TITIK SURVEY TANAMAN",
       format: "image/png",
       transparent: true,
       version: "1.1.0",
-      styles:"sld_tanaman",
+      styles: "sld_tanaman",
     }
   );
 
   wmsLayerTanaman.addTo(landMap);
 
-  
+
 
   let geojsonLayerProject
   // if (lands.value.length>0) {
-  lands.value.forEach((e)=>{
-    if (e.geom!=null){
+  lands.value.forEach((e) => {
+    if (e.geom != null) {
       console.log(wellknown.parse(e.geom))
       L.geoJSON(wellknown.parse(e.geom)).addTo(landMap)
     }
@@ -821,22 +782,22 @@ const editLand = (land: Land) => {
 
 const saveLand = async () => {
   const wkt = (mpwkt as any).toWKT()
-   var uploadData = {
-        "kode_lahan": formData.value.code,
-        "nama_lokasi": formData.value.locationName,
-        "kategori": formData.value.category,
-        "status": formData.value.certificate,
-        "no_sertif": formData.value.certificateNo,
-        "id_project":projectId,
-        "geom": wkt
-    }
-    const res = await axios.post(
-    apiUrl+'/LandInventory/',
-      uploadData
-    )
+  var uploadData = {
+    "kode_lahan": formData.value.code,
+    "nama_lokasi": formData.value.locationName,
+    "kategori": formData.value.category,
+    "status": formData.value.certificate,
+    "no_sertif": formData.value.certificateNo,
+    "id_project": projectId,
+    "geom": wkt
+  }
+  const res = await axios.post(
+    apiUrl + '/LandInventory/',
+    uploadData
+  )
 
-    const landId = res.data.id_lahan
-    alert(`Lahan ${formData.value.code} berhasil ditambahkan!`)
+  const landId = res.data.id_lahan
+  alert(`Lahan ${formData.value.code} berhasil ditambahkan!`)
 
   if (newDocument.value.length > 0) {
     const formDataDoc = new FormData()
@@ -845,17 +806,17 @@ const saveLand = async () => {
       formDataDoc.append('file', file)
       formDataDoc.append('nama_dokumen', file.name)
       formDataDoc.append('id_lahan', landId)
-    
 
-    await axios.post(
-      apiUrl+'/LandInventoryDocument/',
-      formDataDoc,
-      {
-        headers: {
-          'Content-Type': 'multipart/form-data'
+
+      await axios.post(
+        apiUrl + '/LandInventoryDocument/',
+        formDataDoc,
+        {
+          headers: {
+            'Content-Type': 'multipart/form-data'
+          }
         }
-      }
-    )
+      )
     })
   }
   await fetchProjects()
@@ -885,14 +846,14 @@ const selectedLandId = ref<number | null>(null)
 const showDocModal = ref(false)
 
 const viewDocuments = (land: Land) => {
-  console.log(selectedDocuments.value,selectedLandId.value,showDocModal.value)
+  console.log(selectedDocuments.value, selectedLandId.value, showDocModal.value)
   selectedDocuments.value = land.documents
   selectedLandId.value = land.id
   showDocModal.value = true
 }
 
 const openLandModal = () => {
-  
+
   if (landModalRef.value) {
     const Modal = (window as any).bootstrap?.Modal
     if (Modal) {
@@ -973,5 +934,115 @@ watch([selectedCategory, selectedCertificate], ([cat, cert]) => {
 .custom-land-marker {
   background: transparent;
   border: none;
+}
+
+.document-link-item {
+  transition: all 0.2s ease;
+  background: white;
+}
+
+.document-link-item:hover {
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  transform: translateY(-2px);
+}
+
+/* Stat Cards */
+.stat-card {
+  border: none;
+  border-radius: 12px;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.05);
+  transition: all 0.3s ease;
+  overflow: hidden;
+  height: 100%;
+}
+
+.stat-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+}
+
+.border-start-primary {
+  border-left: 4px solid #0d6efd !important;
+}
+
+.border-start-success {
+  border-left: 4px solid #198754 !important;
+}
+
+.border-start-warning {
+  border-left: 4px solid #ffc107 !important;
+}
+
+.border-start-info {
+  border-left: 4px solid #0dcaf0 !important;
+}
+
+/* Icon Box */
+.icon-box {
+  width: 48px;
+  height: 48px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.5rem;
+}
+
+.bg-primary-subtle {
+  background-color: rgba(13, 110, 253, 0.1);
+}
+
+.bg-success-subtle {
+  background-color: rgba(25, 135, 84, 0.1);
+}
+
+.bg-warning-subtle {
+  background-color: rgba(255, 193, 7, 0.1);
+}
+
+.bg-info-subtle {
+  background-color: rgba(13, 202, 240, 0.1);
+}
+
+/* Clean Badge Styling */
+.badge {
+  font-weight: 500;
+  background-color: transparent !important;
+  border: 1px solid transparent;
+}
+
+.badge.bg-success {
+  color: #198754;
+  border-color: #198754;
+}
+
+.badge.bg-info {
+  color: #0dcaf0;
+  border-color: #0dcaf0;
+}
+
+.badge.bg-warning {
+  color: #ffc107;
+  border-color: #ffc107;
+}
+
+.badge.bg-danger {
+  color: #dc3545;
+  border-color: #dc3545;
+}
+
+.badge.bg-secondary {
+  color: #6c757d;
+  border-color: #6c757d;
+}
+
+.badge.bg-primary {
+  color: #0d6efd;
+  border-color: #0d6efd;
+}
+
+.badge.bg-dark {
+  color: #212529;
+  border-color: #212529;
 }
 </style>
