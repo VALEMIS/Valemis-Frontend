@@ -572,7 +572,7 @@ onMounted(async () => {
       transparent: true,
       version: "1.1.0",
       CQL_FILTER: `id_project_id = ${projectId}`,
-      styles:"Acquisition_style",
+      styles:"sld_persil",
       crs: L.CRS.EPSG4326,
       tiled:false
     }
@@ -588,7 +588,7 @@ onMounted(async () => {
     <div class="card p-2">
       <h6>Acquisition</h6>
       <img
-        src=gsUrl+"/vector_valemis/wms?REQUEST=GetLegendGraphic&FORMAT=image/png&LAYER=vector_valemis:tbl_acquisition&STYLE=Acquisition_style&VERSION=1.1.0" alt="Legend"
+        src=${gsUrl}/vector_valemis/wms?REQUEST=GetLegendGraphic&FORMAT=image/png&LAYER=vector_valemis:tbl_acquisition&STYLE=sld_persil&VERSION=1.1.0" alt="Legend"
       />
       </div>
     `;

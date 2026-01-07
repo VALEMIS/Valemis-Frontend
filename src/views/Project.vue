@@ -141,7 +141,7 @@ import "../utils/drawMap.js"
 import router from '../router/index.js'
 import wellknown from "wellknown"
 const apiUrl = import.meta.env.VITE_APP_API_SPATIAL_URL;
-const geoserverUrl = import.meta.env.VITE_APP_API_GEOSERVER_URL;
+const geoserverUrl = import.meta.env.VITE_APP_API_GS_URL;
 // console.log(apiUrl)
 
 const projects = ref([])
@@ -236,11 +236,12 @@ function initProjectMap(){
   // console.log(projects.value.id_persil.geom)
   // console.log(projects.value)
   L.tileLayer.wms(
-    geoserverUrl+"vector_valemis/wms",
+    geoserverUrl+"/vector_valemis/wms",
     {
       layers: "	vector_valemis:tbl_project",
       format: "image/png",
       transparent: true,
+      styles:"sld_projek",
       version: "1.1.0"
     }
   ).addTo(projectMap)
