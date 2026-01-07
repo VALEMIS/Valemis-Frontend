@@ -434,6 +434,7 @@ import CensusFormModal from '../components/CensusFormModal.vue'
 
 interface Asset {
   id: number
+  id_asset?: string  // Auto-generated asset ID from API
   created_at?: string
   updated_at?: string
   // A. Identifikasi Rumah Tangga dan PAP (1-6)
@@ -449,6 +450,7 @@ interface Asset {
   nama_depan?: string
   nama_tengah?: string
   nama_belakang?: string
+  nama_lengkap?: string  // Full name from API
   nama_ayah?: string
   nama_kakek?: string
   nama_pasangan?: string
@@ -1565,8 +1567,287 @@ const formatRupiah = (value: number): string => {
 // Export to CSV
 const exportToCsv = async () => {
   try {
-    // CSV export will be implemented later
-    alert('CSV export coming soon')
+    // Define field mapping with headers - ALL fields from census modal
+    const fieldMapping = [
+      // Basic Info
+      { header: 'ID', field: 'id' },
+      { header: 'ID Asset', field: 'id_asset' },
+      { header: 'Created At', field: 'created_at' },
+      { header: 'Updated At', field: 'updated_at' },
+
+      // A. Identifikasi Rumah Tangga dan PAP
+      { header: 'Kode Enumerator', field: 'kode_enumerator' },
+      { header: 'ID Rumah Tangga', field: 'id_rumah_tangga' },
+      { header: 'Tanggal', field: 'tanggal' },
+      { header: 'Kode Foto Survei', field: 'kode_foto_survei' },
+      { header: 'Entitas Terdampak', field: 'entitas_terdampak' },
+      { header: 'ID Unik', field: 'id_unik' },
+      { header: 'Koordinat', field: 'koordinat' },
+      { header: 'Latitude', field: 'latitude' },
+      { header: 'Longitude', field: 'longitude' },
+
+      // B. Informasi Kepala Keluarga
+      { header: 'Nama Depan', field: 'nama_depan' },
+      { header: 'Nama Tengah', field: 'nama_tengah' },
+      { header: 'Nama Belakang', field: 'nama_belakang' },
+      { header: 'Nama Lengkap', field: 'nama_lengkap' },
+      { header: 'Nama Ayah', field: 'nama_ayah' },
+      { header: 'Nama Kakek', field: 'nama_kakek' },
+      { header: 'Nama Pasangan', field: 'nama_pasangan' },
+      { header: 'Nomor Telepon', field: 'nomor_telepon' },
+      { header: 'NIK', field: 'nik' },
+      { header: 'Desa', field: 'desa' },
+      { header: 'Kecamatan', field: 'kecamatan' },
+      { header: 'Kabupaten', field: 'kabupaten' },
+      { header: 'Provinsi', field: 'provinsi' },
+      { header: 'Nama Responden', field: 'nama_responden' },
+      { header: 'Hubungan Responden dengan KK', field: 'hubungan_responden_kk' },
+
+      // C. Identifikasi Dampak
+      { header: 'Identifikasi Dampak', field: 'identifikasi_dampak' },
+      { header: 'Identifikasi Dampak Lainnya', field: 'identifikasi_dampak_lainnya' },
+
+      // D. Profil Sosial
+      { header: 'Agama', field: 'agama' },
+      { header: 'Agama Lainnya', field: 'agama_lainnya' },
+      { header: 'Asal Etnis', field: 'asal_etnis' },
+      { header: 'Asal Etnis Lainnya', field: 'asal_etnis_lainnya' },
+      { header: 'Bahasa', field: 'bahasa' },
+      { header: 'Bahasa Lainnya', field: 'bahasa_lainnya' },
+      { header: 'Tempat Asal KK', field: 'tempat_asal_kk' },
+      { header: 'Tempat Asal Tentukan', field: 'tempat_asal_tentukan' },
+
+      // E. Demografi Kepala Keluarga
+      { header: 'Jumlah Orang Rumah Tangga', field: 'jumlah_orang_rumah_tangga' },
+      { header: 'Jenis Kelamin', field: 'jenis_kelamin' },
+      { header: 'Tanggal Lahir', field: 'tanggal_lahir' },
+      { header: 'Usia', field: 'usia' },
+      { header: 'Status Perkawinan', field: 'status_perkawinan' },
+      { header: 'Bisa Membaca Menulis', field: 'bisa_membaca_menulis' },
+      { header: 'Defisit Pangan', field: 'defisit_pangan' },
+      { header: 'Defisit Pangan Lainnya', field: 'defisit_pangan_lainnya' },
+      { header: 'Sedang Sekolah', field: 'sedang_sekolah' },
+      { header: 'Sekolah Dimana', field: 'sekolah_dimana' },
+      { header: 'Lokasi Sekolah', field: 'lokasi_sekolah' },
+      { header: 'Pendidikan Terakhir', field: 'pendidikan_terakhir' },
+      { header: 'Alasan Penghentian', field: 'alasan_penghentian' },
+      { header: 'Alasan Penghentian Lainnya', field: 'alasan_penghentian_lainnya' },
+      { header: 'Disabilitas', field: 'disabilitas' },
+      { header: 'Disabilitas Lainnya', field: 'disabilitas_lainnya' },
+      { header: 'Kondisi Kesehatan Kronis', field: 'kondisi_kesehatan_kronis' },
+      { header: 'Kondisi Kesehatan Kronis Lainnya', field: 'kondisi_kesehatan_kronis_lainnya' },
+
+      // F. Pekerjaan KK
+      { header: 'Bekerja 12 Bulan', field: 'bekerja_12_bulan' },
+      { header: 'Pekerjaan Utama', field: 'pekerjaan_utama' },
+      { header: 'Pekerjaan Utama Lainnya', field: 'pekerjaan_utama_lainnya' },
+      { header: 'Jenis Pekerjaan Utama', field: 'jenis_pekerjaan_utama' },
+      { header: 'Jenis Pekerjaan', field: 'jenis_pekerjaan' },
+      { header: 'Lokasi Pekerjaan Utama', field: 'lokasi_pekerjaan_utama' },
+      { header: 'Lokasi Pekerjaan', field: 'lokasi_pekerjaan' },
+      { header: 'Lokasi Pekerjaan Lainnya', field: 'lokasi_pekerjaan_lainnya' },
+      { header: 'Lokasi Pekerjaan Utama Lainnya', field: 'lokasi_pekerjaan_utama_lainnya' },
+      { header: 'Jumlah Bulan Bekerja', field: 'jumlah_bulan_bekerja' },
+      { header: 'Penghasilan per Bulan', field: 'penghasilan_per_bulan' },
+
+      // G. Pekerjaan Sekunder
+      { header: 'Pekerjaan Sekunder', field: 'pekerjaan_sekunder' },
+      { header: 'Pekerjaan Sekunder Lainnya', field: 'pekerjaan_sekunder_lainnya' },
+      { header: 'Lokasi Pekerjaan Sekunder', field: 'lokasi_pekerjaan_sekunder' },
+      { header: 'Lokasi Pekerjaan Sekunder Lainnya', field: 'lokasi_pekerjaan_sekunder_lainnya' },
+      { header: 'Jumlah Bulan Bekerja Sekunder', field: 'jumlah_bulan_bekerja_sekunder' },
+      { header: 'Penghasilan Sekunder per Bulan', field: 'penghasilan_sekunder_per_bulan' },
+
+      // H. Keterampilan & Kesehatan
+      { header: 'Keterampilan', field: 'keterampilan' },
+      { header: 'Keterampilan Lainnya', field: 'keterampilan_lainnya' },
+      { header: 'Penyakit Umum', field: 'penyakit_umum' },
+      { header: 'Tempat Pelayanan', field: 'tempat_pelayanan' },
+      { header: 'Kecukupan Pangan', field: 'kecukupan_pangan' },
+
+      // I. Keuangan
+      { header: 'Penghasilan Tahunan', field: 'penghasilan_tahunan' },
+      { header: 'Pengeluaran Bulanan', field: 'pengeluaran_bulanan' },
+      { header: 'Rekening Bank', field: 'rekening_bank' },
+      { header: 'Punya Tabungan', field: 'punya_tabungan' },
+      { header: 'Tabungan', field: 'tabungan' },
+      { header: 'Jenis Tabungan', field: 'jenis_tabungan' },
+      { header: 'Jenis Tabungan Lainnya', field: 'jenis_tabungan_lainnya' },
+      { header: 'Tabungan Detail', field: 'tabungan_detail' },
+      { header: 'Tabungan Lainnya', field: 'tabungan_lainnya' },
+      { header: 'Punya Hutang', field: 'punya_hutang' },
+      { header: 'Hutang', field: 'hutang' },
+      { header: 'Jenis Hutang', field: 'jenis_hutang' },
+      { header: 'Jenis Hutang Lainnya', field: 'jenis_hutang_lainnya' },
+      { header: 'Hutang Detail', field: 'hutang_detail' },
+      { header: 'Hutang Lainnya', field: 'hutang_lainnya' },
+      { header: 'Alasan Hutang', field: 'alasan_hutang' },
+      { header: 'Alasan Hutang Lainnya', field: 'alasan_hutang_lainnya' },
+
+      // J. Dampak Pembebasan Lahan
+      { header: 'Pernah Dampak Proyek', field: 'pernah_dampak_proyek' },
+      { header: 'Pernah Terdampak Proyek', field: 'pernah_terdampak_proyek' },
+      { header: 'Jenis Proyek', field: 'jenis_proyek' },
+      { header: 'Jenis Proyek Sebelumnya', field: 'jenis_proyek_sebelumnya' },
+      { header: 'Jenis Proyek Lainnya', field: 'jenis_proyek_lainnya' },
+      { header: 'Luas Lahan Dibebaskan', field: 'luas_lahan_dibebaskan' },
+      { header: 'Perkiraan Dampak', field: 'perkiraan_dampak' },
+      { header: 'Pernah Pengungsi', field: 'pernah_pengungsi' },
+
+      // K. Bisnis/Usaha
+      { header: 'Punya Bisnis', field: 'punya_bisnis' },
+      { header: 'Lokasi Bisnis', field: 'lokasi_bisnis' },
+      { header: 'Lokasi Bisnis Lainnya', field: 'lokasi_bisnis_lainnya' },
+      { header: 'Kepemilikan Bisnis', field: 'kepemilikan_bisnis' },
+      { header: 'Kepemilikan Bisnis Lainnya', field: 'kepemilikan_bisnis_lainnya' },
+      { header: 'Sejak Kapan Bisnis', field: 'sejak_kapan_bisnis' },
+      { header: 'Jenis Bisnis', field: 'jenis_bisnis' },
+      { header: 'Jenis Bisnis Lainnya', field: 'jenis_bisnis_lainnya' },
+      { header: 'Jumlah Pegawai', field: 'jumlah_pegawai' },
+      { header: 'Pendapatan Rata Bisnis', field: 'pendapatan_rata_bisnis' },
+      { header: 'Pendapatan Bisnis per Bulan', field: 'pendapatan_bisnis_per_bulan' },
+      { header: 'Deskripsi Produk Layanan', field: 'deskripsi_produk_layanan' },
+
+      // L. Struktur Tempat Tinggal
+      { header: 'Tipe Rumah', field: 'tipe_rumah' },
+      { header: 'Tipe Rumah Lainnya', field: 'tipe_rumah_lainnya' },
+      { header: 'Luas Rumah', field: 'luas_rumah' },
+      { header: 'Pelayanan Listrik', field: 'pelayanan_listrik' },
+      { header: 'Pelayanan Listrik Lainnya', field: 'pelayanan_listrik_lainnya' },
+      { header: 'Sumber Air', field: 'sumber_air' },
+      { header: 'Sumber Air Lainnya', field: 'sumber_air_lainnya' },
+      { header: 'Sanitasi', field: 'sanitasi' },
+      { header: 'Karakteristik Khusus', field: 'karakteristik_khusus' },
+
+      // M. Kerentanan
+      { header: 'Karakteristik Kerentanan', field: 'karakteristik_kerentanan' },
+
+      // N. Sumber Informasi & Komunikasi
+      { header: 'Sumber Informasi', field: 'sumber_informasi' },
+      { header: 'Sumber Informasi Lainnya', field: 'sumber_informasi_lainnya' },
+      { header: 'Metode Komunikasi', field: 'metode_komunikasi' },
+      { header: 'Metode Komunikasi Lainnya', field: 'metode_komunikasi_lainnya' },
+
+      // O. Tanah
+      { header: 'NIB', field: 'nib' },
+      { header: 'Letak Tanah', field: 'letak_tanah' },
+      { header: 'Status Tanah', field: 'status_tanah' },
+      { header: 'Surat Bukti Tanah', field: 'surat_bukti_tanah' },
+      { header: 'Luas Tanah', field: 'luas_tanah' },
+      { header: 'Tahun Kelola Lahan', field: 'tahun_kelola_lahan' },
+      { header: 'Asal Usul Perolehan', field: 'asal_usul_perolehan' },
+      { header: 'Biaya Perolehan', field: 'biaya_perolehan' },
+      { header: 'Pembebanan Hak Tanah', field: 'pembebanan_hak_tanah' },
+      { header: 'Fungsi Kawasan', field: 'fungsi_kawasan' },
+      { header: 'Benda Lain Tanah', field: 'benda_lain_tanah' },
+      { header: 'Batas Utara', field: 'batas_utara' },
+      { header: 'Batas Selatan', field: 'batas_selatan' },
+      { header: 'Batas Timur', field: 'batas_timur' },
+      { header: 'Batas Barat', field: 'batas_barat' },
+
+      // P. Ruang Atas/Bawah
+      { header: 'HM Sarusun', field: 'hm_sarusun' },
+      { header: 'Luas Ruang', field: 'luas_ruang' },
+
+      // Q. Tanaman (40+ jenis tanaman)
+      { header: 'Tanaman Merica', field: 'tanaman_merica' },
+      { header: 'Tanaman Alpukat', field: 'tanaman_alpukat' },
+      { header: 'Tanaman Aren', field: 'tanaman_aren' },
+      { header: 'Tanaman Belimbing', field: 'tanaman_belimbing' },
+      { header: 'Tanaman Belukar', field: 'tanaman_belukar' },
+      { header: 'Tanaman Bonglai', field: 'tanaman_bonglai' },
+      { header: 'Tanaman Buah Naga', field: 'tanaman_buah_naga' },
+      { header: 'Tanaman Cabai', field: 'tanaman_cabai' },
+      { header: 'Tanaman Cempedak', field: 'tanaman_cempedak' },
+      { header: 'Tanaman Cengkeh', field: 'tanaman_cengkeh' },
+      { header: 'Tanaman Cokelat', field: 'tanaman_cokelat' },
+      { header: 'Tanaman Durian', field: 'tanaman_durian' },
+      { header: 'Tanaman Jahe Merah', field: 'tanaman_jahe_merah' },
+      { header: 'Tanaman Jambu', field: 'tanaman_jambu' },
+      { header: 'Tanaman Jambu Air', field: 'tanaman_jambu_air' },
+      { header: 'Tanaman Jambu Batu', field: 'tanaman_jambu_batu' },
+      { header: 'Tanaman Jambu Biji', field: 'tanaman_jambu_biji' },
+      { header: 'Tanaman Jati Putih', field: 'tanaman_jati_putih' },
+      { header: 'Tanaman Jengkol', field: 'tanaman_jengkol' },
+      { header: 'Tanaman Jeruk', field: 'tanaman_jeruk' },
+      { header: 'Tanaman Jeruk Nipis', field: 'tanaman_jeruk_nipis' },
+      { header: 'Tanaman Kapuk', field: 'tanaman_kapuk' },
+      { header: 'Tanaman Kecombrang', field: 'tanaman_kecombrang' },
+      { header: 'Tanaman Kelapa', field: 'tanaman_kelapa' },
+      { header: 'Tanaman Kelapa Sawit', field: 'tanaman_kelapa_sawit' },
+      { header: 'Tanaman Kelor', field: 'tanaman_kelor' },
+      { header: 'Tanaman Kopi', field: 'tanaman_kopi' },
+      { header: 'Tanaman Kunyit', field: 'tanaman_kunyit' },
+      { header: 'Tanaman Kunyit Hitam', field: 'tanaman_kunyit_hitam' },
+      { header: 'Tanaman Langsat', field: 'tanaman_langsat' },
+      { header: 'Tanaman Lengkuas', field: 'tanaman_lengkuas' },
+      { header: 'Tanaman Mangga', field: 'tanaman_mangga' },
+      { header: 'Tanaman Nanas', field: 'tanaman_nanas' },
+      { header: 'Tanaman Nangka', field: 'tanaman_nangka' },
+      { header: 'Tanaman Nilam', field: 'tanaman_nilam' },
+      { header: 'Tanaman Pepaya', field: 'tanaman_pepaya' },
+      { header: 'Tanaman Pinang', field: 'tanaman_pinang' },
+      { header: 'Tanaman Rambutan', field: 'tanaman_rambutan' },
+      { header: 'Tanaman Serai', field: 'tanaman_serai' },
+      { header: 'Tanaman Singkong', field: 'tanaman_singkong' },
+      { header: 'Tanaman Sirsak', field: 'tanaman_sirsak' },
+      { header: 'Tanaman Sukun', field: 'tanaman_sukun' },
+      { header: 'Tanaman Talas', field: 'tanaman_talas' },
+      { header: 'Tanaman Ubi', field: 'tanaman_ubi' },
+
+      // R. Informasi Lainnya
+      { header: 'Catatan Tambahan', field: 'catatan_tambahan' },
+      { header: 'Kebutuhan Khusus', field: 'kebutuhan_khusus' },
+      { header: 'Harapan Kompensasi', field: 'harapan_kompensasi' },
+
+      // Anggota Keluarga
+      { header: 'No Anggota', field: 'no_anggota' },
+      { header: 'ID Dampak', field: 'id_dampak' },
+      { header: 'Anggota Nama Depan', field: 'anggota_nama_depan' },
+      { header: 'Anggota Nama Belakang', field: 'anggota_nama_belakang' },
+      { header: 'Hubungan KK', field: 'hubungan_kk' },
+
+      // Metadata
+      { header: 'Surveyed By', field: 'surveyed_by' },
+      { header: 'Notes', field: 'notes' }
+    ]
+
+    // Extract headers
+    const headers = fieldMapping.map(f => f.header)
+
+    // Map data to CSV rows
+    const rows = filteredAssets.value.map(asset => {
+      return fieldMapping.map(({ field }) => {
+        const value = (asset as any)[field]
+        // Handle null/undefined
+        if (value === null || value === undefined || value === '') return '-'
+        // Convert to string and escape
+        const stringValue = String(value)
+        if (stringValue.includes(',') || stringValue.includes('"') || stringValue.includes('\n')) {
+          return `"${stringValue.replace(/"/g, '""')}"`
+        }
+        return stringValue
+      })
+    })
+
+    // Combine headers and rows
+    const csvContent = [
+      headers.join(','),
+      ...rows.map(row => row.join(','))
+    ].join('\n')
+
+    // Create blob and download
+    const blob = new Blob(['\ufeff' + csvContent], { type: 'text/csv;charset=utf-8;' })
+    const link = document.createElement('a')
+    const url = URL.createObjectURL(blob)
+
+    link.setAttribute('href', url)
+    link.setAttribute('download', `asset-inventory-${new Date().toISOString().split('T')[0]}.csv`)
+    link.style.visibility = 'hidden'
+    document.body.appendChild(link)
+    link.click()
+    document.body.removeChild(link)
+
     alert('Data berhasil didownload dalam format CSV!')
   } catch (err) {
     alert('Gagal mendownload data: ' + (err instanceof Error ? err.message : 'Unknown error'))
