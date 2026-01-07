@@ -1,42 +1,12 @@
 <template>
   <div class="dashboard-container">
-    <!-- Header -->
-    <div class="app-content-header">
-      <div class="container-fluid">
-        <div class="row">
-          <div class="col-sm-6">
-            <h3 class="page-title">Dashboard</h3>
-            <p class="page-subtitle">Gambaran Umum Sistem Pengelolaan Rehabilitasi Daerah Aliran Sungai</p>
-          </div>
-          <div class="col-sm-6">
-            <div class="header-actions">
-              <!-- Project Selector -->
-              <div class="project-selector" v-if="projects.length > 0">
-                <label class="selector-label">Active Project:</label>
-                <select v-model="selectedProjectId" @change="handleProjectChange" class="project-select">
-                  <option :value="null">Select Project...</option>
-                  <option v-for="project in projects" :key="project.id" :value="project.id">
-                    {{ project.nama_project }}
-                  </option>
-                </select>
-              </div>
-
-              <ol class="breadcrumb">
-                <li class="breadcrumb-item">
-                  <router-link to="/">
-                    <i class="bi bi-house-fill"></i>
-                  </router-link>
-                </li>
-                <li class="breadcrumb-item active" aria-current="page">Dashboard</li>
-              </ol>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-
     <div class="app-content">
       <div class="container-fluid">
+        <!-- Dashboard Title -->
+        <div class="dashboard-header">
+          <h3 class="page-title">Dashboard</h3>
+          <p class="page-subtitle">Gambaran Umum Sistem Pengelolaan Rehabilitasi Daerah Aliran Sungai</p>
+        </div>
 
         <!-- 🗺️ ZONE 1: Unified Land Map (Top) -->
         <UnifiedLandMap />
@@ -146,10 +116,11 @@ onMounted(async () => {
   background-attachment: fixed;
 }
 
-.app-content-header {
-  background: white;
-  padding: 1.5rem 0;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+.app-content {
+  padding: 2rem 0;
+}
+
+.dashboard-header {
   margin-bottom: 2rem;
 }
 
