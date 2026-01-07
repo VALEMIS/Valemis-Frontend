@@ -59,7 +59,7 @@
           <li class="nav-item">
             <router-link :to="`/project/${projectId}/land-inventory`" class="nav-link"
               :class="{ active: route.path.startsWith(`/project/${projectId}/land-inventory`) }">
-              <i class="nav-icon pi pi-layers"></i>
+              <i class="nav-icon bi bi-layers"></i>
               <span>Land Inventory</span>
             </router-link>
           </li>
