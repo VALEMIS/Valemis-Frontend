@@ -144,19 +144,7 @@
           </div>
         </div>
 
-        <!-- Summary per Desa -->
-        <div class="row mt-3">
-          <div class="col-md-3" v-for="village in villageSummary" :key="village.name">
-            <div class="card">
-              <div class="card-body">
-                <h5 class="card-title">{{ village.name }}</h5>
-                <p class="mb-1"><strong>Total Asset:</strong> {{ village.totalAssets }}</p>
-                <p class="mb-1"><strong>Total KK:</strong> {{ village.totalKK }}</p>
-                <p class="mb-1"><strong>Luas Total:</strong> {{ village.totalArea.toLocaleString() }} m²</p>
-              </div>
-            </div>
-          </div>
-        </div>
+
       </div>
     </div>
 
