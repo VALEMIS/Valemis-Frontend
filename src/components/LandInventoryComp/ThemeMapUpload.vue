@@ -18,7 +18,7 @@
         </thead>
 
         <tbody>
-          <tr v-for="(r, i) in rasters" :key="r.id_raster">
+          <tr v-for="(r, i) in rasters" :key="r.id_theme_map">
             <td>{{ i + 1 }}</td>
             <td>{{ r.nama_map }}</td>
             <td>
@@ -30,7 +30,7 @@
               <button class="btn btn-sm btn-warning" @click="openEdit(r)">
                 Edit
               </button>
-              <button class="btn btn-sm btn-danger" @click="remove(r.id_raster)">
+              <button class="btn btn-sm btn-danger" @click="remove(r.id_theme_map)">
                 Hapus
               </button>
             </td>
@@ -55,7 +55,10 @@
               <label>Judul Peta</label>
               <input v-model="form.nama" class="form-control" required />
             </div>
-
+            <div class="mb-2">
+              <label>Tipe Peta</label>
+              <input v-model="form.type" class="form-control" required />
+            </div>
             <div class="mb-2">
               <label>File Peta (Shapefile)</label>
               <input type="file" class="form-control" @change="onFile" />
@@ -88,9 +91,8 @@ import 'leaflet/dist/leaflet.css'
 import shp from 'shpjs'
 const props = defineProps(['id_project'])
 
-const API = 'http://127.0.0.1:8000/api/spatial/LandInventoryThemeMap'
-const API_BYPROJECT = `http://127.0.0.1:8000/api/spatial/LandInventoryThemeMap/?id_project=${props.id_project}`
-const PROJECT_API = 'http://127.0.0.1:8000/api/spatial/Project'
+const apiUrl = import.meta.env.VITE_APP_API_SPATIAL_URL
+const gsUrl = import.meta.env.VITE_APP_API_GS_URL
 
 const rasters = ref([])
 const projects = ref([])
@@ -105,7 +107,8 @@ const form = ref({
   id_theme_map:null,
   id_project: props.id_project,
   nama_map: '',
-  shp_path: null
+  shp_path: null,
+  type:""
 })
 
 onMounted(async () => {
@@ -115,12 +118,12 @@ onMounted(async () => {
 })
 
 async function fetchData() {
-  const res = await axios.get(API_BYPROJECT)
+  const res = await axios.get(apiUrl+`/LandInventoryThemeMap/?id_project=${props.id_project}`)
   rasters.value = res.data
 }
 
 async function fetchProjects() {
-  const res = await axios.get(PROJECT_API)
+  const res = await axios.get(apiUrl+"/Project")
   projects.value = res.data
 }
 
@@ -147,8 +150,9 @@ function openEdit(row) {
   isEdit.value = true
   form.value = {
     id_project: row.id_project,
-    nama_map: row.nama_peta,
+    nama_map: row.nama_map,
     shp_path: null,
+    type:row.type
   }
   modal.show()
 }
@@ -173,16 +177,17 @@ async function onFile(e) {
 async function submit() {
   const fd = new FormData()
   fd.append('id_project', props.id_project ?? '')
-  fd.append('nama_map', form.value.nama_peta)
+  fd.append('nama_map', form.value.nama_map)
+  fd.append('type',form.value.type)
 
   if (form.value.shp_path) {
     fd.append('shp_path', form.value.shp_path)
   }
 
   if (isEdit.value) {
-    await axios.put(`${API}/${form.value.id_theme_map}/`, fd)
+    await axios.put(apiUrl+`/LandInventoryThemeMap/${form.value.id_theme_map}/`, fd)
   } else {
-    await axios.post(API + '/', fd)
+    await axios.post(apiUrl+`/LandInventoryThemeMap` + '/', fd)
   }
 
   await fetchData()
@@ -191,7 +196,7 @@ async function submit() {
 
 async function remove(id) {
   if (!confirm('Hapus raster ini?')) return
-  await axios.delete(`${API}/${id}/`)
+  await axios.delete(apiUrl+`/LandInventoryThemeMap/${id}/`)
   fetchData()
 }
 
@@ -200,7 +205,8 @@ function reset() {
     id_theme_map:null,
     id_project: props.id_project,
     nama_map: '',
-    shp_path: null
+    shp_path: null,
+    type:""
   }
 }
 
