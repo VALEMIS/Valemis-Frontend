@@ -365,7 +365,8 @@ const editParcelModal = (parcel) => {
     luas: parcel.luas,
     status: parcel.status,
     jumlah_bebas: parcel.jumlah_bebas,
-    biaya_pembebasan: typeof parcel.biaya_pembebasan === 'number' ? parcel.biaya_pembebasan : 0
+    biaya_pembebasan: typeof parcel.biaya_pembebasan === 'number' ? parcel.biaya_pembebasan : 0,
+    id_asset:parcel.id_asset_id
   }
   
   parcelModalInstance = new Modal(parcelModalRef.value)
@@ -544,13 +545,18 @@ onMounted(async () => {
     })
   })
 
+  
+
+  // console.log(acquisitionParcel.value)
+
+  await initMainMap()
+})
+async function initMainMap(){
   const map = L.map('map')
 
   L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
     attribution: '&copy; OpenStreetMap contributors'
   }).addTo(map)
-
-  // console.log(acquisitionParcel.value)
 
   const wmsLayer = L.tileLayer.wms(
     gsUrl+"/raster_valemis/wms",
@@ -561,9 +567,14 @@ onMounted(async () => {
       version: "1.1.0"
     }
   );
-
   wmsLayer.addTo(map);
-
+  const resProject = await axios.get(apiUrl+`/Project/${projectId}`)
+  
+  if (resProject.data.geom) {
+    const geojson = wellknown.parse(resProject.data.geom)
+    const geojsonLayerProject = new L.GeoJSON(geojson).addTo(map)
+    map.fitBounds(geojsonLayerProject.getBounds())
+  }
   const wmsLayerAcquisition = L.tileLayer.wms(
     gsUrl+"/vector_valemis/wms",
     {
@@ -577,6 +588,51 @@ onMounted(async () => {
       tiled:false
     }
   );
+  map.on("click", async function (e) {
+
+  const url = getFeatureInfoUrl(
+    map,
+    wmsLayerAcquisition,
+    e.latlng,
+    {
+      info_format: "application/json",
+      propertyName: "kode_parcel,nama_pemilik,desa"   // optional
+    }
+  );
+
+const res = await axios.get(url,{
+  
+   headers: {
+      "Authorization": "Basic " + btoa("admin:geoserver")
+    }
+})
+console.log("SDFSDF",res)
+  fetch(url)
+    .then(res => res.json())
+    .then(data => {
+
+      if (!data.features.length) return;
+
+      const props = data.features[0].properties;
+
+      L.popup()
+        .setLatLng(e.latlng)
+        .setContent(`
+          <b>Koder:</b> ${props.kode_parcel}<br>
+          <b>Nama Pemilik:</b> ${props.nama_pemilik}<br>
+          <b>Nama Pemilik:</b> ${props.desa}<br>
+          <b>Nama Pemilik:</b> ${props.luas}<br>
+          <b>Nama Pemilik:</b> ${props.status}<br>
+          <b>Nama Pemilik:</b> ${props.jumlah_bebas}<br>
+          <b>Nama Pemilik:</b> ${props.biaya_pembebasan}<br>
+          <b>Nama Pemilik:</b> ${props.tanggal_negosiasi}<br>
+          <b>Nama Pemilik:</b> ${props.id_asset.id_asset}<br>
+
+        `)
+        .openOn(map);
+
+    });
+});
 
   wmsLayerAcquisition.addTo(map);
   var acquisitionLegend = L.control({ position: 'bottomright' });
@@ -592,20 +648,42 @@ onMounted(async () => {
       />
       </div>
     `;
-
     return div;
   };
 
   acquisitionLegend.addTo(map);
-  const resProject = await axios.get(apiUrl+`/Project/${projectId}`)
   
-  if (resProject.data.geom) {
-    const geojson = wellknown.parse(resProject.data.geom)
-    const geojsonLayerProject = new L.GeoJSON(geojson).addTo(map)
-    map.fitBounds(geojsonLayerProject.getBounds())
-  }
-})
 
+}
+function getFeatureInfoUrl(map, layer, latlng, params) {
+
+  const point = map.latLngToContainerPoint(latlng, map.getZoom());
+  const size = map.getSize();
+
+  const baseParams = {
+    request: 'GetFeatureInfo',
+    service: 'WMS',
+    srs: 'EPSG:4326',
+    styles: '',
+    transparent: true,
+    version: '1.1.1',
+    format: 'image/png',
+    bbox: map.getBounds().toBBoxString(),
+    height: size.y,
+    width: size.x,
+    layers: layer.wmsParams.layers,
+    query_layers: layer.wmsParams.layers,
+    info_format: 'application/json',
+    x: Math.round(point.x),
+    y: Math.round(point.y)
+  };
+  console.log(layer._url)
+  return layer._url + L.Util.getParamString(
+    Object.assign(baseParams, params),
+    layer._url,
+    true
+  );
+}
 function initMap() {
   map = L.map("map-modal").setView([-2, 118], 5)
 
@@ -618,7 +696,23 @@ function initMap() {
     rotateMode: false,
   })
 
+
   mpwkt = new LeafletMultiPolygonWKT(map)
+  const wmsLayerAcquisition = L.tileLayer.wms(
+    gsUrl+"/vector_valemis/wms",
+    {
+      layers: "	vector_valemis:tbl_acquisition",
+      format: "image/png",
+      transparent: true,
+      version: "1.1.0",
+      CQL_FILTER: `id_project_id = ${projectId}`,
+      styles:"sld_persil",
+      crs: L.CRS.EPSG4326,
+      tiled:false
+    }
+  );
+
+  wmsLayerAcquisition.addTo(landMap);
   const wmsLayerProject = L.tileLayer.wms(
     gsUrl+"/vector_valemis/wms",
     {

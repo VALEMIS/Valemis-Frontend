@@ -1,25 +1,46 @@
 <template>
   <div class="unified-land-map">
     <!-- Map Container -->
-    <Card class="map-card">
-      <template #content>
-
-        <div class="flex">
-          <!-- Map Area -->
-          <div class="map-area flex-1">
-            <div id="dashboard-map" class="map-container" ref="mapContainer"></div>
-
-            <!-- Map Loading -->
-            <div v-if="loading" class="map-loading-overlay">
-              <ProgressSpinner strokeWidth="3" />
-              <span class="block mt-2 text-sm">Loading map data...</span>
+     <div class="map-card">
+        <div class="row">
+          <div class="col-md-3 p-4">
+            <h2>
+              <b>Map Layer</b>
+            </h2>
+            <div v-for="theme,i in listThemeMap" class="overflow-x-auto" style="max-height: 600px;">
+                <div class="mb-2">
+                  <div>
+                    <input type="checkbox" /> {{ theme.nama_map }}
+                  </div>
+                  <img :src="`${gsUrl}/vector_valemis/wms?REQUEST=GetLegendGraphic&VERSION=1.0.0&FORMAT=image/png&WIDTH=20&HEIGHT=20&LAYER=vector_valemis:${theme.tbl_name}&STYLE=${theme.style}`"/>
+                </div>
             </div>
+            <div v-for="raster,i in listRaster" class="overflow-x-auto" style="max-height: 600px;">
+                <div class="mb-2">
+                  <div>
+                    <input type="checkbox" /> {{ raster.nama }}
+                  </div>
+                  <!-- <img :src="`${gsUrl}/vector_valemis/wms?REQUEST=GetLegendGraphic&VERSION=1.0.0&FORMAT=image/png&WIDTH=20&HEIGHT=20&LAYER=vector_valemis:${raster.tbl_name}&STYLE=${theme.style}`"/> -->
+                </div>
+            </div>
+          </div>
+          <div class="flex col-md-9">
+            <!-- Map Area -->
+            <div class="map-area flex-1">
+              <div id="dashboard-map" class="map-container" ref="mapContainer"></div>
+
+              <!-- Map Loading -->
+              <div v-if="loading" class="map-loading-overlay">
+                <ProgressSpinner strokeWidth="3" />
+                <span class="block mt-2 text-sm">Loading map data...</span>
+              </div>
 
 
+            </div>
           </div>
         </div>
-      </template>
-    </Card>
+      </div>
+      <!-- </template> -->
 
     <!-- Fullscreen Dialog -->
     <Dialog v-model:visible="fullscreenVisible" :style="{ width: '95vw', height: '90vh' }" :modal="true"
@@ -40,6 +61,7 @@ import MapLayerControl from './MapLayerControl.vue'
 import { useDashboardData } from '@/composables/useDashboardData'
 import { useLeafletMap } from '@/composables/useLeafletMap'
 import L from 'leaflet'
+import axios from 'axios'
 import type { MapLayer, MapFilter } from '@/types/dashboard'
 const apiUrl = import.meta.env.VITE_APP_API_SPATIAL_URL
 const gsUrl = import.meta.env.VITE_APP_API_GS_URL
@@ -51,7 +73,17 @@ const fullscreenVisible = ref(false)
 const layerControlCollapsed = ref(false)
 const visibleParcels = ref(245)
 const selectedParcels = ref(0)
+const listThemeMap = ref([])
+const listRaster = ref([])
 
+async function fetchThemeMap() {
+  const res = await axios.get(`${apiUrl}/LandInventoryThemeMap`)
+  listThemeMap.value = res.data
+}
+async function fetchRaster() {
+  const res = await axios.get(`${apiUrl}/LandInventoryRaster`)
+  listRaster.value = res.data
+}
 // Map filters
 const mapFilters = ref<MapFilter>({
   desa: [],
@@ -69,8 +101,12 @@ const mapLegends = computed(() => [
 
 // Initialize map
 let map: L.Map | null = null
-
+onMounted(async ()=>{
+  await fetchThemeMap()
+  await fetchRaster()
+})
 onMounted(() => {
+  
   if (mapContainer.value) {
     // Initialize Leaflet map
     map = L.map(mapContainer.value, {
@@ -286,6 +322,9 @@ const handleExportMap = () => {
 
 .map-card {
   overflow: hidden;
+  background-color: white;
+  box-shadow: black;
+  border-radius: 1rem;
 }
 
 .map-toolbar {
@@ -303,7 +342,7 @@ const handleExportMap = () => {
 
 .map-area {
   position: relative;
-  height: 500px;
+  height: 600px;
 }
 
 .map-container {

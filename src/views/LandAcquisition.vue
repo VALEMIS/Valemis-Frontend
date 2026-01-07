@@ -564,29 +564,6 @@ const formDataProject = ref<FormDataProject>({
   project: '',
   ownerName: '',
 })
-// Dummy data - lahan yang terdampak project
-const parcels = ref<Parcel[]>([
-  // Project Alpha parcels
-  { id: 1, code: 'PCL-ALP-001', project: 'Project Alpha - Mining Expansion', ownerName: 'Budi Santoso', village: 'Desa Sorowako', area: 500, status: 'Bebas', jumlahBebas: 500, biayaPembebasan: 450000000, negotiationDate: '2024-10-15' },
-  { id: 2, code: 'PCL-ALP-002', project: 'Project Alpha - Mining Expansion', ownerName: 'Ahmad Hidayat', village: 'Desa Sorowako', area: 450, status: 'Bebas', jumlahBebas: 450, biayaPembebasan: 425000000, negotiationDate: '2024-10-18' },
-  { id: 3, code: 'PCL-ALP-003', project: 'Project Alpha - Mining Expansion', ownerName: 'Siti Rahma', village: 'Desa Sorowako', area: 600, status: 'Dalam Negosiasi', jumlahBebas: 0, biayaPembebasan: 0, negotiationDate: '2024-11-20' },
-  { id: 4, code: 'PCL-ALP-004', project: 'Project Alpha - Mining Expansion', ownerName: 'Andi Suryanto', village: 'Desa Magani', area: 480, status: 'Bebas', jumlahBebas: 480, biayaPembebasan: 435000000, negotiationDate: '2024-10-22' },
-  { id: 5, code: 'PCL-ALP-005', project: 'Project Alpha - Mining Expansion', ownerName: 'Maria Ulfa', village: 'Desa Magani', area: 550, status: 'Dalam Negosiasi', jumlahBebas: 0, biayaPembebasan: 0, negotiationDate: '2024-11-25' },
-  { id: 6, code: 'PCL-ALP-006', project: 'Project Alpha - Mining Expansion', ownerName: 'Hasan Basri', village: 'Desa Magani', area: 470, status: 'Belum Diproses', jumlahBebas: 0, biayaPembebasan: 0, negotiationDate: '-' },
-  
-  // Project Beta parcels
-  { id: 7, code: 'PCL-BTA-001', project: 'Project Beta - Infrastructure Development', ownerName: 'Usman Harun', village: 'Desa Wewangriu', area: 530, status: 'Bebas', jumlahBebas: 530, biayaPembebasan: 485000000, negotiationDate: '2024-09-10' },
-  { id: 8, code: 'PCL-BTA-002', project: 'Project Beta - Infrastructure Development', ownerName: 'Fatimah Zahra', village: 'Desa Wewangriu', area: 510, status: 'Dalam Negosiasi', jumlahBebas: 0, biayaPembebasan: 0, negotiationDate: '2024-11-15' },
-  { id: 9, code: 'PCL-BTA-003', project: 'Project Beta - Infrastructure Development', ownerName: 'Rahman Wiranto', village: 'Desa Wewangriu', area: 560, status: 'Belum Diproses', jumlahBebas: 0, biayaPembebasan: 0, negotiationDate: '-' },
-  { id: 10, code: 'PCL-BTA-004', project: 'Project Beta - Infrastructure Development', ownerName: 'Nurul Huda', village: 'Desa Wewangriu', area: 495, status: 'Dalam Negosiasi', jumlahBebas: 0, biayaPembebasan: 0, negotiationDate: '2024-11-28' },
-  
-  // Project Gamma parcels
-  { id: 11, code: 'PCL-GMA-001', project: 'Project Gamma - Road Access', ownerName: 'Bambang Trianto', village: 'Desa Nikkel', area: 540, status: 'Bebas', jumlahBebas: 540, biayaPembebasan: 495000000, negotiationDate: '2024-08-20' },
-  { id: 12, code: 'PCL-GMA-002', project: 'Project Gamma - Road Access', ownerName: 'Dewi Anggraini', village: 'Desa Nikkel', area: 520, status: 'Bebas', jumlahBebas: 520, biayaPembebasan: 475000000, negotiationDate: '2024-08-25' },
-  { id: 13, code: 'PCL-GMA-003', project: 'Project Gamma - Road Access', ownerName: 'Irfan Maulana', village: 'Desa Nikkel', area: 575, status: 'Bebas', jumlahBebas: 575, biayaPembebasan: 525000000, negotiationDate: '2024-09-01' },
-  { id: 14, code: 'PCL-GMA-004', project: 'Project Gamma - Road Access', ownerName: 'Wulan Sari', village: 'Desa Nikkel', area: 505, status: 'Dalam Negosiasi', jumlahBebas: 0, biayaPembebasan: 0, negotiationDate: '2024-11-30' },
-])
-
 const filteredParcels = computed(() => {
   let result = parcels.value
   
