@@ -83,8 +83,8 @@
           <div class="card-header">
             <h5 class="card-title">Daftar Stakeholder</h5>
             <div class="card-tools">
-              <button class="btn btn-sm btn-success me-2" @click="exportData" title="Download CSV">
-                <i class="bi bi-file-earmark-spreadsheet"></i> Download CSV
+              <button class="btn btn-sm btn-success me-2" @click="exportData" title="Download Excel">
+                <i class="bi bi-file-earmark-excel"></i> Download Excel
               </button>
               <router-link to="/stake-holder/tambah" class="btn btn-sm btn-primary">
                 <i class="bi bi-plus-circle"></i> Tambah Stakeholder
@@ -557,8 +557,8 @@ const startScraping = async () => {
 // Export to CSV
 const exportData = async () => {
   try {
-    await stakeholderApi.exportCsv()
-    alert('Data berhasil didownload dalam format CSV!')
+    await stakeholderApi.exportExcel()
+    alert('Data berhasil didownload dalam format Excel!')
   } catch (err) {
     alert('Gagal mendownload data: ' + (err instanceof Error ? err.message : 'Unknown error'))
     console.error('Export error:', err)

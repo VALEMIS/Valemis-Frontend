@@ -1,46 +1,47 @@
 <template>
   <div class="unified-land-map">
     <!-- Map Container -->
-     <div class="map-card">
-        <div class="row">
-          <div class="col-md-3 p-4">
-            <h2>
-              <b>Map Layer</b>
-            </h2>
-            <div v-for="theme,i in listThemeMap" class="overflow-x-auto" style="max-height: 600px;">
-                <div class="mb-2">
-                  <div>
-                    <input type="checkbox" /> {{ theme.nama_map }}
-                  </div>
-                  <img :src="`${gsUrl}/vector_valemis/wms?REQUEST=GetLegendGraphic&VERSION=1.0.0&FORMAT=image/png&WIDTH=20&HEIGHT=20&LAYER=vector_valemis:${theme.tbl_name}&STYLE=${theme.style}`"/>
-                </div>
-            </div>
-            <div v-for="raster,i in listRaster" class="overflow-x-auto" style="max-height: 600px;">
-                <div class="mb-2">
-                  <div>
-                    <input type="checkbox" /> {{ raster.nama }}
-                  </div>
-                  <!-- <img :src="`${gsUrl}/vector_valemis/wms?REQUEST=GetLegendGraphic&VERSION=1.0.0&FORMAT=image/png&WIDTH=20&HEIGHT=20&LAYER=vector_valemis:${raster.tbl_name}&STYLE=${theme.style}`"/> -->
-                </div>
+    <div class="map-card">
+      <div class="row">
+        <div class="col-md-3 p-4">
+          <h2>
+            <b>Map Layer</b>
+          </h2>
+          <div v-for="theme, i in listThemeMap" class="overflow-x-auto" style="max-height: 600px;">
+            <div class="mb-2">
+              <div>
+                <input type="checkbox" /> {{ theme.nama_map }}
+              </div>
+              <img
+                :src="`${gsUrl}/vector_valemis/wms?REQUEST=GetLegendGraphic&VERSION=1.0.0&FORMAT=image/png&WIDTH=20&HEIGHT=20&LAYER=vector_valemis:${theme.tbl_name}&STYLE=${theme.style}`" />
             </div>
           </div>
-          <div class="flex col-md-9">
-            <!-- Map Area -->
-            <div class="map-area flex-1">
-              <div id="dashboard-map" class="map-container" ref="mapContainer"></div>
-
-              <!-- Map Loading -->
-              <div v-if="loading" class="map-loading-overlay">
-                <ProgressSpinner strokeWidth="3" />
-                <span class="block mt-2 text-sm">Loading map data...</span>
+          <div v-for="raster, i in listRaster" class="overflow-x-auto" style="max-height: 600px;">
+            <div class="mb-2">
+              <div>
+                <input type="checkbox" /> {{ raster.nama }}
               </div>
-
-
+              <!-- <img :src="`${gsUrl}/vector_valemis/wms?REQUEST=GetLegendGraphic&VERSION=1.0.0&FORMAT=image/png&WIDTH=20&HEIGHT=20&LAYER=vector_valemis:${raster.tbl_name}&STYLE=${theme.style}`"/> -->
             </div>
           </div>
         </div>
+        <div class="flex col-md-9">
+          <!-- Map Area -->
+          <div class="map-area flex-1">
+            <div id="dashboard-map" class="map-container" ref="mapContainer"></div>
+
+            <!-- Map Loading -->
+            <div v-if="loading" class="map-loading-overlay">
+              <ProgressSpinner strokeWidth="3" />
+              <span class="block mt-2 text-sm">Loading map data...</span>
+            </div>
+
+
+          </div>
+        </div>
       </div>
-      <!-- </template> -->
+    </div>
+    <!-- </template> -->
 
     <!-- Fullscreen Dialog -->
     <Dialog v-model:visible="fullscreenVisible" :style="{ width: '95vw', height: '90vh' }" :modal="true"
@@ -73,8 +74,20 @@ const fullscreenVisible = ref(false)
 const layerControlCollapsed = ref(false)
 const visibleParcels = ref(245)
 const selectedParcels = ref(0)
-const listThemeMap = ref([])
-const listRaster = ref([])
+
+interface ThemeMap {
+  nama_map: string
+  tbl_name: string
+  style: string
+}
+
+interface Raster {
+  nama: string
+  tbl_name?: string
+}
+
+const listThemeMap = ref<ThemeMap[]>([])
+const listRaster = ref<Raster[]>([])
 
 async function fetchThemeMap() {
   const res = await axios.get(`${apiUrl}/LandInventoryThemeMap`)
@@ -101,12 +114,12 @@ const mapLegends = computed(() => [
 
 // Initialize map
 let map: L.Map | null = null
-onMounted(async ()=>{
+onMounted(async () => {
   await fetchThemeMap()
   await fetchRaster()
 })
 onMounted(() => {
-  
+
   if (mapContainer.value) {
     // Initialize Leaflet map
     map = L.map(mapContainer.value, {
@@ -118,9 +131,9 @@ onMounted(() => {
     // Add tile layer
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
       attribution: '© OpenStreetMap contributors'
-      }).addTo(map)
+    }).addTo(map)
     const wmsLayer = L.tileLayer.wms(
-      gsUrl+"/raster_valemis/wms",
+      gsUrl + "/raster_valemis/wms",
       {
         layers: "raster_valemis:orthophoto_mbb1",
         format: "image/png",
@@ -145,72 +158,72 @@ onMounted(() => {
     // wmsLayerHutan.addTo(map);
 
     const wmsLayerBatas = L.tileLayer.wms(
-      gsUrl+"/vector_valemis/wms",
+      gsUrl + "/vector_valemis/wms",
       {
         layers: "	vector_valemis:theme_ea895991",
         format: "image/png",
         transparent: true,
-        styles:"Style Batas Desa",
+        styles: "Style Batas Desa",
         version: "1.1.0"
       }
     );
 
     wmsLayerBatas.addTo(map);
     const wmsLayerIUPK = L.tileLayer.wms(
-    gsUrl+"/vector_valemis/wms",
-    {
-      layers: "	vector_valemis:theme_eab3f65a",
-      format: "image/png",
-      transparent: true,
-      version: "1.1.0",
-      styles:"sld_iupk_3",
-      crs: L.CRS.EPSG4326,
-    }
-  );
+      gsUrl + "/vector_valemis/wms",
+      {
+        layers: "	vector_valemis:theme_eab3f65a",
+        format: "image/png",
+        transparent: true,
+        version: "1.1.0",
+        styles: "sld_iupk_3",
+        crs: L.CRS.EPSG4326,
+      }
+    );
 
-  wmsLayerIUPK.addTo(map);
+    wmsLayerIUPK.addTo(map);
 
     const wmsLayerAcquisition = L.tileLayer.wms(
-    gsUrl+"/vector_valemis/wms",
-    {
-      layers: "	vector_valemis:tbl_acquisition",
-      format: "image/png",
-      transparent: true,
-      version: "1.1.0",
-      styles:"sld_persil",
-      crs: L.CRS.EPSG4326,
-    }
-  );
+      gsUrl + "/vector_valemis/wms",
+      {
+        layers: "	vector_valemis:tbl_acquisition",
+        format: "image/png",
+        transparent: true,
+        version: "1.1.0",
+        styles: "sld_persil",
+        crs: L.CRS.EPSG4326,
+      }
+    );
 
-  wmsLayerAcquisition.addTo(map);
-  const wmsLayerAsset = L.tileLayer.wms(
-    gsUrl+"/vector_valemis/wms",
-    {
-      layers: "	vector_valemis:census_kepala_keluarga",
-      format: "image/png",
-      transparent: true,
-      version: "1.1.0",
-      styles:"sld_asset_point",
-      crs: L.CRS.EPSG4326,
-    }
-  );
+    wmsLayerAcquisition.addTo(map);
+    const wmsLayerAsset = L.tileLayer.wms(
+      gsUrl + "/vector_valemis/wms",
+      {
+        layers: "	vector_valemis:census_kepala_keluarga",
+        format: "image/png",
+        transparent: true,
+        version: "1.1.0",
+        styles: "sld_asset_point",
+        crs: L.CRS.EPSG4326,
+      }
+    );
 
-  wmsLayerAsset.addTo(map);
+    wmsLayerAsset.addTo(map);
 
-  const wmsLayerProject = L.tileLayer.wms(
-    gsUrl+"/vector_valemis/wms",
-    {
-      layers: "	vector_valemis:tbl_project",
-      format: "image/png",
-      transparent: true,
-      version: "1.1.0",
-      styles:"sld_projek",
-      crs: L.CRS.EPSG4326,
-    }
-  );
+    const wmsLayerProject = L.tileLayer.wms(
+      gsUrl + "/vector_valemis/wms",
+      {
+        layers: "	vector_valemis:tbl_project",
+        format: "image/png",
+        transparent: true,
+        version: "1.1.0",
+        styles: "sld_projek",
+        crs: L.CRS.EPSG4326,
+      }
+    );
 
-  wmsLayerProject.addTo(map);
-      // Add sample data (in real implementation, this would come from API)
+    wmsLayerProject.addTo(map);
+    // Add sample data (in real implementation, this would come from API)
     addSampleLayers()
 
     // Simulate loading
