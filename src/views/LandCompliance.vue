@@ -197,7 +197,11 @@ function deleteLayer(){
 
 }
 function initMap() {
-  map.value = L.map("map").setView([-2, 118], 5)
+  map.value = L.map("map",{
+      center: [-2.5, 121.0],
+      zoom: 10,
+      zoomControl: true
+    })
   if (map.value) {
     L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png").addTo(map.value as any)
   }
@@ -247,6 +251,44 @@ function convertToFeatureCollection(layersObject) {
   };
 }
 
+function normalizeLayers(layersObject) {
+
+  const features = [];
+
+  Object.entries(layersObject).forEach(([name, geom]) => {
+
+    // Jika GEOMETRYCOLLECTION
+    if (geom.type === "GeometryCollection") {
+
+      geom.geometries.forEach((g, idx) => {
+
+        features.push({
+          type: "Feature",
+          properties: {
+            name: `${name}_${idx}`
+          },
+          geometry: g
+        });
+
+      });
+
+    } else {
+      // Normal geometry: Polygon / MultiPolygon / LineString dll
+      features.push({
+        type: "Feature",
+        properties: { name },
+        geometry: geom
+      });
+    }
+
+  });
+
+  return {
+    type: "FeatureCollection",
+    features
+  };
+}
+
 
 async function analyze() {
   // if (!file.value) {
@@ -256,15 +298,21 @@ async function analyze() {
   // console.log(inputLayer.value)
   // const formData = new FormData()
   // formData.append("file", file.value)
-  // const wkt = mpwkt.toWKT()
+  const wkt = mpwkt.toWKT()
   // console.log( geojson.value.features[0].geometry)
+  var geom 
+  if (geojson.value!=null){
+    geom = geojsonToWKT(geojson.value.features[0].geometry)
+  }else{
+    geom = wkt
+  }
   const res = await fetch(`${apiUrl}/analyze/`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json"
     },
     body: JSON.stringify({
-      geometry: geojsonToWKT(geojson.value.features[0].geometry),
+      geometry: geom,
       tables: selectedLayer.value.map((e:any)=>(e.tbl_name))
     })
   })
@@ -272,7 +320,7 @@ async function analyze() {
   const data = await res.json()
   stats.value = data.stats
   geometryHasil.value = data.layers
-  const fc = convertToFeatureCollection(data.layers);
+  const fc = normalizeLayers(data.layers);
 
   // 4. Render semua geometry
   const geojsonLayer = L.geoJSON(fc, {
@@ -383,7 +431,7 @@ onMounted(() => {
     drawCircleMarker: false,
     rotateMode: false,
   })
-  // mpwkt = new LeafletMultiPolygonWKT(map)
+  mpwkt = new LeafletMultiPolygonWKT(map.value)
 })
 
 // Clean up map instance when navigating away
