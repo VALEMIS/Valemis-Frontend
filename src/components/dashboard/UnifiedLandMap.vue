@@ -3,29 +3,8 @@
     <!-- Map Container -->
     <div class="map-card">
       <div class="row">
-        <div class="col-md-3 p-4">
-          <h2>
-            <b>Map Layer</b>
-          </h2>
-          <div v-for="theme, i in listThemeMap" class="overflow-x-auto" style="max-height: 600px;">
-            <div class="mb-2">
-              <div>
-                <input type="checkbox" /> {{ theme.nama_map }}
-              </div>
-              <img
-                :src="`${gsUrl}/vector_valemis/wms?REQUEST=GetLegendGraphic&VERSION=1.0.0&FORMAT=image/png&WIDTH=20&HEIGHT=20&LAYER=vector_valemis:${theme.tbl_name}&STYLE=${theme.style}`" />
-            </div>
-          </div>
-          <div v-for="raster, i in listRaster" class="overflow-x-auto" style="max-height: 600px;">
-            <div class="mb-2">
-              <div>
-                <input type="checkbox" /> {{ raster.nama }}
-              </div>
-              <!-- <img :src="`${gsUrl}/vector_valemis/wms?REQUEST=GetLegendGraphic&VERSION=1.0.0&FORMAT=image/png&WIDTH=20&HEIGHT=20&LAYER=vector_valemis:${raster.tbl_name}&STYLE=${theme.style}`"/> -->
-            </div>
-          </div>
-        </div>
-        <div class="flex col-md-9">
+        
+        <div class="flex col-md-12">
           <!-- Map Area -->
           <div class="map-area flex-1">
             <div id="dashboard-map" class="map-container" ref="mapContainer"></div>
@@ -183,19 +162,19 @@ onMounted(() => {
 
     wmsLayerIUPK.addTo(map);
 
-    const wmsLayerAcquisition = L.tileLayer.wms(
-      gsUrl + "/vector_valemis/wms",
-      {
-        layers: "	vector_valemis:tbl_acquisition",
-        format: "image/png",
-        transparent: true,
-        version: "1.1.0",
-        styles: "sld_persil",
-        crs: L.CRS.EPSG4326,
-      }
-    );
+    // const wmsLayerAcquisition = L.tileLayer.wms(
+    //   gsUrl + "/vector_valemis/wms",
+    //   {
+    //     layers: "	vector_valemis:tbl_acquisition",
+    //     format: "image/png",
+    //     transparent: true,
+    //     version: "1.1.0",
+    //     styles: "sld_persil",
+    //     crs: L.CRS.EPSG4326,
+    //   }
+    // );
 
-    wmsLayerAcquisition.addTo(map);
+    // wmsLayerAcquisition.addTo(map);
     const wmsLayerAsset = L.tileLayer.wms(
       gsUrl + "/vector_valemis/wms",
       {

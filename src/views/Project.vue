@@ -204,7 +204,11 @@ const submitProject = async () => {
 // const fetchMap
 
 function initMap() {
-  map = L.map("map").setView([-2, 118], 5)
+  map = L.map("map").setView([-2, 118], {
+      center: [-2.5, 121.0],
+      zoom: 10,
+      zoomControl: true
+    })
 
   L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png")
     .addTo(map)
@@ -227,7 +231,11 @@ function randomMapColor() {
 }
 
 function initProjectMap(){
-  projectMap = L.map("mapProject").setView([-2, 118], 5)
+  projectMap = L.map("mapProject",{
+      center: [-2.5, 121.0],
+      zoom: 10,
+      zoomControl: true
+    })
 
   L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png")
     .addTo(projectMap)

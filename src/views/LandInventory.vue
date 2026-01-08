@@ -318,11 +318,11 @@
                   <label class="form-label"><strong>Kategori</strong> <span class="text-danger">*</span></label>
                   <select class="form-select" v-model="formData.category" required>
                     <option value="">Pilih Kategori</option>
-                    <option value="0">Milik Vale</option>
-                    <option value="1">Acquired/Diakuisisi</option>
-                    <option value="2">IUPK</option>
-                    <option value="3">PPKH</option>
-                    <option value="4">Operasional</option>
+                    <option value="1">Milik Vale</option>
+                    <option value="2">Acquired/Diakuisisi</option>
+                    <option value="3">IUPK</option>
+                    <option value="4">PPKH</option>
+                    <option value="5">Operasional</option>
                   </select>
                 </div>
                 <div class="col-md-6 mb-3">
@@ -338,10 +338,10 @@
                       class="text-danger">*</span></label>
                   <select class="form-select" v-model="formData.certificate" required>
                     <option value="">Pilih Status</option>
-                    <option value="0">SHM (Sertifikat Hak Milik)</option>
-                    <option value="1">SHGB (Hak Guna Bangunan)</option>
-                    <option value="2">HGU (Hak Guna Usaha)</option>
-                    <option value="3">Belum Sertifikat</option>
+                    <option value="1">SHM (Sertifikat Hak Milik)</option>
+                    <option value="2">SHGB (Hak Guna Bangunan)</option>
+                    <option value="3">HGU (Hak Guna Usaha)</option>
+                    <option value="4">Belum Sertifikat</option>
                   </select>
                 </div>
                 <div class="col-md-6 mb-3">
@@ -723,7 +723,7 @@ const saveLand = async () => {
     "status": formData.value.certificate,
     "no_sertif": formData.value.certificateNo,
     "id_project": projectId,
-    "geom": uploadWKT
+    "geom": uploadWKT.value
   }
   const res = await axios.post(
     apiUrl + '/LandInventory/',

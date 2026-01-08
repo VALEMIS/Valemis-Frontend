@@ -149,6 +149,7 @@ import shp from "shpjs"
 import "leaflet/dist/leaflet.css"
 import axios from "axios";
 import { geojsonToWKT } from "@terraformer/wkt"
+import { stat } from "fs";
 
 const apiUrl = import.meta.env.VITE_APP_API_SPATIAL_URL
 const gsUrl = import.meta.env.VITE_APP_API_GS_URL
@@ -172,6 +173,8 @@ const selectedOptions = ref<any>(null)
 const analyzeData = ref<any>(null)
 const analyzeDataGeom = ref<any>(null)
 const activeLayers = {};
+const geometryHasil = ref<any>(null)
+// const stats = ref([])
 let layerGroup
 let mpwkt
 // const 
@@ -224,6 +227,27 @@ function initMap() {
 //   layersOnMap.value.push(layer)
 // }
 
+function convertToFeatureCollection(layersObject) {
+  const features = Object.entries(layersObject).map(([name, geom]) => {
+    return {
+      type: "Feature",
+      properties: {
+        name: name
+      },
+      geometry: {
+        type: geom.type,
+        coordinates: geom.coordinates
+      }
+    };
+  });
+
+  return {
+    type: "FeatureCollection",
+    features: features
+  };
+}
+
+
 async function analyze() {
   // if (!file.value) {
   //   alert("Upload file dulu")
@@ -246,6 +270,26 @@ async function analyze() {
   })
 
   const data = await res.json()
+  stats.value = data.stats
+  geometryHasil.value = data.layers
+  const fc = convertToFeatureCollection(data.layers);
+
+  // 4. Render semua geometry
+  const geojsonLayer = L.geoJSON(fc, {
+    style: function () {
+      return {
+        color: "#ff0000",
+        weight: 1,
+        fillOpacity: 0.3
+      };
+    },
+    onEachFeature: function (feature, layer) {
+      layer.bindPopup(feature.properties.name);
+    }
+  }).addTo(map.value);
+
+  // 5. Fit ke bounding box
+  map.value.fitBounds(geojsonLayer.getBounds());
   // console.log(data)
   // clearLayers()
   // for (const [_name, geo] of Object.entries(data.layers)) {

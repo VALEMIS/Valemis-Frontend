@@ -467,11 +467,11 @@ async function saveParcel() {
   const wkt = mpwkt.toWKT()
   console.log(formData,wkt)
   let geom
-  console.log(uploadWKT.value)
-  if (uploadWKT.value!=null){
-    console.log(uploadWKT.value)
-    uploadWKT.value
-  }
+  // console.log(uploadWKT.value)
+  // if (uploadWKT.value!=null){
+  //   console.log(uploadWKT.value)
+  //   uploadWKT.value
+  // }
   const payload = {
     id_project: projectId,
     kode_parcel: formData.value.kode_parcel,
@@ -484,7 +484,7 @@ async function saveParcel() {
     geom: wkt == null ? acquisition.value.geom : wkt
     // geom:uploadWKT.value
   }
-  modalMap.value.removeLayer(inputLayer)
+  // modalMap.value.removeLayer(inputLayer)
   // console.log(payload,isEditMode)
   if (isEditMode) {
     // UPDATE
