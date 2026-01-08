@@ -359,22 +359,17 @@
                     min="1900" :max="new Date().getFullYear()" />
                 </div>
               </div>
-              <div id="maps" ref="mapContainer" style="height: 400px;"></div>
+              <div id="maps" ref="mapContainer" class="mb-3" style="height: 400px;"></div>
+              <input type="file" accept=".zip" @change="onFile" />
               <div class="mb-3 mt-3">
                 <label class="form-label"><strong><i class="bi bi-file-earmark-text"></i> Dokumen Lahan</strong></label>
-
+                
                 <div class="input-group mb-2">
-                  <!-- <input 
-                    type="text" 
-                    class="form-control" 
-                    v-model="newDocument" 
-                    placeholder="Nama file dokumen (contoh: SHM-001-2020.pdf)"
-                    @keyup.enter="addDocument"
-                  /> -->
                   <input type="file" class="btn btn-outline-primary" multiple @change="addDocument">
                   <!-- <i class="bi bi-plus-circle"></i> Tambah -->
                   </input>
                 </div>
+                
                 <div v-if="newDocument.length > 0" class="border rounded p-2">
                   <small class="text-muted d-block mb-2">Daftar Dokumen:</small>
                   <div class="d-flex flex-wrap gap-1">
@@ -425,7 +420,9 @@ import 'bootstrap/dist/js/bootstrap.bundle.min.js'
 import RasterUpload from '../components/LandInventoryComp/RasterUpload.vue';
 import ThemeMapUpload from '../components/LandInventoryComp/ThemeMapUpload.vue';
 import DocumentModal from '../components/LandInventoryComp/DocumentModal.vue';
-import "../utils/drawMap.js"
+// import "../utils/drawMap.js"
+import shp from "shpjs"
+import { geojsonToWKT } from "@terraformer/wkt"
 import {addWms} from "../utils/addWms.js"
 import { useRoute } from 'vue-router'
 
@@ -469,8 +466,13 @@ const landMapContainer = ref<HTMLElement | null>(null)
 const mapContainer = ref<HTMLElement | null>(null)
 const landModalRef = ref<HTMLElement | null>(null)
 const newDocument = ref<any[]>([])
+const uploadWKT = ref<any>(null)
+const geojson = ref<any>(null)
+const map = ref<any>(null)
+const inputLayer = ref<any>(null)
+
 let landMap: L.Map | null = null
-let map: L.Map | null = null
+// let map: L.Map | null = null
 let landModalInstance: any = null
 let projects = ref<any[]>([])
 
@@ -599,17 +601,17 @@ const initLandMap = async () => {
     drawCircleMarker: false,
     rotateMode: false,
   });
-  L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
+  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
     attribution: '© OpenStreetMap contributors',
     maxZoom: 19
   }).addTo(landMap)
 
   await addWms(landMap,projectId)
 
-  const wmsLayerProject = L.tileLayer.wms(
+  const wmsLayerLandInventory = L.tileLayer.wms(
     gsUrl + "/vector_valemis/wms",
     {
-      layers: "vector_valemis:tbl_project",
+      layers: "vector_valemis:tbl_land_inventory",
       format: "image/png",
       transparent: true,
       version: "1.1.0",
@@ -617,33 +619,22 @@ const initLandMap = async () => {
     }
   );
 
-  wmsLayerProject.addTo(landMap);
-
-
-
-  // let geojsonLayerProject
-  // // if (lands.value.length>0) {
-  // lands.value.forEach((e) => {
-  //   if (e.geom != null) {
-  //     console.log(wellknown.parse(e.geom))
-  //     L.geoJSON(wellknown.parse(e.geom)).addTo(landMap)
-  //   }
-  // })
+  wmsLayerLandInventory.addTo(landMap);
 
 }
-function initMap() {
-  map = L.map("maps").setView([-2.5650, 121.3450], 12)
+async function initMap() {
+  map.value = L.map("maps").setView([-2.5650, 121.3450], 12)
 
   L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png")
-    .addTo(map)
+    .addTo(map.value)
+  await addWms(map.value,projectId)
+  // map.pm.addControls({
+  //   position: 'topleft',
+  //   drawCircleMarker: false,
+  //   rotateMode: false,
+  // })
 
-  map.pm.addControls({
-    position: 'topleft',
-    drawCircleMarker: false,
-    rotateMode: false,
-  })
-
-  mpwkt = new LeafletMultiPolygonWKT(map)
+  // mpwkt = new LeafletMultiPolygonWKT(map)
 
 }
 
@@ -724,7 +715,7 @@ const editLand = (land: Land) => {
 }
 
 const saveLand = async () => {
-  const wkt = (mpwkt as any).toWKT()
+  // const wkt = (mpwkt as any).toWKT()
   var uploadData = {
     "kode_lahan": formData.value.code,
     "nama_lokasi": formData.value.locationName,
@@ -732,7 +723,7 @@ const saveLand = async () => {
     "status": formData.value.certificate,
     "no_sertif": formData.value.certificateNo,
     "id_project": projectId,
-    "geom": wkt
+    "geom": uploadWKT
   }
   const res = await axios.post(
     apiUrl + '/LandInventory/',
@@ -764,7 +755,7 @@ const saveLand = async () => {
   }
   await fetchProjects()
   closeLandModal()
-
+  map.value.removeLayer(inputLayer.value)
 
   if (showMap.value) {
     initLandMap()
@@ -807,7 +798,7 @@ const openLandModal = () => {
           if (!map) {
             initMap()
           } else {
-            map.invalidateSize()
+            map.value.invalidateSize()
           }
         },
         { once: true } // penting: jangan dobel
@@ -841,7 +832,7 @@ onMounted(() => {
   if (showMap.value) {
     nextTick(() => {
       initLandMap()
-      initMap()
+      // initMap()
     })
   }
 })
@@ -871,6 +862,23 @@ watch([selectedCategory, selectedCertificate], ([cat, cert]) => {
     })
   }
 })
+async function onFile(e) {
+  const file = e.target.files[0]
+  // console.log(map)
+  if (!file) return
+  const ext = file.name.split(".").slice(-1)[0].toLowerCase()
+  
+  if(ext=="zip"){
+    const buffer = await file.arrayBuffer()
+    geojson.value = await shp(buffer)
+    console.log(geojson.value.features[0])
+    inputLayer.value = new L.GeoJSON(geojson.value.features[0].geometry).addTo(map.value)
+    uploadWKT.value = geojsonToWKT(geojson.value.features[0].geometry)
+  }
+  const bounds = inputLayer.value.getBounds()
+  map.value.fitBounds(bounds)
+  // console.log(geojson.value)
+}
 </script>
 
 <style scoped>

@@ -43,6 +43,7 @@
               <th>Nama table</th>
               <th>Link WMS</th>
               <th>Legenda</th>
+              <th>Aksi</th>
             </tr>
           </thead>
           <tbody>
@@ -59,6 +60,11 @@
               </td>
               <td>
                 <img :src="`${gsUrl}/vector_valemis/wms?REQUEST=GetLegendGraphic&VERSION=1.0.0&FORMAT=image/png&WIDTH=20&HEIGHT=20&LAYER=vector_valemis:${row.tbl_name}&STYLE=${row.style}`"/>
+              </td>
+              <td>
+                <button class="btn btn-sm btn-error bg-error me-2" id="addBtn" v-on:click="removeLayer(row.tbl_name)">
+                  <i class="bi bi-trash"></i>
+                </button>
               </td>
               <!-- <td>{{ row.jumlah_fitur }}</td>
               <td>{{ row.luas_m2 }}</td>
@@ -165,6 +171,8 @@ const selectedLayer = ref<any>([])
 const selectedOptions = ref<any>(null)
 const analyzeData = ref<any>(null)
 const analyzeDataGeom = ref<any>(null)
+const activeLayers = {};
+let layerGroup
 let mpwkt
 // const 
 const fileSelected = computed(() => file.value !== null)
@@ -182,7 +190,9 @@ function handleFile(e: Event) {
   file.value = target.files?.[0] || null
   console.log(file.value)
 }
+function deleteLayer(){
 
+}
 function initMap() {
   map.value = L.map("map").setView([-2, 118], 5)
   if (map.value) {
@@ -199,7 +209,7 @@ function initMap() {
       })
     }
   })
-  
+  layerGroup = L.layerGroup([]).addTo(map.value);
 }
 
 // function clearLayers() {
@@ -268,25 +278,42 @@ function selectLayer(e){
   selectedOptions.value = e.value
   console.log(selectedOptions.value)
 }
-function addLayer(nama_map:any){
-  const modal = document.getElementById("modal");
-  if (modal) {
-    modal.style.display = "none";
-  }
-  if (selectedOptions.value!=""){
-    selectedLayer.value.push(selectedOptions.value)
-  }
+function addLayer() {
+  if (!selectedOptions.value) return;
 
-  L.tileLayer.wms(
-    gsUrl+"/vector_valemis/wms",
-    {
-      layers: "vector_valemis:"+selectedOptions.value.tbl_name,
-      format: "image/png",
-      transparent: true,
-      styles:selectedOptions.value.style,
-      version: "1.1.0"
-    }
-  ).addTo(map.value as any);
+  const key = selectedOptions.value.tbl_name;
+
+  // kalau sudah ada → jangan tambah dua kali
+  if (activeLayers[key]) return;
+
+  const layer = L.tileLayer.wms(gsUrl + "/vector_valemis/wms", {
+    layers: "vector_valemis:" + key,
+    format: "image/png",
+    transparent: true,
+    styles: selectedOptions.value.style,
+    version: "1.1.0",
+  });
+
+  layer.addTo(layerGroup);
+
+  activeLayers[key] = layer;
+
+  selectedLayer.value.push(selectedOptions.value);
+  modal.style.display="none"
+  // console.log(selectedLayer.value)
+}
+
+function removeLayer(key) {
+  const layer = activeLayers[key];
+  console.log(activeLayers,layer)
+  if (!layer) return;
+
+  layerGroup.removeLayer(layer);
+  delete activeLayers[key];
+
+  // hapus dari list selected
+  selectedLayer.value = selectedLayer.value.filter(k => k.tbl_name !== key);
+  console.log(selectedLayer)
 }
 
 

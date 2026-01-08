@@ -81,23 +81,25 @@
                     </span>
                   </td>
                   <td>
-                    <input v-if="parcel.status !== 'Bebas'" type="number" class="form-control form-control-sm"
+                    <!-- <input v-if="parcel.status !== 'Bebas'" type="number" class="form-control form-control-sm"
                       v-model="parcel.jumlah_bebas" @change="updatejumlah_bebas(parcel)" min="0" :max="parcel.luas"
                       style="width: 100px;" />
-                    <span v-else class="text-success"><strong>{{ parcel.jumlah_bebas }} m²</strong></span>
+                    <span v-else class="text-success"><strong>{{ parcel.jumlah_bebas }} m²</strong></span> -->
+                    <span class="text-success"><strong>{{ parcel.jumlah_bebas }}</strong></span>
                   </td>
                   <td style="white-space: nowrap;">
-                    <input v-if="parcel.status !== 'Bebas'" type="text" class="form-control form-control-sm"
+                    <!-- <input v-if="parcel.status !== 'Bebas'" type="text" class="form-control form-control-sm"
                       v-model="parcel.biaya_pembebasan" @blur="formatBiaya(parcel)" style="width: 150px;" />
                     <span v-else class="text-success"><strong>{{ formatRupiah(parcel.biaya_pembebasan)
-                        }}</strong></span>
+                        }}</strong></span> -->
+                      <span class="text-success"><strong>{{ parcel.biaya_pembebasan }}</strong></span>
                   </td>
                   <td><small>{{ parcel.tanggal_negosiasi }}</small></td>
                   <td class="text-center row" style="white-space: nowrap;">
                     <div class="btn-group col-md-6" role="group">
-                      <button class="btn btn-sm btn-success" @click="markAsBebas(parcel.id_parcel)" v-if="parcel.status !== 'Bebas'" title="Mark as Bebas">
+                      <!-- <button class="btn btn-sm btn-success" @click="markAsBebas(parcel.id_parcel)" v-if="parcel.status !== 'Bebas'" title="Mark as Bebas">
                         <i class="bi bi-check-circle"></i>
-                      </button>
+                      </button> -->
                       <button class="btn btn-sm btn-warning" @click="editParcelModal(parcel)" title="Edit">
                         <i class="bi bi-pencil-square"></i>
                       </button>
@@ -190,7 +192,7 @@
                 </div>
               </div>
               <div id="map-modal" style="height: 400px;width:100%;margin-bottom: 1rem;"></div>
-              <input type="file" accept=".geojson" @change="handleGeoJsonUpload" />
+              <!-- <input type="file" accept=".zip" @change="onFile($event, modalMap)" /> -->
               <!-- <p></p> -->
               <div class="d-flex justify-content-end gap-2">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
@@ -268,9 +270,11 @@ import 'bootstrap/dist/js/bootstrap.bundle.min.js'
 import "../utils/drawMap.js"
 import router from '../router/index.js'
 import wellknown from "wellknown"
+import shp from "shpjs"
 import { useRoute } from 'vue-router'
 import { addWms } from "../utils/addWms.js"
 import { acquisitionApi } from '../api'
+import { geojsonToWKT } from "@terraformer/wkt"
 const route = useRoute()
 const projectId = route.params.id_project
 const uploadGeometry = null
@@ -280,16 +284,16 @@ const gsUrl = import.meta.env.VITE_APP_API_GS_URL
 
 let mpwkt
 let map = null
-let modalMap = null
+let modalMap = ref(null)
+let inputLayer
 let isEditMode = false
 let acquisitionParcel = ref([])
-let acquisitionParcelCompute = ref([])
 let parcelModalRef = ref(null)
 let parcelModalInstance = null
 const acquisition = ref([])
 const projects = ref([])
-let uploadedGeojson = null
-let selectedGeometry = null
+let uploadWKT = ref(null)
+const  geojson = ref(null)
 const selectedPersil = ref(null)
 let historyModalRef = ref(null)
 let historyModalInstance = ref(null)
@@ -458,31 +462,16 @@ const formatRupiah = (value) => {
 }
 
 
-const markAsBebas = async (parcelId) => {
-  // console.log(parcel)
-  const parcel = acquisitionParcel.value.find(
-    p => p.id_parcel === parcelId
-  )
-  if (!parcel) return
-
-
-  if (parcel.jumlah_bebas === 0 || parcel.biaya_pembebasan === 0) {
-    alert('Mohon isi Jumlah Bebas dan Biaya Pembebasan terlebih dahulu')
-    return
-  }
-
-  if (confirm(`Tandai parcel ${parcel.kode_parcel} sebagai Bebas?`)) {
-    parcel.status = 'Bebas'
-    parcel.negotiationDate = new Date().toISOString().split('T')[0] || '-'
-    alert('Status berhasil diupdate menjadi Bebas. Negosiasi telah di-clear.')
-  }
-  console.log(parcel)
-  await axios.put(apiUrl + '/LandAcquisition/' + parcelId + '/', parcel)
-}
 
 async function saveParcel() {
   const wkt = mpwkt.toWKT()
-  console.log(formData)
+  console.log(formData,wkt)
+  let geom
+  console.log(uploadWKT.value)
+  if (uploadWKT.value!=null){
+    console.log(uploadWKT.value)
+    uploadWKT.value
+  }
   const payload = {
     id_project: projectId,
     kode_parcel: formData.value.kode_parcel,
@@ -493,7 +482,9 @@ async function saveParcel() {
     jumlah_bebas: formData.value.jumlah_bebas,
     biaya_pembebasan: formData.value.biaya_pembebasan,
     geom: wkt == null ? acquisition.value.geom : wkt
+    // geom:uploadWKT.value
   }
+  modalMap.value.removeLayer(inputLayer)
   // console.log(payload,isEditMode)
   if (isEditMode) {
     // UPDATE
@@ -685,20 +676,20 @@ function getFeatureInfoUrl(map, layer, latlng, params) {
   );
 }
 async function initMap() {
-  modalMap = L.map("map-modal").setView([-2, 118], 5)
+  modalMap.value = L.map("map-modal").setView([-2, 118], 5)
 
   L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png")
-    .addTo(modalMap)
+    .addTo(modalMap.value)
 
-  modalMap.pm.addControls({
+  modalMap.value.pm.addControls({
     position: 'topleft',
     drawCircleMarker: false,
     rotateMode: false,
   })
 
   // watch()
-  mpwkt = new LeafletMultiPolygonWKT(modalMap)
-  await addWms(modalMap, projectId)
+  mpwkt = new LeafletMultiPolygonWKT(modalMap.value)
+  await addWms(modalMap.value, projectId)
   const wmsLayerAcquisition = L.tileLayer.wms(
     gsUrl + "/vector_valemis/wms",
     {
@@ -712,67 +703,31 @@ async function initMap() {
       tiled: false
     }
   );
-  wmsLayerAcquisition.addTo(modalMap)
+  wmsLayerAcquisition.addTo(modalMap.value)
 }
-function handleGeoJsonUpload(event) {
-  const target = event.target
-  const file = target.files?.[0]
+async function onFile(e,map) {
+  const file = e.target.files[0]
+  // console.log(map)
   if (!file) return
-
-  const reader = new FileReader()
-
-  reader.onload = (e) => {
-    try {
-      const result = e.target?.result
-      if (typeof result !== 'string') {
-        console.error('Invalid result type')
-        return
-      }
-      uploadedGeojson = JSON.parse(result)
-      // console.log('Hasil JSON:', uploadedGeojson)
-
-
-      // 🔥 buat layer baru
-      var selectedLayer
-      var geojsonLayer = new L.GeoJSON(uploadedGeojson, {
-        style: {
-          color: '#3388ff',
-          weight: 2
-        },
-        onEachFeature: (feature, layer) => {
-          layer.on('click', () => {
-            // 🔥 reset highlight lama
-            if (selectedLayer) {
-              geojsonLayer.resetStyle(selectedLayer)
-            }
-
-            // 🔥 highlight layer baru
-            layer.setStyle({
-              color: 'yellow',
-              weight: 4
-            })
-
-            selectedLayer = layer
-
-            // 🔥 simpan geometry
-            selectedGeometry = feature.geometry
-
-            console.log('Selected geometry:', selectedGeometry)
-          })
-        }
-      })
-      if (map) {
-        geojsonLayer.addTo(map)
-        // 🔥 auto zoom ke data
-        map.fitBounds(geojsonLayer.getBounds())
-      }
-
-    } catch (err) {
-      console.error('JSON tidak valid:', err)
-    }
+  const ext = file.name.split(".").slice(-1)[0].toLowerCase()
+  if(ext=="zip"){
+    const buffer = await file.arrayBuffer()
+    geojson.value = await shp(buffer)
+    console.log(geojson.value.features[0])
+    inputLayer = new L.GeoJSON(geojson.value.features[0].geometry).addTo(modalMap.value)
+    uploadWKT.value = geojsonToWKT(geojson.value.features[0].geometry)
   }
-
-  reader.readAsText(file)
+  // else if (ext=="geojson"){
+  //   const buffer = await file.arrayBuffer()
+  //   const text = new TextDecoder("utf-8").decode(buffer)
+  //   geojson.value = JSON.parse(text)
+  //   inputLayer = new L.GeoJSON(geojson.value).addTo(modalMap.value)
+  //   uploadWKT.value = wellknown.stringify(JSON.stringify(geojson.value))
+  //   // console.log(uploadWKT.value)
+  // }
+  const bounds = inputLayer.getBounds()
+  modalMap.value.fitBounds(bounds)
+  // console.log(geojson.value)
 }
 </script>
 
