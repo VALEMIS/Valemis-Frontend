@@ -100,7 +100,7 @@ const formatNumber = (num: number) => {
 
 .summary-grid {
     display: grid;
-    grid-template-columns: repeat(2, 1fr);
+    grid-template-columns: repeat(5, 1fr);
     gap: 0.875rem;
 }
 
@@ -150,7 +150,7 @@ const formatNumber = (num: number) => {
 
 @media (max-width: 768px) {
     .summary-grid {
-        grid-template-columns: 1fr;
+        grid-template-columns: repeat(1, 1fr);
     }
 
     .summary-card {
