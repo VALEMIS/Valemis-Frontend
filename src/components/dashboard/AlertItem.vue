@@ -1,151 +1,137 @@
 <template>
-  <div
-    class="alert-item p-3 mb-2 border-round transition-all hover:bg-white hover:shadow-md cursor-pointer"
-    @click="handleClick"
-  >
-    <div class="flex justify-content-between align-items-start">
-      <!-- Left: Alert Content -->
-      <div class="flex-1">
-        <div class="flex align-items-center mb-1">
-          <Badge
-            v-if="alert.count"
-            :value="alert.count"
-            :severity="getSeverity(alert.severity)"
-            class="mr-2"
-          />
-          <span class="font-semibold text-sm">{{ alert.title }}</span>
-        </div>
-        <p class="text-500 text-sm m-0">{{ alert.message }}</p>
-
-        <!-- Timestamp (if exists) -->
-        <small v-if="alert.timestamp" class="text-400 block mt-1">
-          <i class="bi bi-clock mr-1"></i>
-          {{ formatTimestamp(alert.timestamp) }}
-        </small>
+  <div class="alert-item" :class="severityClass" @click="$emit('click', alert)">
+    <div class="alert-main">
+      <span class="severity-icon">{{ severityIcon }}</span>
+      <div class="alert-text">
+        <h6 class="alert-title">{{ alert.title }}</h6>
+        <p class="alert-description">{{ alert.description }}</p>
       </div>
-
-      <!-- Right: Actions -->
-      <div class="flex gap-2 ml-3">
-        <!-- Action Button -->
-        <Button
-          v-if="alert.actionLabel"
-          :label="alert.actionLabel"
-          size="small"
-          text
-          class="text-sm"
-          @click.stop="handleActionClick"
-        />
-
-        <!-- Dismiss Button -->
-        <Button
-          v-if="alert.dismissible"
-          icon="bi bi-x-lg"
-          severity="secondary"
-          text
-          rounded
-          size="small"
-          @click.stop="handleDismiss"
-        />
-      </div>
+    </div>
+    <div class="alert-right">
+      <span class="alert-time">{{ formattedTime }}</span>
+      <span v-if="alert.count" class="alert-count">{{ alert.count }} item</span>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { useRouter } from 'vue-router'
-import Button from 'primevue/button'
-import Badge from 'primevue/badge'
-import type { Alert } from '@/types/dashboard'
+import { computed } from 'vue'
 
-interface Props {
-  alert: Alert
-}
+const props = defineProps<{ alert: any }>()
 
-interface Emits {
-  (e: 'dismiss', id: number): void
-}
-
-const props = defineProps<Props>()
-const emit = defineEmits<Emits>()
-const router = useRouter()
-
-// Get PrimeVue severity from alert severity
-const getSeverity = (severity: string) => {
-  switch (severity) {
-    case 'critical':
-      return 'danger'
-    case 'warning':
-      return 'warning'
-    case 'info':
-      return 'info'
-    case 'monitoring':
-      return 'secondary'
-    default:
-      return 'info'
+const severityClass = computed(() => {
+  switch (props.alert.severity) {
+    case 'critical': return 'severity-critical'
+    case 'warning': return 'severity-warning'
+    case 'info': return 'severity-info'
+    default: return ''
   }
-}
+})
 
-// Format timestamp
-const formatTimestamp = (date: Date) => {
+const severityIcon = computed(() => {
+  switch (props.alert.severity) {
+    case 'critical': return '❗'
+    case 'warning': return '⚠️'
+    case 'info': return 'ℹ️'
+    default: return '•'
+  }
+})
+
+const formattedTime = computed(() => {
   const now = new Date()
-  const diff = now.getTime() - date.getTime()
-  const minutes = Math.floor(diff / 60000)
-  const hours = Math.floor(minutes / 60)
-  const days = Math.floor(hours / 24)
-
-  if (days > 0) {
-    return `${days} day${days > 1 ? 's' : ''} ago`
-  } else if (hours > 0) {
-    return `${hours} hour${hours > 1 ? 's' : ''} ago`
-  } else if (minutes > 0) {
-    return `${minutes} minute${minutes > 1 ? 's' : ''} ago`
-  }
-  return 'Just now'
-}
-
-// Handle alert click
-const handleClick = () => {
-  if (props.alert.actionRoute) {
-    router.push(props.alert.actionRoute)
-  }
-}
-
-// Handle action button click
-const handleActionClick = () => {
-  if (props.alert.actionRoute) {
-    router.push(props.alert.actionRoute)
-  }
-}
-
-// Handle dismiss
-const handleDismiss = () => {
-  emit('dismiss', props.alert.id)
-}
+  const diff = now.getTime() - new Date(props.alert.timestamp).getTime()
+  if (diff < 60000) return 'Baru saja'
+  if (diff < 3600000) return `${Math.floor(diff / 60000)} menit lalu`
+  if (diff < 86400000) return `${Math.floor(diff / 3600000)} jam lalu`
+  return `${Math.floor(diff / 86400000)} hari lalu`
+})
 </script>
 
 <style scoped>
 .alert-item {
-  background-color: var(--surface-ground);
-  border-left: 4px solid transparent;
+  display: flex;
+  flex-direction: row;
+  padding: 1rem;
+  border-radius: 12px;
+  background-color: #f9fafb;
+  border: 2px solid #e5e7eb;
+  cursor: pointer;
+  transition: all 0.3s ease;
 }
 
 .alert-item:hover {
-  border-left-color: var(--primary-color);
+  background-color: #f3f4f6;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 }
 
-.alert-item.critical {
-  border-left-color: var(--red-500);
+.alert-main {
+  display: flex;
+  flex-grow: 1;
+  gap: 0.5rem;
+  align-items: center;
 }
 
-.alert-item.warning {
-  border-left-color: var(--yellow-500);
+.severity-icon {
+  font-size: 1.25rem;
 }
 
-.alert-item.info {
-  border-left-color: var(--blue-500);
+.alert-text {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
 }
 
-.alert-item.monitoring {
-  border-left-color: var(--surface-500);
+.alert-title {
+  margin: 0;
+  font-weight: 700;
+  font-size: 0.9375rem;
+  color: #111827;
+}
+
+.alert-description {
+  margin: 0;
+  font-size: 0.8125rem;
+  color: #6b7280;
+}
+
+.alert-right {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.75rem;
+  color: #9ca3af;
+}
+
+.alert-count {
+  background-color: #ffffff;
+  padding: 0.25rem 0.625rem;
+  border-radius: 8px;
+  border: 2px solid;
+  border-color: #898ebc;
+  font-weight: 600;
+  color: #374151;
+}
+
+/* Severity Colors */
+.severity-critical {
+  border-left: 4px solid #ef4444;
+}
+
+.severity-warning {
+  border-left: 4px solid #f59e0b;
+}
+
+.severity-info {
+  border-left: 4px solid #3b82f6;
+}
+
+@media (max-width: 768px) {
+  .alert-right {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.25rem;
+  }
 }
 </style>

@@ -20,7 +20,7 @@
         </div>
       </div>
     </div>
-    <div class="container-fluid">      
+    <div class="container-fluid" id="mapContainer">
       <div class="card">
         <div class="card-header">
           <h5>Peta Project Vale</h5>
@@ -30,8 +30,8 @@
         </div>
       </div>
     </div>
-    
-    
+
+
     <!-- Content -->
     <div class="container-fluid mt-3">
       <div class="card">
@@ -44,48 +44,58 @@
 
 
         <div class="card-body">
-          <table class="table table-bordered table-striped">
-            <thead>
-              <tr>
-                <th>#</th>
-                <th>Nama Project</th>
-                <th>Owner</th>
-                <th>Tanggal Dibuat</th>
-                <th>Aksi</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr v-if="projects.length === 0">
-                <td colspan="4" class="text-center text-muted">
-                  No data
-                </td>
-              </tr>
+          <div class="projects-container">
+            <div v-if="projects.length === 0" class="no-data">
+              No projects available
+            </div>
 
-              <tr v-for="(item, index) in projects" :key="item.id_project">
-                <td>{{ index+1 }}</td>
-                <td>{{ item.nama_project }}</td>
-                <td>{{ item.owner_project }}</td>
-                <td>{{ item.tanggal_dibuat }}</td>
-                <td>
-                    <div class="btn-group" role="group">
-                        <button class="btn btn-sm btn-warning" @click="router.push(`/project/${item.id_project}`)"  title="Open Project">
-                            <i class="bi bi-arrow-right"></i>
-                        </button>
-                        <button class="btn btn-sm btn-danger" @click="deleteProject(item.id_project)" title="Hapus parcel">
-                          <i class="bi bi-trash"></i>
-                        </button>
-                    </div>
-                </td>
-              </tr>
-            </tbody>
-          </table>
+            <div class="project-cards">
+              <div v-for="(item, index) in projects" :key="item.id_project" class="project-card">
+                <!-- Header -->
+                <div class="card-header">
+                  <h3 class="project-title">{{ item.nama_project }}</h3>
+                  <span class="project-owner">Owner: {{ item.owner_project }}</span>
+                  <span class="project-date">Tanggal Dibuat: {{ item.tanggal_dibuat }}</span>
+                  <!-- TODO: Luas -->
+                  <span class="project-luas">Luas: {{ item.luas ?? "150" }} ha</span>
+                </div>
+
+                <!-- Stats / info badges -->
+                <!-- TODO: Status Lahan -->
+                <div class="card-info">
+                  <span class="info-badge">Lahan Bebas: {{ item.lahan_bebas ?? 0 }}</span>
+                  <span class="info-badge">Proses: {{ item.proses ?? 0 }}</span>
+                  <span class="info-badge">Negosiasi: {{ item.negosiasi ?? 0 }}</span>
+                  <span class="info-badge">Sengketa: {{ item.sengketa ?? 0 }}</span>
+                </div>
+
+                <!-- Footer -->
+                <div class="card-footer">
+                  <div class="card-qty">
+                    <!-- <span class="qty-badge">{{ item.project_details.length }} item</span> -->
+                  </div>
+                  <div class="card-actions">
+                    <button class="btn btn-primary" @click="router.push(`/project/${item.id_project}`)">
+                      <i class="bi bi-arrow-right"></i> Open
+                    </button>
+                    <button class="btn btn-secondary" @click="viewMap(item.geom)">
+                      <i class="bi bi-map"></i> View Map
+                    </button>
+                    <button class="btn btn-danger" @click="deleteProject(item.id_project)">
+                      <i class="bi bi-trash"></i> Delete
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     </div>
 
     <!-- Modal -->
     <div class="modal fade" ref="modalRef" tabindex="-1">
-      <div class="modal-dialog" >
+      <div class="modal-dialog">
         <form class="modal-content" @submit.prevent="submitProject">
           <div class="modal-header">
             <h5 class="modal-title">Add Project</h5>
@@ -95,25 +105,16 @@
           <div class="modal-body grid grid-cols-3">
             <div class="mb-3">
               <label class="form-label">Nama Project</label>
-              <input
-                v-model="form.nama_project"
-                type="text"
-                class="form-control"
-                required
-              />
+              <input v-model="form.nama_project" type="text" class="form-control" required />
             </div>
 
             <div class="mb-3">
               <label class="form-label">Owner Project</label>
-              <input
-                v-model="form.owner_project"
-                type="text"
-                class="form-control"
-              />
+              <input v-model="form.owner_project" type="text" class="form-control" />
             </div>
             <div id="map" style="width: 100%;height: 250px;"></div>
           </div>
-          
+
           <div class="modal-footer">
             <button type="button" class="btn btn-secondary" @click="closeModal">
               Cancel
@@ -129,7 +130,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted,watch } from 'vue'
+import { ref, onMounted, watch } from 'vue'
 import axios from 'axios'
 import { Modal } from 'bootstrap'
 import L from 'leaflet'
@@ -158,12 +159,12 @@ const form = ref({
 })
 
 const fetchProjects = async () => {
-  const res = await axios.get(apiUrl+'/Project/?format=json')
+  const res = await axios.get(apiUrl + '/Project/?format=json')
   projects.value = res.data
 }
 
 const openModal = () => {
-modalRef.value.addEventListener(
+  modalRef.value.addEventListener(
     'shown.bs.modal',
     () => {
       if (!map) {
@@ -174,7 +175,7 @@ modalRef.value.addEventListener(
     },
     { once: true } // penting: jangan dobel
   )
-    // initMap()
+  // initMap()
   modalInstance.show()
 }
 
@@ -183,20 +184,20 @@ const closeModal = () => {
 }
 
 async function deleteProject(projectId) {
-  await axios.delete(apiUrl+`/Project/${projectId}/`)
+  await axios.delete(apiUrl + `/Project/${projectId}/`)
 }
 
 const submitProject = async () => {
   const wkt = mpwkt.toWKT()
   form.value.geom = wkt
-  await axios.post(apiUrl+'/Project/?format=json', form.value)
+  await axios.post(apiUrl + '/Project/?format=json', form.value)
 
   // reset form
   form.value = {
     "nama_project": "",
     "owner_project": "",
-    }
-    // console.log(form.value)
+  }
+  // console.log(form.value)
   closeModal()
   fetchProjects()
 }
@@ -239,17 +240,17 @@ function initProjectMap(){
 
   L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png")
     .addTo(projectMap)
-    let geojsonLayerProject
+  let geojsonLayerProject
   // if (lands.value.length>0) 
   // console.log(projects.value.id_persil.geom)
   // console.log(projects.value)
   L.tileLayer.wms(
-    geoserverUrl+"/vector_valemis/wms",
+    geoserverUrl + "/vector_valemis/wms",
     {
       layers: "	vector_valemis:tbl_project",
       format: "image/png",
       transparent: true,
-      styles:"sld_projek",
+      styles: "sld_projek",
       version: "1.1.0"
     }
   ).addTo(projectMap)
@@ -297,6 +298,21 @@ function initProjectMap(){
   // })
 }
 
+function viewMap(geom) {
+  const wkt = geom
+
+  const wktClean = wkt.replace(/^SRID=\d+;/, '')
+
+  const geojson = wellknown.parse(wktClean)
+
+  const layer = L.geoJSON(geojson);
+  projectMap.flyToBounds(layer.getBounds());
+
+  // scroll to id
+  const el = document.getElementById('mapContainer')
+  el.scrollIntoView({ behavior: 'smooth' })
+}
+
 
 onMounted(async () => {
   modalInstance = new Modal(modalRef.value)
@@ -304,3 +320,158 @@ onMounted(async () => {
   initProjectMap()
 })
 </script>
+
+<style scoped>
+.projects-container {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.no-data {
+  text-align: center;
+  color: #6b7280;
+  font-style: italic;
+}
+
+.project-cards {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1rem;
+}
+
+.project-card {
+  display: flex;
+  flex-direction: column;
+  background-color: #ffffff;
+  border-radius: 12px;
+  padding: 1rem;
+  border: 1px solid #e5e7eb;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.1);
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.project-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.card-header {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  margin-bottom: 0.75rem;
+}
+
+.project-title {
+  font-size: 1.125rem;
+  font-weight: 700;
+  color: #111827;
+}
+
+.project-owner,
+.project-date,
+.project-luas {
+  font-size: 0.875rem;
+  color: #6b7280;
+}
+
+.card-info {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-bottom: 0.75rem;
+}
+
+.info-badge {
+  background-color: #e5e7eb;
+  color: #111827;
+  padding: 0.25rem 0.5rem;
+  border-radius: 8px;
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+
+.card-chart {
+  margin-bottom: 0.75rem;
+}
+
+.card-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 0.5rem;
+  margin-top: auto;
+}
+
+.card-qty {
+  display: flex;
+  flex-grow: 1;
+  align-items: center;
+}
+
+.qty-badge {
+  padding: 0.25rem 0.5rem;
+  background-color: #3b82f6;
+  color: white;
+  font-size: 0.75rem;
+  font-weight: 600;
+  border-radius: 8px;
+}
+
+.card-actions {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.btn {
+  padding: 0.375rem 0.75rem;
+  border-radius: 8px;
+  font-size: 0.875rem;
+  font-weight: 600;
+  cursor: pointer;
+  border: none;
+  transition: all 0.2s;
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+.btn-primary {
+  background-color: #3b82f6;
+  color: #fff;
+}
+
+.btn-primary:hover {
+  background-color: #2563eb;
+}
+
+.btn-secondary {
+  background-color: #6b7280;
+  color: #fff;
+}
+
+.btn-secondary:hover {
+  background-color: #4b5563;
+}
+
+.btn-danger {
+  background-color: #ef4444;
+  color: #fff;
+}
+
+.btn-danger:hover {
+  background-color: #b91c1c;
+}
+
+@media (max-width: 768px) {
+  .project-cards {
+    grid-template-columns: 1fr;
+  }
+
+  .card-footer {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+}
+</style>

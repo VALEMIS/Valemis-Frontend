@@ -9,25 +9,25 @@
           <div class="map-area flex-1">
             <div id="dashboard-map" class="map-container" ref="mapContainer"></div>
 
-            <!-- Map Loading -->
-            <div v-if="loading" class="map-loading-overlay">
-              <ProgressSpinner strokeWidth="3" />
-              <span class="block mt-2 text-sm">Loading map data...</span>
-            </div>
-
-
+          <!-- Map Loading -->
+          <div v-if="loading" class="map-loading-overlay">
+            <ProgressSpinner strokeWidth="3" />
+            <span class="block mt-2 text-sm">Loading map data...</span>
           </div>
+
+
         </div>
       </div>
     </div>
-    <!-- </template> -->
-
-    <!-- Fullscreen Dialog -->
-    <Dialog v-model:visible="fullscreenVisible" :style="{ width: '95vw', height: '90vh' }" :modal="true"
-      :showHeader="false">
-      <div id="dashboard-map-fullscreen" class="map-container-fullscreen"></div>
-    </Dialog>
   </div>
+  </div>
+  <!-- </template> -->
+
+  <!-- Fullscreen Dialog -->
+  <Dialog v-model:visible="fullscreenVisible" :style="{ width: '95vw', height: '90vh' }" :modal="true"
+    :showHeader="false">
+    <div id="dashboard-map-fullscreen" class="map-container-fullscreen"></div>
+  </Dialog>
 </template>
 
 <script setup lang="ts">
@@ -308,10 +308,6 @@ const handleExportMap = () => {
 </script>
 
 <style scoped>
-.unified-land-map {
-  margin-bottom: 2.5rem;
-}
-
 .map-card {
   overflow: hidden;
   background-color: white;
