@@ -1,5 +1,5 @@
 <template>
-    <div class="urgent-alerts-section">
+    <div class="urgent-alerts">
         <!-- Section Header -->
         <div class="section-header">
             <div class="header-text">
@@ -8,51 +8,54 @@
             </div>
         </div>
 
-        <!-- Alerts List -->
-        <div class="alerts-list">
-            <!-- Legal / Compliance Alerts -->
-            <div class="alert-category-section">
-                <h5 class="category-title">Legal / Compliance</h5>
-                <div v-for="alert in legalAlerts" :key="alert.id" class="alert-item"
-                    :class="`severity-${alert.severity}`" @click="handleAlertClick(alert)">
-                    <div class="alert-content">
-                        <h6 class="alert-title">{{ alert.title }}</h6>
-                        <p class="alert-description">{{ alert.description }}</p>
-                        <div class="alert-footer">
-                            <span v-if="alert.count" class="alert-count">{{ alert.count }} item</span>
-                            <span class="alert-time">{{ formatTime(alert.timestamp) }}</span>
+        <!-- Alerts Container -->
+        <div class="urgent-alerts-section">
+            <!-- Alerts List -->
+            <div class="alerts-list">
+                <!-- Legal / Compliance Alerts -->
+                <div class="alert-category-section">
+                    <h5 class="category-title">Legal / Compliance</h5>
+                    <div v-for="alert in legalAlerts" :key="alert.id" class="alert-item"
+                        :class="`severity-${alert.severity}`" @click="handleAlertClick(alert)">
+                        <div class="alert-content">
+                            <h6 class="alert-title">{{ alert.title }}</h6>
+                            <p class="alert-description">{{ alert.description }}</p>
+                            <div class="alert-footer">
+                                <span v-if="alert.count" class="alert-count">{{ alert.count }} item</span>
+                                <span class="alert-time">{{ formatTime(alert.timestamp) }}</span>
+                            </div>
                         </div>
                     </div>
                 </div>
-            </div>
 
-            <!-- Operasional Alerts -->
-            <div class="alert-category-section">
-                <h5 class="category-title">Operasional</h5>
-                <div v-for="alert in operationalAlerts" :key="alert.id" class="alert-item"
-                    :class="`severity-${alert.severity}`" @click="handleAlertClick(alert)">
-                    <div class="alert-content">
-                        <h6 class="alert-title">{{ alert.title }}</h6>
-                        <p class="alert-description">{{ alert.description }}</p>
-                        <div class="alert-footer">
-                            <span v-if="alert.count" class="alert-count">{{ alert.count }} item</span>
-                            <span class="alert-time">{{ formatTime(alert.timestamp) }}</span>
+                <!-- Operasional Alerts -->
+                <div class="alert-category-section">
+                    <h5 class="category-title">Operasional</h5>
+                    <div v-for="alert in operationalAlerts" :key="alert.id" class="alert-item"
+                        :class="`severity-${alert.severity}`" @click="handleAlertClick(alert)">
+                        <div class="alert-content">
+                            <h6 class="alert-title">{{ alert.title }}</h6>
+                            <p class="alert-description">{{ alert.description }}</p>
+                            <div class="alert-footer">
+                                <span v-if="alert.count" class="alert-count">{{ alert.count }} item</span>
+                                <span class="alert-time">{{ formatTime(alert.timestamp) }}</span>
+                            </div>
                         </div>
                     </div>
                 </div>
-            </div>
 
-            <!-- Sosial Alerts -->
-            <div class="alert-category-section">
-                <h5 class="category-title">Sosial</h5>
-                <div v-for="alert in socialAlerts" :key="alert.id" class="alert-item"
-                    :class="`severity-${alert.severity}`" @click="handleAlertClick(alert)">
-                    <div class="alert-content">
-                        <h6 class="alert-title">{{ alert.title }}</h6>
-                        <p class="alert-description">{{ alert.description }}</p>
-                        <div class="alert-footer">
-                            <span v-if="alert.count" class="alert-count">{{ alert.count }} item</span>
-                            <span class="alert-time">{{ formatTime(alert.timestamp) }}</span>
+                <!-- Sosial Alerts -->
+                <div class="alert-category-section">
+                    <h5 class="category-title">Sosial</h5>
+                    <div v-for="alert in socialAlerts" :key="alert.id" class="alert-item"
+                        :class="`severity-${alert.severity}`" @click="handleAlertClick(alert)">
+                        <div class="alert-content">
+                            <h6 class="alert-title">{{ alert.title }}</h6>
+                            <p class="alert-description">{{ alert.description }}</p>
+                            <div class="alert-footer">
+                                <span v-if="alert.count" class="alert-count">{{ alert.count }} item</span>
+                                <span class="alert-time">{{ formatTime(alert.timestamp) }}</span>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -90,18 +93,15 @@ const handleAlertClick = (alert: any) => {
 </script>
 
 <style scoped>
-.urgent-alerts-section {
-    background: white;
-    border-radius: 16px;
-    padding: 1.5rem;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-    border: 2px solid #e5e7eb;
+.urgent-alerts {
+    margin-bottom: 0;
 }
 
 .section-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
     margin-bottom: 1.5rem;
-    padding-bottom: 1rem;
-    border-bottom: 2px solid #f3f4f6;
 }
 
 .header-text {
@@ -119,6 +119,14 @@ const handleAlertClick = (alert: any) => {
     font-size: 0.875rem;
     color: #6b7280;
     margin: 0;
+}
+
+.urgent-alerts-section {
+    background: white;
+    border-radius: 16px;
+    padding: 1.5rem;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    border: 2px solid #e5e7eb;
 }
 
 .alerts-list {
