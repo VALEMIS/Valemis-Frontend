@@ -963,8 +963,8 @@ function handleGeoJsonUpload(event: Event) {
 }
 const exportData = async () => {
   try {
-    await acquisitionApi.exportCsv()
-    alert('Data berhasil didownload dalam format CSV!')
+    await acquisitionApi.exportExcel()
+    alert('Data berhasil didownload dalam format Excel!')
   } catch (err) {
     alert('Gagal mendownload data: ' + (err instanceof Error ? err.message : 'Unknown error'))
     console.error('Export error:', err)

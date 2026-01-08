@@ -44,7 +44,8 @@
                   </div>
                   <div class="col-6">
                     <small class="text-muted">Biaya</small>
-                    <p class="mb-0" style="white-space: nowrap; overflow: visible;"><strong style="font-size: 0.9rem;">{{ formatRupiah(project.totalCost) }}</strong></p>
+                    <p class="mb-0" style="white-space: nowrap; overflow: visible;"><strong
+                        style="font-size: 0.9rem;">{{ formatRupiah(project.totalCost) }}</strong></p>
                   </div>
                 </div>
                 <button class="btn btn-sm btn-outline-primary mt-2 w-100" @click="filterByProject(project.name || '')">
@@ -91,32 +92,38 @@
                 </div>
               </div>
               <div class="card-body">
-                <div id="acquisition-map" ref="acquisitionMapContainer" style="height: 600px; border-radius: 8px;"></div>
-                
+                <div id="acquisition-map" ref="acquisitionMapContainer" style="height: 600px; border-radius: 8px;">
+                </div>
+
                 <!-- Legend -->
                 <div class="mt-3 p-3 bg-light rounded">
                   <h6><strong>Legend:</strong></h6>
                   <div class="row">
                     <div class="col-md-3 mb-2">
-                      <span style="display: inline-block; width: 20px; height: 20px; background: rgba(13, 110, 253, 0.05); border: 2px dashed #0d6efd;"></span>
+                      <span
+                        style="display: inline-block; width: 20px; height: 20px; background: rgba(13, 110, 253, 0.05); border: 2px dashed #0d6efd;"></span>
                       <small class="ms-2">IUPK Valemis</small>
                     </div>
                     <div class="col-md-3 mb-2">
-                      <span style="display: inline-block; width: 20px; height: 20px; background: rgba(255, 193, 7, 0.3); border: 2px solid #ffc107;"></span>
+                      <span
+                        style="display: inline-block; width: 20px; height: 20px; background: rgba(255, 193, 7, 0.3); border: 2px solid #ffc107;"></span>
                       <small class="ms-2">Project Alpha</small>
                     </div>
                     <div class="col-md-3 mb-2">
-                      <span style="display: inline-block; width: 20px; height: 20px; background: rgba(13, 202, 240, 0.3); border: 2px solid #0dcaf0;"></span>
+                      <span
+                        style="display: inline-block; width: 20px; height: 20px; background: rgba(13, 202, 240, 0.3); border: 2px solid #0dcaf0;"></span>
                       <small class="ms-2">Project Beta</small>
                     </div>
                     <div class="col-md-3 mb-2">
-                      <span style="display: inline-block; width: 20px; height: 20px; background: rgba(25, 135, 84, 0.3); border: 2px solid #198754;"></span>
+                      <span
+                        style="display: inline-block; width: 20px; height: 20px; background: rgba(25, 135, 84, 0.3); border: 2px solid #198754;"></span>
                       <small class="ms-2">Project Gamma</small>
                     </div>
                   </div>
                   <div class="row mt-2">
                     <div class="col-md-12">
-                      <span style="display: inline-block; width: 20px; height: 20px; background: rgba(220, 53, 69, 0.1); border: 2px solid #dc3545;"></span>
+                      <span
+                        style="display: inline-block; width: 20px; height: 20px; background: rgba(220, 53, 69, 0.1); border: 2px solid #dc3545;"></span>
                       <small class="ms-2">Batas Desa</small>
                     </div>
                   </div>
@@ -222,33 +229,22 @@
                         </span>
                       </td>
                       <td>
-                        <input 
-                          v-if="parcel.status !== 'Bebas'" 
-                          type="number" 
-                          class="form-control form-control-sm" 
-                          v-model="parcel.jumlahBebas"
-                          @change="updateJumlahBebas(parcel)"
-                          min="0"
-                          :max="parcel.area"
-                          style="width: 100px;"
-                        />
+                        <input v-if="parcel.status !== 'Bebas'" type="number" class="form-control form-control-sm"
+                          v-model="parcel.jumlahBebas" @change="updateJumlahBebas(parcel)" min="0" :max="parcel.area"
+                          style="width: 100px;" />
                         <span v-else class="text-success"><strong>{{ parcel.jumlahBebas }} m²</strong></span>
                       </td>
                       <td style="white-space: nowrap;">
-                        <input 
-                          v-if="parcel.status !== 'Bebas'" 
-                          type="text" 
-                          class="form-control form-control-sm" 
-                          v-model="parcel.biayaPembebasan"
-                          @blur="formatBiaya(parcel)"
-                          style="width: 150px;"
-                        />
-                        <span v-else class="text-success"><strong>{{ formatRupiah(parcel.biayaPembebasan) }}</strong></span>
+                        <input v-if="parcel.status !== 'Bebas'" type="text" class="form-control form-control-sm"
+                          v-model="parcel.biayaPembebasan" @blur="formatBiaya(parcel)" style="width: 150px;" />
+                        <span v-else class="text-success"><strong>{{ formatRupiah(parcel.biayaPembebasan)
+                            }}</strong></span>
                       </td>
                       <td><small>{{ parcel.negotiationDate }}</small></td>
                       <td class="text-center" style="white-space: nowrap;">
                         <div class="btn-group" role="group">
-                          <button class="btn btn-sm btn-success" @click="markAsBebas(parcel)" v-if="parcel.status !== 'Bebas'" title="Mark as Bebas">
+                          <button class="btn btn-sm btn-success" @click="markAsBebas(parcel)"
+                            v-if="parcel.status !== 'Bebas'" title="Mark as Bebas">
                             <i class="bi bi-check-circle"></i>
                           </button>
                           <button class="btn btn-sm btn-warning" @click="editParcel(parcel)" title="Edit">
@@ -264,10 +260,12 @@
                   <tfoot v-if="filteredParcels.length > 0">
                     <tr class="table-secondary">
                       <td colspan="5" class="text-end"><strong>Total:</strong></td>
-                      <td class="text-end" style="white-space: nowrap;"><strong>{{ totalArea.toLocaleString() }} m²</strong></td>
+                      <td class="text-end" style="white-space: nowrap;"><strong>{{ totalArea.toLocaleString() }}
+                          m²</strong></td>
                       <td class="text-center"><strong>-</strong></td>
                       <td class="text-center"><strong>-</strong></td>
-                      <td class="text-end" style="white-space: nowrap;"><strong>{{ formatRupiah(totalCost) }}</strong></td>
+                      <td class="text-end" style="white-space: nowrap;"><strong>{{ formatRupiah(totalCost) }}</strong>
+                      </td>
                       <td colspan="2"></td>
                     </tr>
                   </tfoot>
@@ -280,7 +278,8 @@
     </div>
 
     <!-- Add/Edit Parcel Modal -->
-    <div class="modal fade" id="parcelModal" tabindex="-1" aria-labelledby="parcelModalLabel" aria-hidden="true" ref="parcelModalRef">
+    <div class="modal fade" id="parcelModal" tabindex="-1" aria-labelledby="parcelModalLabel" aria-hidden="true"
+      ref="parcelModalRef">
       <div class="modal-dialog modal-lg">
         <div class="modal-content">
           <div class="modal-header">
@@ -294,21 +293,16 @@
               <div class="row">
                 <div class="col-md-6 mb-3">
                   <label class="form-label"><strong>Kode Parcel</strong> <span class="text-danger">*</span></label>
-                  <input 
-                    type="text" 
-                    class="form-control" 
-                    v-model="formData.code" 
-                    placeholder="Contoh: PCL-ALP-001"
-                    :disabled="isEditMode"
-                    required 
-                  />
+                  <input type="text" class="form-control" v-model="formData.code" placeholder="Contoh: PCL-ALP-001"
+                    :disabled="isEditMode" required />
                 </div>
                 <div class="col-md-6 mb-3">
                   <label class="form-label"><strong>Project</strong> <span class="text-danger">*</span></label>
                   <select class="form-select" v-model="formData.project" required>
                     <option value="">Pilih Project</option>
                     <option value="Project Alpha - Mining Expansion">Project Alpha - Mining Expansion</option>
-                    <option value="Project Beta - Infrastructure Development">Project Beta - Infrastructure Development</option>
+                    <option value="Project Beta - Infrastructure Development">Project Beta - Infrastructure Development
+                    </option>
                     <option value="Project Gamma - Road Access">Project Gamma - Road Access</option>
                   </select>
                 </div>
@@ -317,13 +311,8 @@
               <div class="row">
                 <div class="col-md-6 mb-3">
                   <label class="form-label"><strong>Nama Pemilik</strong> <span class="text-danger">*</span></label>
-                  <input 
-                    type="text" 
-                    class="form-control" 
-                    v-model="formData.ownerName" 
-                    placeholder="Nama lengkap pemilik lahan"
-                    required 
-                  />
+                  <input type="text" class="form-control" v-model="formData.ownerName"
+                    placeholder="Nama lengkap pemilik lahan" required />
                 </div>
                 <div class="col-md-6 mb-3">
                   <label class="form-label"><strong>Desa</strong> <span class="text-danger">*</span></label>
@@ -340,14 +329,8 @@
               <div class="row">
                 <div class="col-md-6 mb-3">
                   <label class="form-label"><strong>Luas Area (m²)</strong> <span class="text-danger">*</span></label>
-                  <input 
-                    type="number" 
-                    class="form-control" 
-                    v-model.number="formData.area" 
-                    placeholder="Contoh: 500"
-                    min="1"
-                    required 
-                  />
+                  <input type="number" class="form-control" v-model.number="formData.area" placeholder="Contoh: 500"
+                    min="1" required />
                 </div>
                 <div class="col-md-6 mb-3">
                   <label class="form-label"><strong>Status Negosiasi</strong> <span class="text-danger">*</span></label>
@@ -363,24 +346,13 @@
               <div class="row" v-if="formData.status === 'Bebas'">
                 <div class="col-md-6 mb-3">
                   <label class="form-label"><strong>Jumlah Bebas (m²)</strong></label>
-                  <input 
-                    type="number" 
-                    class="form-control" 
-                    v-model.number="formData.jumlahBebas" 
-                    placeholder="Luas yang sudah dibebaskan"
-                    min="0"
-                    :max="formData.area"
-                  />
+                  <input type="number" class="form-control" v-model.number="formData.jumlahBebas"
+                    placeholder="Luas yang sudah dibebaskan" min="0" :max="formData.area" />
                 </div>
                 <div class="col-md-6 mb-3">
                   <label class="form-label"><strong>Biaya Pembebasan (Rp)</strong></label>
-                  <input 
-                    type="number" 
-                    class="form-control" 
-                    v-model.number="formData.biayaPembebasan" 
-                    placeholder="Total biaya pembebasan"
-                    min="0"
-                  />
+                  <input type="number" class="form-control" v-model.number="formData.biayaPembebasan"
+                    placeholder="Total biaya pembebasan" min="0" />
                 </div>
               </div>
               <div id="map" style="height: 400px;width:100%;margin-bottom: 1rem;"></div>
@@ -394,7 +366,7 @@
                   <i class="bi bi-save"></i> {{ isEditMode ? 'Update' : 'Simpan' }}
                 </button>
               </div>
-              
+
             </form>
           </div>
         </div>
@@ -402,7 +374,8 @@
     </div>
 
     <!-- History Modal -->
-    <div class="modal fade" id="historyModal" tabindex="-1" aria-labelledby="historyModalLabel" aria-hidden="true" ref="historyModalRef">
+    <div class="modal fade" id="historyModal" tabindex="-1" aria-labelledby="historyModalLabel" aria-hidden="true"
+      ref="historyModalRef">
       <div class="modal-dialog modal-lg">
         <div class="modal-content">
           <div class="modal-header">
@@ -417,7 +390,8 @@
                 <strong>Parcel:</strong> {{ selectedParcel.code }}<br>
                 <strong>Pemilik:</strong> {{ selectedParcel.ownerName }}<br>
                 <strong>Project:</strong> {{ selectedParcel.project }}<br>
-                <strong>Status Saat Ini:</strong> <span class="badge" :class="getStatusClass(selectedParcel.status)">{{ selectedParcel.status }}</span>
+                <strong>Status Saat Ini:</strong> <span class="badge" :class="getStatusClass(selectedParcel.status)">{{
+                  selectedParcel.status }}</span>
               </div>
 
               <h6 class="mb-3"><strong>Timeline Negosiasi:</strong></h6>
@@ -433,7 +407,8 @@
                         <p class="text-muted mb-0"><small>2024-08-15 10:30</small></p>
                       </div>
                       <div class="timeline-body">
-                        <p class="mb-0">Parcel {{ selectedParcel.code }} ditambahkan ke sistem untuk project {{ selectedParcel.project }}</p>
+                        <p class="mb-0">Parcel {{ selectedParcel.code }} ditambahkan ke sistem untuk project {{
+                          selectedParcel.project }}</p>
                       </div>
                     </div>
                   </div>
@@ -450,7 +425,8 @@
                         <p class="text-muted mb-0"><small>2024-09-20 14:15</small></p>
                       </div>
                       <div class="timeline-body">
-                        <p class="mb-0">Proses negosiasi dengan pemilik lahan {{ selectedParcel.ownerName }} telah dimulai</p>
+                        <p class="mb-0">Proses negosiasi dengan pemilik lahan {{ selectedParcel.ownerName }} telah
+                          dimulai</p>
                       </div>
                     </div>
                   </div>
@@ -493,7 +469,8 @@ import L from 'leaflet'
 import 'leaflet/dist/leaflet.css'
 import "@geoman-io/leaflet-geoman-free";
 import "@geoman-io/leaflet-geoman-free/dist/leaflet-geoman.css";
-import { ref, computed,onMounted, onUnmounted, watch, nextTick } from 'vue'
+import { ref, computed, onMounted, onUnmounted, watch, nextTick } from 'vue'
+import * as XLSX from 'xlsx'
 
 interface Parcel {
   id: number
@@ -532,12 +509,12 @@ const parcelModalRef = ref<HTMLElement | null>(null)
 const projectModalRef = ref<HTMLElement | null>(null)
 const historyModalRef = ref<HTMLElement | null>(null)
 
-let selectedGeometry:any = null
+let selectedGeometry: any = null
 let parcelModalInstance: any = null
 let projectModalInstance: any = null
 let historyModalInstance: any = null
 let map: L.Map | null = null
-let  uploadedGeojson = null
+let uploadedGeojson = null
 
 // Map state
 const showMap = ref<boolean>(true)  // Default to show map first
@@ -564,17 +541,21 @@ const formDataProject = ref<FormDataProject>({
   project: '',
   ownerName: '',
 })
+
+// Parcels data
+const parcels = ref<Parcel[]>([])
+
 const filteredParcels = computed(() => {
   let result = parcels.value
-  
+
   if (selectedProject.value !== 'all') {
     result = result.filter(p => p.project === selectedProject.value)
   }
-  
+
   if (selectedStatus.value !== 'all') {
     result = result.filter(p => p.status === selectedStatus.value)
   }
-  
+
   return result
 })
 
@@ -602,7 +583,7 @@ const projectSummary = computed(() => {
     'Project Beta - Infrastructure Development',
     'Project Gamma - Road Access'
   ]
-  
+
   return projects.map(projectName => {
     const projectParcels = parcels.value.filter(p => p.project === projectName)
     const bebasParcels = projectParcels.filter(p => p.status === 'Bebas')
@@ -610,7 +591,7 @@ const projectSummary = computed(() => {
       const cost = typeof p.biayaPembebasan === 'number' ? p.biayaPembebasan : 0
       return sum + cost
     }, 0)
-    
+
     return {
       name: projectName.split(' - ')[0],
       fullName: projectName,
@@ -629,7 +610,7 @@ const filterData = () => {
 const filterByProject = (projectName: string) => {
   const fullProjectName = parcels.value.find(p => p.project.startsWith(projectName))?.project
   selectedProject.value = fullProjectName || projectName
-  
+
   // Show map with filtered project
   selectedMapProject.value = projectName
   showMap.value = true
@@ -684,7 +665,7 @@ const markAsBebas = (parcel: Parcel) => {
     alert('Mohon isi Jumlah Bebas dan Biaya Pembebasan terlebih dahulu')
     return
   }
-  
+
   if (confirm(`Tandai parcel ${parcel.code} sebagai Bebas?`)) {
     parcel.status = 'Bebas'
     parcel.negotiationDate = new Date().toISOString().split('T')[0] || '-'
@@ -755,12 +736,12 @@ const saveParcel = () => {
   } else {
     // Add new parcel
     const newId = Math.max(...parcels.value.map(p => p.id)) + 1
-    const projectPrefix = formData.value.project.includes('Alpha') ? 'ALP' : 
-                          formData.value.project.includes('Beta') ? 'BTA' : 'GMA'
+    const projectPrefix = formData.value.project.includes('Alpha') ? 'ALP' :
+      formData.value.project.includes('Beta') ? 'BTA' : 'GMA'
     const projectParcels = parcels.value.filter(p => p.code.includes(projectPrefix))
     const newNumber = String(projectParcels.length + 1).padStart(3, '0')
     const generatedCode = `PCL-${projectPrefix}-${newNumber}`
-    
+
     parcels.value.push({
       id: newId,
       code: formData.value.code || generatedCode,
@@ -868,14 +849,14 @@ const closeHistoryModal = () => {
   }
 }
 
-function initMap(){
+function initMap() {
   map = L.map("map").setView([-2, 118], 5)
   L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png").addTo(map)
-  map.pm.addControls({  
-    position: 'topleft',  
+  map.pm.addControls({
+    position: 'topleft',
     drawCircleMarker: false,
     rotateMode: false,
-  }); 
+  });
 }
 function handleGeoJsonUpload(event: Event) {
   const target = event.target as HTMLInputElement
@@ -896,39 +877,39 @@ function handleGeoJsonUpload(event: Event) {
 
 
       // 🔥 buat layer baru
-      var selectedLayer:any
+      var selectedLayer: any
       var geojsonLayer = new L.GeoJSON(uploadedGeojson, {
-          style: {
-            color: '#3388ff',
-            weight: 2
-          },
-          onEachFeature: (feature: any, layer: any) => {
-            layer.on('click', () => {
-              // 🔥 reset highlight lama
-              if (selectedLayer) {
-                geojsonLayer.resetStyle(selectedLayer)
-              }
+        style: {
+          color: '#3388ff',
+          weight: 2
+        },
+        onEachFeature: (feature: any, layer: any) => {
+          layer.on('click', () => {
+            // 🔥 reset highlight lama
+            if (selectedLayer) {
+              geojsonLayer.resetStyle(selectedLayer)
+            }
 
-              // 🔥 highlight layer baru
-              layer.setStyle({
-                color: 'yellow',
-                weight: 4
-              })
-
-              selectedLayer = layer
-
-              // 🔥 simpan geometry
-              selectedGeometry = feature.geometry
-
-              console.log('Selected geometry:', selectedGeometry)
+            // 🔥 highlight layer baru
+            layer.setStyle({
+              color: 'yellow',
+              weight: 4
             })
-          }
-        })
-        if (map) {
-          geojsonLayer.addTo(map)
-          // 🔥 auto zoom ke data
-          map.fitBounds(geojsonLayer.getBounds())
+
+            selectedLayer = layer
+
+            // 🔥 simpan geometry
+            selectedGeometry = feature.geometry
+
+            console.log('Selected geometry:', selectedGeometry)
+          })
         }
+      })
+      if (map) {
+        geojsonLayer.addTo(map)
+        // 🔥 auto zoom ke data
+        map.fitBounds(geojsonLayer.getBounds())
+      }
 
     } catch (err) {
       console.error('JSON tidak valid:', err)
@@ -938,9 +919,9 @@ function handleGeoJsonUpload(event: Event) {
   reader.readAsText(file)
 }
 const exportData = () => {
-  // Generate CSV data
+  // Prepare data for Excel
   const headers = ['No', 'Kode Parcel', 'Project', 'Nama Pemilik', 'Desa', 'Luas (m²)', 'Status Negosiasi', 'Jumlah Bebas', 'Biaya Pembebasan', 'Tanggal Negosiasi']
-  
+
   const rows = filteredParcels.value.map((parcel, index) => [
     index + 1,
     parcel.code,
@@ -954,25 +935,21 @@ const exportData = () => {
     parcel.negotiationDate
   ])
 
-  const csvContent = [
-    headers.join(','),
-    ...rows.map(row => row.join(','))
-  ].join('\n')
+  // Create array of arrays with headers
+  const data = [headers, ...rows]
 
-  // Create download link
-  const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' })
-  const link = document.createElement('a')
-  const url = URL.createObjectURL(blob)
-  
-  link.setAttribute('href', url)
-  link.setAttribute('download', `land_acquisition_${new Date().toISOString().split('T')[0]}.csv`)
-  link.style.visibility = 'hidden'
-  
-  document.body.appendChild(link)
-  link.click()
-  document.body.removeChild(link)
-  
-  alert('Data berhasil di-export ke CSV!')
+  // Create workbook and worksheet
+  const wb = XLSX.utils.book_new()
+  const ws = XLSX.utils.aoa_to_sheet(data)
+
+  // Add worksheet to workbook
+  XLSX.utils.book_append_sheet(wb, ws, 'Land Acquisition')
+
+  // Generate Excel file and trigger download
+  const filename = `land_acquisition_${new Date().toISOString().split('T')[0]}.xlsx`
+  XLSX.writeFile(wb, filename)
+
+  alert('Data berhasil di-export ke Excel!')
 }
 
 // Map functions
@@ -1063,8 +1040,8 @@ const initAcquisitionMap = () => {
 
     const projectParcels = parcels.value.filter(p => p.project === projectName)
     const bebasCount = projectParcels.filter(p => p.status === 'Bebas').length
-    const progress = projectParcels.length > 0 
-      ? Math.round((bebasCount / projectParcels.length) * 100) 
+    const progress = projectParcels.length > 0
+      ? Math.round((bebasCount / projectParcels.length) * 100)
       : 0
 
     const totalCostProject = projectParcels.reduce((sum, p) => {
@@ -1119,12 +1096,12 @@ const initAcquisitionMap = () => {
     }).addTo(acquisitionMap!).bindPopup(`
       <div style="min-width: 200px;">
         <h6><strong>${villageName}</strong></h6>
-        ${affectedProjects.length > 0 
-          ? `<p class="mb-1"><strong>Terdampak oleh:</strong><br>${affectedProjects.join(', ')}</p>
+        ${affectedProjects.length > 0
+        ? `<p class="mb-1"><strong>Terdampak oleh:</strong><br>${affectedProjects.join(', ')}</p>
              <p class="mb-1"><strong>Parcels:</strong> ${villageParcels.length}</p>
              <p class="mb-0"><strong>Status:</strong> ${bebasCount}/${villageParcels.length} bebas</p>`
-          : '<p class="mb-0"><em>Tidak ada project yang berdampak</em></p>'
-        }
+        : '<p class="mb-0"><em>Tidak ada project yang berdampak</em></p>'
+      }
       </div>
     `)
   })

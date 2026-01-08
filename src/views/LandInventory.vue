@@ -828,8 +828,8 @@ const closeLandModal = () => {
 
 const exportData = async () => {
   try {
-    await landApi.exportCsv()
-    alert('Data berhasil didownload dalam format CSV!')
+    await landApi.exportExcel()
+    alert('Data berhasil didownload dalam format Excel!')
   } catch (err) {
     alert('Gagal mendownload data: ' + (err instanceof Error ? err.message : 'Unknown error'))
     console.error('Export error:', err)

@@ -3,6 +3,8 @@
  * Connects to Django Backend at https://api.valemis.id
  */
 
+import * as XLSX from 'xlsx'
+
 const API_BASE_URL = import.meta.env.VITE_API_URL || 'https://api.valemis.id'
 
 interface ApiResponse<T> {
@@ -31,8 +33,8 @@ async function apiFetch<T>(endpoint: string, options?: RequestInit): Promise<T> 
   return response.json()
 }
 
-// Export to CSV function
-async function exportToCsv(endpoint: string, filename: string): Promise<void> {
+// Export to Excel function
+async function exportToExcel(endpoint: string, filename: string): Promise<void> {
   const url = `${API_BASE_URL}${endpoint}`
   const response = await fetch(url)
 
@@ -40,15 +42,40 @@ async function exportToCsv(endpoint: string, filename: string): Promise<void> {
     throw new Error(`Export Error: ${response.status} ${response.statusText}`)
   }
 
-  const blob = await response.blob()
-  const downloadUrl = window.URL.createObjectURL(blob)
-  const link = document.createElement('a')
-  link.href = downloadUrl
-  link.download = filename
-  document.body.appendChild(link)
-  link.click()
-  document.body.removeChild(link)
-  window.URL.revokeObjectURL(downloadUrl)
+  // Get CSV text from response
+  const csvText = await response.text()
+
+  // Parse CSV to array of arrays
+  const rows = csvText.split('\n').map(row => {
+    // Simple CSV parsing (handles basic cases)
+    const values: string[] = []
+    let current = ''
+    let inQuotes = false
+
+    for (let i = 0; i < row.length; i++) {
+      const char = row[i]
+      if (char === '"') {
+        inQuotes = !inQuotes
+      } else if (char === ',' && !inQuotes) {
+        values.push(current)
+        current = ''
+      } else {
+        current += char
+      }
+    }
+    values.push(current)
+    return values
+  }).filter(row => row.some(cell => cell.trim() !== ''))
+
+  // Create workbook and worksheet
+  const wb = XLSX.utils.book_new()
+  const ws = XLSX.utils.aoa_to_sheet(rows)
+
+  // Add worksheet to workbook
+  XLSX.utils.book_append_sheet(wb, ws, 'Data')
+
+  // Generate Excel file and trigger download
+  XLSX.writeFile(wb, filename)
 }
 
 // Asset Inventory API
@@ -69,7 +96,7 @@ export const assetApi = {
   delete: (id: number) => apiFetch<void>(`/api/valemis/assets/${id}/`, {
     method: 'DELETE',
   }),
-  exportCsv: () => exportToCsv('/api/valemis/assets/export_csv/', 'asset_inventory.csv'),
+  exportExcel: () => exportToExcel('/api/valemis/assets/export_csv/', 'asset_inventory.xlsx'),
 }
 
 // Asset Inventory Detail API
@@ -88,7 +115,7 @@ export const assetDetailApi = {
   delete: (id: number) => apiFetch<void>(`/api/valemis/asset-details/${id}/`, {
     method: 'DELETE',
   }),
-  exportCsv: () => exportToCsv('/api/valemis/asset-details/export_csv/', 'asset_inventory_detail.csv'),
+  exportExcel: () => exportToExcel('/api/valemis/asset-details/export_csv/', 'asset_inventory_detail.xlsx'),
 }
 
 // Land Inventory API
@@ -106,7 +133,7 @@ export const landApi = {
   delete: (id: number) => apiFetch<void>(`/api/valemis/lands/${id}/`, {
     method: 'DELETE',
   }),
-  exportCsv: () => exportToCsv('/api/valemis/lands/export_csv/', 'land_inventory.csv'),
+  exportExcel: () => exportToExcel('/api/valemis/lands/export_csv/', 'land_inventory.xlsx'),
 }
 
 // Land Acquisition API
@@ -124,7 +151,7 @@ export const acquisitionApi = {
   delete: (id: number) => apiFetch<void>(`/api/valemis/acquisitions/${id}/`, {
     method: 'DELETE',
   }),
-  exportCsv: () => exportToCsv('/api/valemis/acquisitions/export_csv/', 'land_acquisition.csv'),
+  exportExcel: () => exportToExcel('/api/valemis/acquisitions/export_csv/', 'land_acquisition.xlsx'),
 }
 
 // Land Compliance API
@@ -142,7 +169,7 @@ export const complianceApi = {
   delete: (id: number) => apiFetch<void>(`/api/valemis/compliances/${id}/`, {
     method: 'DELETE',
   }),
-  exportCsv: () => exportToCsv('/api/valemis/compliances/export_csv/', 'land_compliance.csv'),
+  exportExcel: () => exportToExcel('/api/valemis/compliances/export_csv/', 'land_compliance.xlsx'),
 }
 
 // Litigation API
@@ -160,7 +187,7 @@ export const litigationApi = {
   delete: (id: number) => apiFetch<void>(`/api/valemis/litigations/${id}/`, {
     method: 'DELETE',
   }),
-  exportCsv: () => exportToCsv('/api/valemis/litigations/export_csv/', 'litigation.csv'),
+  exportExcel: () => exportToExcel('/api/valemis/litigations/export_csv/', 'litigation.xlsx'),
 }
 
 // Stakeholder API
@@ -178,7 +205,7 @@ export const stakeholderApi = {
   delete: (id: number) => apiFetch<void>(`/api/valemis/stakeholders/${id}/`, {
     method: 'DELETE',
   }),
-  exportCsv: () => exportToCsv('/api/valemis/stakeholders/export_csv/', 'stakeholders.csv'),
+  exportExcel: () => exportToExcel('/api/valemis/stakeholders/export_csv/', 'stakeholders.xlsx'),
 }
 
 // Census Survey API

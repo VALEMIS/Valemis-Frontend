@@ -656,8 +656,8 @@ const openTimelineModal = () => {
 
 const exportData = async () => {
   try {
-    await litigationApi.exportCsv()
-    alert('Data berhasil didownload dalam format CSV!')
+    await litigationApi.exportExcel()
+    alert('Data berhasil didownload dalam format Excel!')
   } catch (err) {
     alert('Gagal mendownload data: ' + (err instanceof Error ? err.message : 'Unknown error'))
     console.error('Export error:', err)

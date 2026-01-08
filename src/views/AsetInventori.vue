@@ -431,7 +431,7 @@ import { censusKepalaKeluargaApi, censusQuestionsApi, type CensusKepalaKeluarga 
 import DataTable from 'primevue/datatable'
 import Column from 'primevue/column'
 import CensusFormModal from '../components/CensusFormModal.vue'
-import {addWms} from "../utils/addWms.js"
+import { addWms } from "../utils/addWms.js"
 import * as XLSX from 'xlsx'
 const gsUrl = import.meta.env.VITE_APP_API_GS_URL
 interface Asset {
@@ -1138,7 +1138,9 @@ const initAssetMap = async () => {
   // );
 
   // wmsLayer.addTo(assetMap);
-  await addWms(assetMap,projectId.value)
+  if (projectId.value) {
+    await addWms(assetMap, projectId.value)
+  }
 
   // wmsLayerIUPK.addTo(assetMap);
   const wmsLayerAsset = L.tileLayer.wms(

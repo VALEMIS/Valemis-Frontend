@@ -220,9 +220,14 @@
             <div v-show="activeTab === 'master'">
               <div class="d-flex justify-content-between align-items-center mb-3">
                 <h5>Daftar Stakeholder</h5>
-                <button class="btn btn-primary" @click="openModalAdd('master')">
-                  <i class="bi bi-plus-circle"></i> Tambah Stakeholder
-                </button>
+                <div>
+                  <button class="btn btn-success me-2" @click="exportData" title="Download Excel">
+                    <i class="bi bi-file-earmark-excel"></i> Download Excel
+                  </button>
+                  <button class="btn btn-primary" @click="openModalAdd('master')">
+                    <i class="bi bi-plus-circle"></i> Tambah Stakeholder
+                  </button>
+                </div>
               </div>
 
               <div class="table-responsive">
@@ -1234,6 +1239,7 @@
 
 <script setup lang="ts">
 import { ref, onMounted } from 'vue'
+import { stakeholderApi } from '../api'
 
 const activeTab = ref('master')
 const showModal = ref(false)
@@ -2125,6 +2131,17 @@ const analyzeSentiment = async () => {
     alert(`Error: ${error.message}`)
   } finally {
     isAnalyzing.value = false
+  }
+}
+
+// Export to Excel
+const exportData = async () => {
+  try {
+    await stakeholderApi.exportExcel()
+    alert('Data berhasil didownload dalam format Excel!')
+  } catch (err) {
+    alert('Gagal mendownload data: ' + (err instanceof Error ? err.message : 'Unknown error'))
+    console.error('Export error:', err)
   }
 }
 
