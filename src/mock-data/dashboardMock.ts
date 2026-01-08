@@ -1,6 +1,9 @@
 /**
  * Dashboard Mock Data
- * Comprehensive mock data for all 4 zones of the monitoring dashboard
+ * Comprehensive mock data for dashboard with 3 zones:
+ * - Zona 1: Ringkasan Lahan (Land Summary)
+ * - Zona 2: Urgent Alerts (3 categories: Legal/Compliance, Operational, Social)
+ * - Zona 3: Progress Pembebasan Lahan (Dispute data + Project progress stages)
  */
 
 import type {
@@ -11,6 +14,184 @@ import type {
   MapLegend,
   ChartConfig
 } from '@/types/dashboard'
+
+// ============================================================
+// ZONA 1: Ringkasan Lahan (Land Summary)
+// ============================================================
+
+export interface LandSummary {
+  totalBidangLahan: number
+  totalLuasHa: number
+  sudahBebasPct: number
+  dalamProsesPct: number
+  bermasalahPct: number
+}
+
+export const landSummaryData: LandSummary = {
+  totalBidangLahan: 245,
+  totalLuasHa: 1850.5,
+  sudahBebasPct: 73.5,
+  dalamProsesPct: 21.2,
+  bermasalahPct: 5.3
+}
+
+// ============================================================
+// ZONA 2: Urgent Alerts (3 Categories)
+// ============================================================
+
+export interface UrgentAlert {
+  id: number
+  category: 'legal' | 'operational' | 'social'
+  title: string
+  description: string
+  count?: number
+  severity: 'critical' | 'warning' | 'info'
+  actionRoute?: string
+  timestamp: Date
+}
+
+export const urgentAlertsData: UrgentAlert[] = [
+  // Legal / Compliance
+  {
+    id: 1,
+    category: 'legal',
+    title: 'Izin lahan akan expired 30 hari',
+    description: '5 izin lahan akan berakhir dalam 30 hari ke depan',
+    count: 5,
+    severity: 'critical',
+    actionRoute: '/land-compliance',
+    timestamp: new Date('2026-01-08')
+  },
+  {
+    id: 2,
+    category: 'legal',
+    title: 'Izin lahan akan expired 60 hari',
+    description: '8 izin lahan akan berakhir dalam 60 hari ke depan',
+    count: 8,
+    severity: 'warning',
+    actionRoute: '/land-compliance',
+    timestamp: new Date('2026-01-08')
+  },
+  {
+    id: 3,
+    category: 'legal',
+    title: 'Lahan belum compliant tapi sudah mau dipake',
+    description: '3 lahan belum memenuhi compliance namun project date sudah dekat',
+    count: 3,
+    severity: 'critical',
+    actionRoute: '/land-compliance',
+    timestamp: new Date('2026-01-08')
+  },
+  {
+    id: 4,
+    category: 'legal',
+    title: 'Overlap dengan kawasan hutan/sempadan',
+    description: '2 bidang lahan terdeteksi overlap dengan kawasan hutan atau sempadan',
+    count: 2,
+    severity: 'warning',
+    actionRoute: '/land-compliance',
+    timestamp: new Date('2026-01-08')
+  },
+
+  // Operasional
+  {
+    id: 5,
+    category: 'operational',
+    title: 'Blok krusial belum bebas',
+    description: '4 blok krusial (1 AOI atau persil) belum bebas dan project date mendekat',
+    count: 4,
+    severity: 'critical',
+    actionRoute: '/project/8/land-acquisition',
+    timestamp: new Date('2026-01-08')
+  },
+
+  // Sosial
+  {
+    id: 6,
+    category: 'social',
+    title: 'Stakeholder kontra aktif',
+    description: '6 stakeholder dengan sikap kontra aktif terdeteksi',
+    count: 6,
+    severity: 'warning',
+    actionRoute: '/stakeholder-management',
+    timestamp: new Date('2026-01-08')
+  },
+  {
+    id: 7,
+    category: 'social',
+    title: 'Konflik muncul di lokasi yang sama berulang',
+    description: '2 lokasi mengalami konflik berulang dalam 3 bulan terakhir',
+    count: 2,
+    severity: 'critical',
+    actionRoute: '/stakeholder-management',
+    timestamp: new Date('2026-01-08')
+  }
+]
+
+// ============================================================
+// ZONA 3: Progress Pembebasan Lahan
+// ============================================================
+
+// Sengketa Lahan Data
+export interface DisputeData {
+  jumlahKlaimAktif: number
+  statusKlaim: {
+    baru: number
+    proses: number
+    mediasi: number
+    selesai: number
+  }
+  klaimDiAreaOperasional: number
+}
+
+export const disputeData: DisputeData = {
+  jumlahKlaimAktif: 14,
+  statusKlaim: {
+    baru: 3,
+    proses: 6,
+    mediasi: 3,
+    selesai: 2
+  },
+  klaimDiAreaOperasional: 5
+}
+
+// Progress per Project Data
+export interface ProjectProgress {
+  projectName: string
+  stages: {
+    identifikasi: number
+    negosiasi: number
+    sepakat: number
+    bayar: number
+    sertifikasi: number
+  }
+  totalBidang: number
+}
+
+export const projectProgressData: ProjectProgress[] = [
+  {
+    projectName: 'Project MBB1',
+    stages: {
+      identifikasi: 45,
+      negosiasi: 38,
+      sepakat: 25,
+      bayar: 18,
+      sertifikasi: 12
+    },
+    totalBidang: 138
+  },
+  {
+    projectName: 'Project Alpha',
+    stages: {
+      identifikasi: 32,
+      negosiasi: 28,
+      sepakat: 20,
+      bayar: 15,
+      sertifikasi: 10
+    },
+    totalBidang: 105
+  }
+]
 
 // ============================================================
 // ZONE 1: Executive KPI Mock Data

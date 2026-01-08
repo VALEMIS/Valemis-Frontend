@@ -8,22 +8,26 @@
           <!-- <p class="page-subtitle">Gambaran Umum Sistem Pengelolaan Lahan dan Aset</p> -->
         </div>
 
-        <!-- 🗺️ ZONE 1: Unified Land Map (Top) -->
-        <UnifiedLandMap />
+        <!-- 🗺️ Top Row: Map (Left) + Ringkasan Lahan (Right) -->
+        <div class="dashboard-top-grid">
+          <div class="map-column">
+            <UnifiedLandMap />
+          </div>
+          <div class="summary-column">
+            <LandSummary />
+          </div>
+        </div>
 
-        <!-- 🟦 ZONE 2: Executive KPI (Below Map) -->
-        <ExecutiveKPI />
-
-        <!-- 📊 ZONE 3: Two-Column Layout (Charts Left, Alerts Right) -->
+        <!-- 📊 Bottom Row: Progress Charts (Left) + Urgent Alerts (Right) -->
         <div class="dashboard-bottom-grid">
           <div class="charts-column">
-            <MonitoringCharts />
+            <ProgressPembebasan />
 
             <!-- 📄 Appraisal Documents Section -->
             <AppraisalDocuments />
           </div>
           <div class="alerts-column">
-            <CriticalAlerts />
+            <UrgentAlerts />
           </div>
         </div>
 
@@ -35,10 +39,10 @@
 <script setup lang="ts">
 import { ref, onMounted, computed } from 'vue'
 import { useRouter } from 'vue-router'
-import ExecutiveKPI from '@/components/dashboard/ExecutiveKPI.vue'
-import CriticalAlerts from '@/components/dashboard/CriticalAlerts.vue'
+import LandSummary from '@/components/dashboard/LandSummary.vue'
+import UrgentAlerts from '@/components/dashboard/UrgentAlerts.vue'
 import UnifiedLandMap from '@/components/dashboard/UnifiedLandMap.vue'
-import MonitoringCharts from '@/components/dashboard/MonitoringCharts.vue'
+import ProgressPembebasan from '@/components/dashboard/ProgressPembebasan.vue'
 import AppraisalDocuments from '@/components/dashboard/AppraisalDocuments.vue'
 import { useProject } from '@/composables/useProject'
 
@@ -318,7 +322,23 @@ onMounted(async () => {
   margin: 0;
 }
 
-/* Two-Column Bottom Grid */
+/* Top Grid: Map (Left) + Ringkasan Lahan (Right) */
+.dashboard-top-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 2rem;
+  margin-bottom: 2.5rem;
+}
+
+.map-column {
+  min-width: 0;
+}
+
+.summary-column {
+  min-width: 0;
+}
+
+/* Bottom Grid: Charts (Left) + Alerts (Right) */
 .dashboard-bottom-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -386,6 +406,11 @@ onMounted(async () => {
   .footer-content {
     flex-direction: column;
     text-align: center;
+  }
+
+  .dashboard-top-grid {
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
   }
 
   .dashboard-bottom-grid {
