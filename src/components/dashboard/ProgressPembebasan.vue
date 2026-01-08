@@ -89,44 +89,80 @@ onMounted(() => {
                     bodyColor: '#e5e7eb',
                     cornerRadius: 8,
                     callbacks: {
-                        label: function (context: any) {
-                            const label = context.label || ''
-                            const value = context.parsed || 0
-                            const total = disputeData.jumlahKlaimAktif
-                            const percentage = ((value / total) * 100).toFixed(1)
-                            return `${label}: ${value} klaim (${percentage}%)`
-                        }
-                    }
+                        label(context: any) {
+                            if (context.raw === 1) {
+                                return `Tahap: ${context.dataset.label}`
+                            }
+                            return ''
+                        },
+                    },
+                },
+                datalabels: {
+                    color: '#ffffff',
+                    font: {
+                        weight: 'bold',
+                        size: 12
+                    },
+                    formatter: (value: number, context: any) => {
+                        const label = context.chart.data.labels[context.dataIndex]
+                        return `${value} ${label}`
+                    },
+                    anchor: 'center',
+                    align: 'center'
                 }
-            }
+            },
         }
     }
 
-    initPieChart(pieChartConfig)
+
+    initPieChart(pieChartConfig as any)
 
     // Bar Chart - Project Progress per Stage
+    const stages = [
+        'Identifikasi',
+        'Negosiasi',
+        'Sepakat',
+        'Bayar',
+        'Sertifikasi',
+    ]
+
+    const stageColors = [
+        '#9ca3af',
+        '#facc15',
+        '#3b82f6',
+        '#8b5cf6',
+        '#22c55e',
+    ]
+
+    // contoh projectProgressData
+    // stages = 1 artinya sudah dilewati / aktif
     const barChartData = {
-        labels: ['Identifikasi', 'Negosiasi', 'Sepakat', 'Bayar', 'Sertifikasi'],
-        datasets: projectProgressData.map((project, index) => ({
-            label: project.projectName,
-            data: [
-                project.stages.identifikasi,
-                project.stages.negosiasi,
-                project.stages.sepakat,
-                project.stages.bayar,
-                project.stages.sertifikasi
-            ],
-            backgroundColor: index === 0 ? '#3b82f6' : '#8b5cf6',
+        labels: projectProgressData.map(p => p.projectName),
+        datasets: stages.map((stage, stageIndex) => ({
+            label: stage,
+            data: projectProgressData.map(project => {
+                const stageValues = [
+                    project.stages.identifikasi,
+                    project.stages.negosiasi,
+                    project.stages.sepakat,
+                    project.stages.bayar,
+                    project.stages.sertifikasi,
+                ]
+
+                // progress logic (0 / 1)
+                return stageValues[stageIndex]
+            }),
+            backgroundColor: stageColors[stageIndex],
             borderRadius: 6,
-            barThickness: 25
-        }))
+            barThickness: 25,
+        })),
     }
+
 
     const barChartConfig = {
         type: 'bar' as const,
         data: barChartData,
         options: {
-            responsive: true,
             maintainAspectRatio: false,
             plugins: {
                 legend: {
@@ -153,14 +189,35 @@ onMounted(() => {
                     cornerRadius: 8,
                     callbacks: {
                         label: function (context: any) {
-                            return `${context.dataset.label}: ${context.parsed.y} bidang`
+                            return `${context.dataset.label}: ${context.parsed.x} bidang`
+                        },
+                        footer: function (tooltipItems: any[]) {
+                            const stages = projectProgressData.find(p => p.projectName === tooltipItems[0].label)?.stages
+                            if (!stages) return
+
+
+                            const total = stages.identifikasi + stages.negosiasi + stages.sepakat + stages.bayar + stages.sertifikasi
+                            return `Total: ${total} bidang`
                         }
+
                     }
+                },
+                datalabels: {
+                    color: '#ffffff',
+                    font: {
+                        weight: 'bold',
+                        size: 12
+                    },
+                    anchor: 'center',
+                    align: 'center'
                 }
             },
+            responsive: true,
+            indexAxis: 'y',
             scales: {
                 y: {
                     beginAtZero: true,
+                    stacked: true,
                     grid: {
                         color: '#f3f4f6',
                         drawBorder: false
@@ -174,6 +231,7 @@ onMounted(() => {
                     }
                 },
                 x: {
+                    stacked: true,
                     grid: {
                         display: false,
                         drawBorder: false
@@ -190,7 +248,7 @@ onMounted(() => {
         }
     }
 
-    initBarChart(barChartConfig)
+    initBarChart(barChartConfig as any)
 })
 </script>
 

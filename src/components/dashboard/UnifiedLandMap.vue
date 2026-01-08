@@ -1,54 +1,52 @@
 <template>
-  <div class="unified-land-map">
-    <!-- Map Container -->
-    <div class="map-card">
-      <div class="row">
-        <div class="col-md-3 p-4">
-          <h2>
-            <b>Map Layer</b>
-          </h2>
-          <div v-for="theme, i in listThemeMap" class="overflow-x-auto" style="max-height: 600px;">
-            <div class="mb-2">
-              <div>
-                <input type="checkbox" /> {{ theme.nama_map }}
-              </div>
-              <img
-                :src="`${gsUrl}/vector_valemis/wms?REQUEST=GetLegendGraphic&VERSION=1.0.0&FORMAT=image/png&WIDTH=20&HEIGHT=20&LAYER=vector_valemis:${theme.tbl_name}&STYLE=${theme.style}`" />
+  <!-- Map Container -->
+  <div class="map-card">
+    <div class="row">
+      <div class="col-md-3 p-4">
+        <h2>
+          <b>Map Layer</b>
+        </h2>
+        <div v-for="theme, i in listThemeMap" class="overflow-x-auto" style="max-height: 600px;">
+          <div class="mb-2">
+            <div>
+              <input type="checkbox" /> {{ theme.nama_map }}
             </div>
-          </div>
-          <div v-for="raster, i in listRaster" class="overflow-x-auto" style="max-height: 600px;">
-            <div class="mb-2">
-              <div>
-                <input type="checkbox" /> {{ raster.nama }}
-              </div>
-              <!-- <img :src="`${gsUrl}/vector_valemis/wms?REQUEST=GetLegendGraphic&VERSION=1.0.0&FORMAT=image/png&WIDTH=20&HEIGHT=20&LAYER=vector_valemis:${raster.tbl_name}&STYLE=${theme.style}`"/> -->
-            </div>
+            <img
+              :src="`${gsUrl}/vector_valemis/wms?REQUEST=GetLegendGraphic&VERSION=1.0.0&FORMAT=image/png&WIDTH=20&HEIGHT=20&LAYER=vector_valemis:${theme.tbl_name}&STYLE=${theme.style}`" />
           </div>
         </div>
-        <div class="flex col-md-9">
-          <!-- Map Area -->
-          <div class="map-area flex-1">
-            <div id="dashboard-map" class="map-container" ref="mapContainer"></div>
-
-            <!-- Map Loading -->
-            <div v-if="loading" class="map-loading-overlay">
-              <ProgressSpinner strokeWidth="3" />
-              <span class="block mt-2 text-sm">Loading map data...</span>
+        <div v-for="raster, i in listRaster" class="overflow-x-auto" style="max-height: 600px;">
+          <div class="mb-2">
+            <div>
+              <input type="checkbox" /> {{ raster.nama }}
             </div>
-
-
+            <!-- <img :src="`${gsUrl}/vector_valemis/wms?REQUEST=GetLegendGraphic&VERSION=1.0.0&FORMAT=image/png&WIDTH=20&HEIGHT=20&LAYER=vector_valemis:${raster.tbl_name}&STYLE=${theme.style}`"/> -->
           </div>
         </div>
       </div>
-    </div>
-    <!-- </template> -->
+      <div class="flex col-md-9">
+        <!-- Map Area -->
+        <div class="map-area flex-1">
+          <div id="dashboard-map" class="map-container" ref="mapContainer"></div>
 
-    <!-- Fullscreen Dialog -->
-    <Dialog v-model:visible="fullscreenVisible" :style="{ width: '95vw', height: '90vh' }" :modal="true"
-      :showHeader="false">
-      <div id="dashboard-map-fullscreen" class="map-container-fullscreen"></div>
-    </Dialog>
+          <!-- Map Loading -->
+          <div v-if="loading" class="map-loading-overlay">
+            <ProgressSpinner strokeWidth="3" />
+            <span class="block mt-2 text-sm">Loading map data...</span>
+          </div>
+
+
+        </div>
+      </div>
+    </div>
   </div>
+  <!-- </template> -->
+
+  <!-- Fullscreen Dialog -->
+  <Dialog v-model:visible="fullscreenVisible" :style="{ width: '95vw', height: '90vh' }" :modal="true"
+    :showHeader="false">
+    <div id="dashboard-map-fullscreen" class="map-container-fullscreen"></div>
+  </Dialog>
 </template>
 
 <script setup lang="ts">
@@ -329,10 +327,6 @@ const handleExportMap = () => {
 </script>
 
 <style scoped>
-.unified-land-map {
-  margin-bottom: 2.5rem;
-}
-
 .map-card {
   overflow: hidden;
   background-color: white;

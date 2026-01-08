@@ -102,6 +102,7 @@ onMounted(async () => {
   min-height: 100vh;
   background: #f5f7fa;
   background-attachment: fixed;
+  margin-bottom: 2.5rem;
 }
 
 .app-content {
@@ -324,8 +325,8 @@ onMounted(async () => {
 
 /* Top Grid: Map (Left) + Ringkasan Lahan (Right) */
 .dashboard-top-grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
+  display: flex;
+  flex-direction: column;
   gap: 2rem;
   margin-bottom: 2.5rem;
 }
@@ -409,7 +410,6 @@ onMounted(async () => {
   }
 
   .dashboard-top-grid {
-    grid-template-columns: 1fr;
     gap: 1.5rem;
   }
 
