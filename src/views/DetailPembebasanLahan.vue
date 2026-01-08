@@ -28,43 +28,6 @@
               </router-link>
             </div>
           </div>
-          <!-- <div class="card-body">
-            <div class="row">
-              <div class="col-md-6">
-                <table class="table table-bordered">
-                  <tbody>
-                    <tr>
-                      <th width="40%">Project Id</th>
-                      <td>{{ projects.id_project }}</td>
-                    </tr>
-                    <tr>
-                      <th>Nama Project</th>
-                      <td>{{ projects.nama_project }}</td>
-                    </tr>
-                    <tr>
-                      <th>Owner Project</th>
-                      <td>{{projects.owner_project}}</td>
-                    </tr>
-                    
-                    <tr>
-                      <th>Luas Project</th>
-                      <td>500 m²</td>
-                    </tr>
-                  </tbody>
-                </table>
-              </div>
-              <div class="col-md-6">
-                <div id="map" style="height: 400px;"></div>
-              </div>
-            </div>
-
-            <div class="row mt-3">
-              <div class="col-12">
-                <h6>Catatan:</h6>
-                <p>Proses pembebasan lahan sedang dalam tahap negosiasi dengan pemilik lahan.</p>
-              </div>
-            </div>
-          </div> -->
           <div class="col-md-12">
                 <div id="map" style="height: 600px;"></div>
               </div>
@@ -139,13 +102,16 @@
                     <span v-else class="text-success"><strong>{{ formatRupiah(parcel.biaya_pembebasan) }}</strong></span>
                   </td>
                   <td><small>{{ parcel.tanggal_negosiasi }}</small></td>
-                  <td class="text-center" style="white-space: nowrap;">
-                    <div class="btn-group" role="group">
+                  <td class="text-center row" style="white-space: nowrap;">
+                    <div class="btn-group col-md-6" role="group">
                       <button class="btn btn-sm btn-success" @click="markAsBebas(parcel.id_parcel)" v-if="parcel.status !== 'Bebas'" title="Mark as Bebas">
                         <i class="bi bi-check-circle"></i>
                       </button>
                       <button class="btn btn-sm btn-warning" @click="editParcelModal(parcel)" title="Edit">
                         <i class="bi bi-pencil-square"></i>
+                      </button>
+                      <button class="btn btn-sm btn-primary" @click="openHistoryModal(parcel.id_parcel)" title="Lihat Riwayat">
+                        <i class="bi bi-list"></i>
                       </button>
                       <button class="btn btn-sm btn-danger" @click="deleteParcel(parcel.id_parcel)" title="Hapus parcel">
                         <i class="bi bi-trash"></i>
@@ -270,8 +236,55 @@
           </div>
         </div>
       </div>
-    </div>
+  </div>
+  <div class="modal fade" id="historyModal" tabindex="-1" aria-labelledby="historyModalLabel" aria-hidden="true" ref="historyModalRef">
+    <div class="modal-dialog modal-lg">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="historyModalLabel">
+            Riwayat Status
+          </h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" ></button>
+        </div>
+        <div class="modal-body" style="max-height: 60vh; overflow-y: auto;">
+          <ul class="list-group">
+            <li
+              class="list-group-item d-flex justify-content-between align-items-start"
+              v-for="item in historyData"
+              :key="item.id_history"
+            >
+              <div class="ms-2 me-auto">
+                <div class="fw-bold">
+                  {{ item.status }}
+                </div>
+                <small class="text-muted">
+                  {{ new Date(item.date_created).toLocaleString() }}
+                </small>
+                <div>
+                  {{ item.deskripsi }}
+                </div>
+              </div>
 
+              <!-- badge warna sesuai status -->
+              <span
+                class="badge rounded-pill"
+                :class="{
+                  'bg-success': item.status === 'Bebas',
+                  'bg-secondary': item.status === 'Belum Diproses',
+                  'bg-warning text-dark': item.status === 'Dalam Negosiasi' || item.status === 'Dalam Proses',
+                  'bg-danger': item.status === 'Sengketa'
+                }"
+              >
+                {{ item.status }}
+              </span>
+            </li>
+
+          </ul>
+        </div>
+
+      </div>
+    </div>
+  </div>
 </template>
 
 <script setup lang="js">
@@ -308,13 +321,14 @@ const projects = ref([])
 let uploadedGeojson = null
 let selectedGeometry = null
 const selectedPersil = ref(null)
+let historyModalRef = ref(null)
+let historyModalInstance = ref(null)
+const historyData = ref(null)
 let wmsLayerAcquisitionSelected = null
 const fetchAcquisition = async () => {
   const res = await axios.get(apiUrl+`/LandAcquisition/?id_project=${projectId}`)
   acquisition.value = res.data
-  // const resProject = await axios.get(apiUrl+`/Project/${projectId}`)
-  // projects.value = resProject.data
-  acquisitionParcel.value = res.data || []// acquisitionParcel = res.data.acquisitions
+  acquisitionParcel.value = res.data || []
 }
 
 
@@ -328,9 +342,20 @@ const formData = ref({
       biaya_pembebasan: 0,
     })
 let  geojsonGeometry=  null
+const openHistoryModal = async (id_parcel) => {
+  // isEditMode = false
+  const res = await axios.get(`${apiUrl}/LandAcquisitionHistory/?id_parcel=${id_parcel}`)
+  historyData.value = res.data
+  console.log(historyData.value)
+  if (!historyModalRef.value) return
 
+  const Modal = window.bootstrap?.Modal
+  if (!Modal) return
+
+  historyModalInstance = new Modal(historyModalRef.value)
+  historyModalInstance.show()
+}
 const openParcelModal = () => {
-  isEditMode = false
   if (!parcelModalRef.value) return
 
   const Modal = window.bootstrap?.Modal
@@ -428,8 +453,6 @@ const getStatusClass = (status) => {
   }
   
 }
-
-
 const updatejumlah_bebas = (parcel) => {
   if (parcel.jumlah_bebas > parcel.luas) {
     parcel.jumlah_bebas = parcel.luas
@@ -603,7 +626,7 @@ async function initMainMap(){
 
         `)
         .openOn(map);
-// <b>Nama Pemilik:</b> ${props.luas}<br>
+          // <b>Nama Pemilik:</b> ${props.luas}<br>
           // <b>Nama Pemilik:</b> ${props.status}<br>
           // <b>Nama Pemilik:</b> ${props.jumlah_bebas}<br>
           // <b>Nama Pemilik:</b> ${props.biaya_pembebasan}<br>
