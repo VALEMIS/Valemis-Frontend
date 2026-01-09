@@ -149,7 +149,7 @@ import shp from "shpjs"
 import "leaflet/dist/leaflet.css"
 import axios from "axios";
 import { geojsonToWKT } from "@terraformer/wkt"
-import { stat } from "fs";
+// import { stat } from "fs";
 
 const apiUrl = import.meta.env.VITE_APP_API_SPATIAL_URL
 const gsUrl = import.meta.env.VITE_APP_API_GS_URL
