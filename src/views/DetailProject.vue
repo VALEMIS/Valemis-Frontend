@@ -198,7 +198,7 @@ onMounted(async () => {
   }).addTo(map)
 
   const resProject = await axios.get(apiUrl+`/Project/${projectId}`)
-  
+  console.log(projectId)
   // if (resProject.data.geom) {
   //   const geojson = wellknown.parse(resProject.data.geom)
   //   const geojsonLayerProject = new L.GeoJSON(geojson).addTo(map)
