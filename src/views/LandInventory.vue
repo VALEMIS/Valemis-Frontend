@@ -132,94 +132,95 @@
         </div>
 
         <!-- <div v-if="showMap" class="row mb-3"> -->
-          <div class="col-12">
-            <div class="card">
-              <div class="card-header">
-                <h3 class="card-title"><i class="bi bi-map"></i> Peta Land Inventory</h3>
-              </div>
-              <div class="card-body">
-                <div id="land-map" ref="landMapContainer" style="height: 600px; border-radius: 8px;"></div>
-              </div>
+        <div class="col-12 mb-3">
+          <div class="card">
+            <div class="card-header">
+              <h3 class="card-title"><i class="bi bi-map"></i> Peta Land Inventory</h3>
+            </div>
+            <div class="card-body">
+              <div id="land-map" ref="landMapContainer" style="height: 600px; border-radius: 8px;"></div>
             </div>
           </div>
+        </div>
         <!-- </div> -->
 
         <!-- <div v-else class="row"> -->
-          <div class="col-12">
-            <div class="card">
-              <div class="card-header">
-                <h3 class="card-title"><i class="bi bi-table"></i> Data Land Inventory</h3>
-                <div class="card-tools">
-                  <button class="btn btn-sm btn-primary me-2" @click="addLand">
-                    <i class="bi bi-plus-circle"></i> Tambah Lahan
-                  </button>
-                  <button class="btn btn-sm btn-success" @click="exportData">
-                    <i class="bi bi-file-earmark-excel"></i> Export Excel
-                  </button>
-                </div>
-              </div>
-              <div class="card-body table-responsive">
-                <table class="table table-bordered table-striped">
-                  <thead>
-                    <tr>
-                      <th>No</th>
-                      <th>Kode Lahan</th>
-                      <th>Nama Lokasi</th>
-                      <th>Kategori</th>
-                      <th>Luas (Ha)</th>
-                      <th>Status Sertifikat</th>
-                      <th>No. Sertifikat</th>
-                      <th>Koordinat</th>
-                      <th>Tahun Akuisisi</th>
-                      <th>Dokumen</th>
-                      <th>Aksi</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    <tr v-for="(land, index) in filteredLands" :key="land.id">
-                      <td>{{ index + 1 }}</td>
-                      <td><span class="badge bg-primary">{{ land.code }}</span></td>
-                      <td><strong>{{ land.locationName }}</strong></td>
-                      <td><span class="badge" :class="getCategoryClass(land.category)">{{ land.category }}</span></td>
-                      <td class="text-end">{{ land.area.toLocaleString() }}</td>
-                      <td><span class="badge" :class="getCertificateClass(land.certificate)">{{ land.certificate
-                      }}</span></td>
-                      <td><small>{{ land.certificateNo || '-' }}</small></td>
-                      <td><small class="text-muted">{{ land.coordinates }}</small></td>
-                      <td class="text-center">{{ land.acquisitionYear || '-' }}</td>
-                      <td>
-                        <button v-if="land.documents.length >= 0" class="btn btn-sm btn-outline-secondary"
-                          @click="viewDocuments(land)" title="Lihat Dokumen">
-                          <i class="bi bi-file-earmark-text"></i> {{ land.documents.length }} file
-                        </button>
-                        <small v-else class="text-muted">-</small>
-                      </td>
-                      <td class="text-center" style="white-space: nowrap;">
-                        <div class="btn-group" role="group">
-                          <button class="btn btn-sm btn-info" @click="viewOnMap(land)" title="Lihat di Peta">
-                            <i class="bi bi-geo-alt-fill"></i>
-                          </button>
-                          <button class="btn btn-sm btn-warning" @click="editLand(land)" title="Edit">
-                            <i class="bi bi-pencil-square"></i>
-                          </button>
-                          <button class="btn btn-sm btn-danger" @click="deleteLand(land)" title="Hapus">
-                            <i class="bi bi-trash"></i>
-                          </button>
-                        </div>
-                      </td>
-                    </tr>
-                  </tbody>
-                  <tfoot v-if="filteredLands.length > 0">
-                    <tr class="table-secondary">
-                      <td colspan="4" class="text-end"><strong>Total:</strong></td>
-                      <td class="text-end"><strong>{{ filteredTotalArea.toLocaleString() }} Ha</strong></td>
-                      <td colspan="6"></td>
-                    </tr>
-                  </tfoot>
-                </table>
+        <div class="col-12">
+          <div class="card">
+            <div class="card-header">
+              <h3 class="card-title"><i class="bi bi-table"></i> Data Land Inventory</h3>
+              <div class="card-tools">
+                <button class="btn btn-sm btn-primary me-2" @click="addLand">
+                  <i class="bi bi-plus-circle"></i> Tambah Lahan
+                </button>
+                <button class="btn btn-sm btn-success" @click="exportData">
+                  <i class="bi bi-file-earmark-excel"></i> Export Excel
+                </button>
               </div>
             </div>
+            <div class="card-body table-responsive">
+              <table class="table table-bordered table-striped">
+                <thead>
+                  <tr>
+                    <th>No</th>
+                    <th>Kode Lahan</th>
+                    <th>Nama Lokasi</th>
+                    <th>Kategori</th>
+                    <th>Luas (Ha)</th>
+                    <th>Status Sertifikat</th>
+                    <th>No. Sertifikat</th>
+                    <th>Koordinat</th>
+                    <th>Tahun Akuisisi</th>
+                    <th>Dokumen</th>
+                    <th>Aksi</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr v-for="(land, index) in filteredLands" :key="land.id">
+                    <td>{{ index + 1 }}</td>
+                    <td><span class="badge bg-primary">{{ land.code }}</span></td>
+                    <td><strong>{{ land.locationName }}</strong></td>
+                    <td><span class="badge" :class="getCategoryClass(land.category)">{{ land.category }}</span></td>
+                    <td class="text-end">{{ land.area.toLocaleString() }}</td>
+                    <td><span class="badge" :class="getCertificateClass(land.certificate)">{{ land.certificate
+                        }}</span></td>
+                    <td><small>{{ land.certificateNo || '-' }}</small></td>
+                    <td><small class="text-muted">{{ land.coordinates }}</small></td>
+                    <td class="text-center">{{ land.acquisitionYear || '-' }}</td>
+                    <td>
+                      <button v-if="land.documents.length >= 0" class="btn btn-sm btn-outline-secondary"
+                        @click="viewDocuments(land)" title="Lihat Dokumen">
+                        <i class="bi bi-file-earmark-text"></i> {{ land.documents.length }} file
+                      </button>
+                      <small v-else class="text-muted">-</small>
+                    </td>
+                    <td class="text-center" style="white-space: nowrap;">
+                      <div class="btn-group" role="group">
+                        <button class="btn btn-sm btn-info" :disabled="!land.geom" @click="viewOnMap(land.geom)"
+                          title="Lihat di Peta">
+                          <i class="bi bi-geo-alt-fill"></i>
+                        </button>
+                        <button class="btn btn-sm btn-warning" @click="editLand(land)" title="Edit">
+                          <i class="bi bi-pencil-square"></i>
+                        </button>
+                        <button class="btn btn-sm btn-danger" @click="deleteLand(land)" title="Hapus">
+                          <i class="bi bi-trash"></i>
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                </tbody>
+                <tfoot v-if="filteredLands.length > 0">
+                  <tr class="table-secondary">
+                    <td colspan="4" class="text-end"><strong>Total:</strong></td>
+                    <td class="text-end"><strong>{{ filteredTotalArea.toLocaleString() }} Ha</strong></td>
+                    <td colspan="6"></td>
+                  </tr>
+                </tfoot>
+              </table>
+            </div>
           </div>
+        </div>
         <!-- </div> -->
 
         <div class="row mt-3">
@@ -363,13 +364,13 @@
               <input type="file" accept=".zip" @change="onFile" />
               <div class="mb-3 mt-3">
                 <label class="form-label"><strong><i class="bi bi-file-earmark-text"></i> Dokumen Lahan</strong></label>
-                
+
                 <div class="input-group mb-2">
                   <input type="file" class="btn btn-outline-primary" multiple @change="addDocument">
                   <!-- <i class="bi bi-plus-circle"></i> Tambah -->
                   </input>
                 </div>
-                
+
                 <div v-if="newDocument.length > 0" class="border rounded p-2">
                   <small class="text-muted d-block mb-2">Daftar Dokumen:</small>
                   <div class="d-flex flex-wrap gap-1">
@@ -423,8 +424,9 @@ import DocumentModal from '../components/LandInventoryComp/DocumentModal.vue';
 // import "../utils/drawMap.js"
 import shp from "shpjs"
 import { geojsonToWKT } from "@terraformer/wkt"
-import {addWms} from "../utils/addWms.js"
+import { addWms } from "../utils/addWms.js"
 import { useRoute } from 'vue-router'
+import { wktToLayer } from "../utils/map.js"
 
 const apiUrl = import.meta.env.VITE_APP_API_SPATIAL_URL
 const gsUrl = import.meta.env.VITE_APP_API_GS_URL
@@ -606,7 +608,7 @@ const initLandMap = async () => {
     maxZoom: 19
   }).addTo(landMap)
 
-  await addWms(landMap,projectId)
+  await addWms(landMap, projectId)
 
   const wmsLayerLandInventory = L.tileLayer.wms(
     gsUrl + "/vector_valemis/wms",
@@ -627,7 +629,7 @@ async function initMap() {
 
   L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png")
     .addTo(map.value)
-  await addWms(map.value,projectId)
+  await addWms(map.value, projectId)
   // map.pm.addControls({
   //   position: 'topleft',
   //   drawCircleMarker: false,
@@ -669,12 +671,14 @@ const getCertificateClass = (certificate: string): string => {
   }
 }
 
-const viewOnMap = (land: Land) => {
+const viewOnMap = (geom) => {
+  const layer = wktToLayer(geom)
+
   showMap.value = true
   nextTick(() => {
     initLandMap()
     if (landMap) {
-      landMap.setView([land.lat, land.lng], 16)
+      landMap.flyToBounds(layer.getBounds());
     }
   })
 }
@@ -706,8 +710,9 @@ const editLand = (land: Land) => {
     area: land.area,
     certificate: land.certificate,
     certificateNo: land.certificateNo,
-    lat: land.lat.toString(),
-    lng: land.lng.toString(),
+    // TODO: lat lng
+    lat: "",
+    lng: "",
     acquisitionYear: land.acquisitionYear,
     documents: [...land.documents]
   }
@@ -867,8 +872,8 @@ async function onFile(e) {
   // console.log(map)
   if (!file) return
   const ext = file.name.split(".").slice(-1)[0].toLowerCase()
-  
-  if(ext=="zip"){
+
+  if (ext == "zip") {
     const buffer = await file.arrayBuffer()
     geojson.value = await shp(buffer)
     console.log(geojson.value.features[0])
