@@ -106,7 +106,8 @@
             <div class="row">
               <!-- Map -->
               <div class="col-md-9">
-                <div id="map" style="height: 600px;"></div>
+                <modal-map :geometries="uploadGeometry" @update="uploadGeometry = $event" />
+                <!-- {{ uploadGeometry.value }} -->
               </div>
 
               <!-- Form -->
@@ -159,7 +160,7 @@ import 'bootstrap/dist/js/bootstrap.bundle.min.js'
 import "../utils/drawMap.js"
 import router from '../router/index.js'
 import { wktToLayer } from "../utils/map.js"
-
+import modalMap from '@/components/project/modalMap.vue'
 const apiUrl = import.meta.env.VITE_APP_API_SPATIAL_URL;
 const geoserverUrl = import.meta.env.VITE_APP_API_GS_URL;
 // console.log(apiUrl)
@@ -167,7 +168,7 @@ const geoserverUrl = import.meta.env.VITE_APP_API_GS_URL;
 const projects = ref([])
 let mpwkt
 const modalRef = ref(null)
-const uploadGeometry = null
+const uploadGeometry = ref([])
 let modalInstance = null
 let map = null
 let projectMap = null
@@ -190,14 +191,12 @@ const openModal = () => {
     'shown.bs.modal',
     () => {
       if (!map) {
-        initMap()
       } else {
         map.invalidateSize()
       }
     },
     { once: true } // penting: jangan dobel
   )
-  // initMap()
   modalInstance.show()
 }
 
@@ -207,12 +206,13 @@ const closeModal = () => {
 
 async function deleteProject(projectId) {
   await axios.delete(apiUrl + `/Project/${projectId}/`)
+  await fetchProjects()
 }
 
 const submitProject = async () => {
-  const wkt = mpwkt.toWKT()
-  form.value.geom = wkt
-  // console.log(form.value)
+  // const wkt = mpwkt.toWKT()
+  form.value.geom = uploadGeometry.value[0]
+  // console.log(uploadGeometry)
   await axios.post(apiUrl + '/Project/?format=json', form.value)
 
   // reset form
@@ -230,38 +230,12 @@ const submitProject = async () => {
 
 // const fetchMap
 
-function initMap() {
-  map = L.map("map").setView([-2, 118], 5)
-
-  L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png")
-    .addTo(map)
-
-  map.pm.addControls({
-    position: 'topleft',
-    drawCircleMarker: false,
-    rotateMode: false,
-  })
-
-  mpwkt = new LeafletMultiPolygonWKT(map)
-}
-
-function randomMapColor() {
-  const hue = Math.floor(Math.random() * 360)
-  const saturation = 70
-  const lightness = 50
-
-  return `hsl(${hue}, ${saturation}%, ${lightness}%)`
-}
-
 function initProjectMap() {
   projectMap = L.map("mapProject").setView([-2, 118], 5)
 
   L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png")
     .addTo(projectMap)
   let geojsonLayerProject
-  // if (lands.value.length>0) 
-  // console.log(projects.value.id_persil.geom)
-  // console.log(projects.value)
   L.tileLayer.wms(
     geoserverUrl + "/vector_valemis/wms",
     {
@@ -273,47 +247,6 @@ function initProjectMap() {
     }
   ).addTo(projectMap)
   const features = []
-  // projects.value.forEach((e)=>{
-  //   // console.log(wellknown.parse(e.id_persil?.geom))
-  //   if (e.id_persil?.geom!=null){
-  //     const wkt = e.id_persil?.geom
-  //   if (!wkt) return
-
-  //   const geojson = wellknown.parse(wkt)
-
-  //   // 🔥 inject properties manual
-  //   geojson.properties = {
-  //     id_project: e.id_project,
-  //     nama_project: e.nama_project,
-  //     owner: e.owner_project
-  //   }
-
-  //   features.push(geojson)
-  //   L.geoJSON(features,{
-  //     style: {
-  //       color: '#ff7800',
-  //       weight: 2,
-  //       fillOpacity: 0.4
-  //     },
-  //     onEachFeature: (feature, layer) => {
-  //       if (!feature.properties) return
-
-  //       const props = feature.properties
-
-  //        let html = `
-  //           <b>${props.nama_project}</b><br/>
-  //           Owner: ${props.owner}<br/>
-  //           ID: ${props.id_project}
-  //         `
-
-  //         layer.bindPopup(html)
-  //         layer.setStyle({
-  //           color: randomMapColor(),
-  //         })
-  //     }
-  //   }).addTo(projectMap)
-  //   }
-  // })
 }
 
 function viewMap(geom) {

@@ -20,6 +20,9 @@
     "chartjs-plugin-datalabels": "^2.2.0",
     "leaflet": "^1.9.4",
     "leaflet-draw": "^1.0.4",
+    "ol": "^10.7.0",
+    "ol-contextmenu": "^6.0.0",
+    "ol-ext": "^4.0.37",
     "overlayscrollbars": "^2.13.0",
     "primeicons": "^7.0.0",
     "primevue": "^3.53.1",
@@ -27,6 +30,7 @@
     "vue": "^3.5.25",
     "vue-leaflet": "^0.1.0",
     "vue-router": "^4.6.3",
+    "vue3-openlayers": "^12.2.0",
     "wellknown": "^0.5.0",
     "wkt-to-gml": "^0.0.2",
     "xlsx": "^0.18.5"
