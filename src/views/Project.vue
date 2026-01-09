@@ -78,7 +78,7 @@
                     <button class="btn btn-primary" @click="router.push(`/project/${item.id_project}`)">
                       <i class="bi bi-arrow-right"></i> Open
                     </button>
-                    <button class="btn btn-secondary" @click="viewMap(item.geom)">
+                    <button class="btn btn-secondary" :disabled="!item.geom" @click="viewMap(item.geom)">
                       <i class="bi bi-map"></i> View Map
                     </button>
                     <button class="btn btn-danger" @click="deleteProject(item.id_project)">
@@ -140,7 +140,8 @@ import "@geoman-io/leaflet-geoman-free/dist/leaflet-geoman.css";
 import 'bootstrap/dist/js/bootstrap.bundle.min.js'
 import "../utils/drawMap.js"
 import router from '../router/index.js'
-import wellknown from "wellknown"
+import { wktToLayer } from "../utils/map.js"
+
 const apiUrl = import.meta.env.VITE_APP_API_SPATIAL_URL;
 const geoserverUrl = import.meta.env.VITE_APP_API_GS_URL;
 // console.log(apiUrl)
@@ -299,13 +300,8 @@ function initProjectMap(){
 }
 
 function viewMap(geom) {
-  const wkt = geom
+  const layer = wktToLayer(geom)
 
-  const wktClean = wkt.replace(/^SRID=\d+;/, '')
-
-  const geojson = wellknown.parse(wktClean)
-
-  const layer = L.geoJSON(geojson);
   projectMap.flyToBounds(layer.getBounds());
 
   // scroll to id
