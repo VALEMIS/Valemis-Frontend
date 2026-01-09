@@ -231,7 +231,7 @@ const submitProject = async () => {
 // const fetchMap
 
 function initProjectMap() {
-  projectMap = L.map("mapProject").setView([-2, 118], 5)
+  projectMap = L.map("mapProject").setView([-2.5, 121.5], 10)
 
   L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png")
     .addTo(projectMap)
