@@ -716,6 +716,10 @@ const editLand = (land: Land) => {
     acquisitionYear: land.acquisitionYear,
     documents: [...land.documents]
   }
+  console.log(land.category);
+
+  selectedCategory.value = land.category
+  selectedCertificate.value = land.certificate
   openLandModal()
 }
 
@@ -730,13 +734,29 @@ const saveLand = async () => {
     "id_project": projectId,
     "geom": uploadWKT.value
   }
-  const res = await axios.post(
-    apiUrl + '/LandInventory/',
-    uploadData
-  )
+
+  let res
+
+  if (isEditMode.value) {
+    res = await axios.put(
+      apiUrl + '/LandInventory/' + formData.value.id + '/',
+      uploadData
+    )
+  } else {
+    res = await axios.post(
+      apiUrl + '/LandInventory/',
+      uploadData
+    )
+
+  }
 
   const landId = res.data.id_lahan
-  alert(`Lahan ${formData.value.code} berhasil ditambahkan!`)
+
+  if (isEditMode.value) {
+    alert(`Lahan ${formData.value.code} berhasil diubah!`)
+  } else {
+    alert(`Lahan ${formData.value.code} berhasil ditambahkan!`)
+  }
 
   if (newDocument.value.length > 0) {
     const formDataDoc = new FormData()
@@ -760,7 +780,9 @@ const saveLand = async () => {
   }
   await fetchProjects()
   closeLandModal()
-  map.value.removeLayer(inputLayer.value)
+
+  if (inputLayer.value)
+    map.value.removeLayer(inputLayer.value)
 
   if (showMap.value) {
     initLandMap()
