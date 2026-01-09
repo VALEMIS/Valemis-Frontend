@@ -2,8 +2,7 @@
     <div class="appraisal-section">
         <div class="section-header">
             <div class="header-text">
-                <h4 class="section-title">Dokumen Appraisal</h4>
-                <p class="section-subtitle">Surat Keputusan Tanaman</p>
+                <h4 class="section-title">Dokumen Pendukung Pembebasan</h4>
             </div>
         </div>
 
