@@ -56,6 +56,8 @@
                   <h3 class="project-title">{{ item.nama_project }}</h3>
                   <span class="project-owner">Owner: {{ item.owner_project }}</span>
                   <span class="project-date">Tanggal Dibuat: {{ item.tanggal_dibuat }}</span>
+                  <span class="project-date">Tanggal Projek Dimulai: {{ item.date_start }}</span>
+                  <span class="project-date">Tanggal Projek Selesai: {{ item.date_end }}</span>
                   <!-- TODO: Luas -->
                   <span class="project-luas">Luas: {{ item.luas ?? "150" }} ha</span>
                 </div>
