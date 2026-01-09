@@ -56,8 +56,6 @@
                   <h3 class="project-title">{{ item.nama_project }}</h3>
                   <span class="project-owner">Owner: {{ item.owner_project }}</span>
                   <span class="project-date">Tanggal Dibuat: {{ item.tanggal_dibuat }}</span>
-                  <span class="project-date">Tanggal Projek Dimulai: {{ item.date_start }}</span>
-                  <span class="project-date">Tanggal Projek Selesai: {{ item.date_end }}</span>
                   <!-- TODO: Luas -->
                   <span class="project-luas">Luas: {{ item.luas ?? "150" }} ha</span>
                 </div>
@@ -97,25 +95,43 @@
 
     <!-- Modal -->
     <div class="modal fade" ref="modalRef" tabindex="-1">
-      <div class="modal-dialog">
+      <div class="modal-dialog modal-xl">
         <form class="modal-content" @submit.prevent="submitProject">
           <div class="modal-header">
             <h5 class="modal-title">Add Project</h5>
             <button type="button" class="btn-close" @click="closeModal"></button>
           </div>
 
-          <div class="modal-body grid grid-cols-3">
-            <div class="mb-3">
-              <label class="form-label">Nama Project</label>
-              <input v-model="form.nama_project" type="text" class="form-control" required />
-            </div>
+          <div class="modal-body">
+            <div class="row">
+              <!-- Map -->
+              <div class="col-md-9">
+                <div id="map" style="height: 600px;"></div>
+              </div>
 
-            <div class="mb-3">
-              <label class="form-label">Owner Project</label>
-              <input v-model="form.owner_project" type="text" class="form-control" />
+              <!-- Form -->
+              <div class="col-md-3">
+                <div class="mb-3">
+                  <label class="form-label">Nama Project</label>
+                  <input v-model="form.nama_project" type="text" class="form-control" required />
+                </div>
+
+                <div class="mb-3">
+                  <label class="form-label">Owner Project</label>
+                  <input v-model="form.owner_project" type="text" class="form-control" />
+                </div>
+                <div class="mb-3">
+                  <label class="form-label">Tanggal Mulai Projek</label>
+                  <input v-model="form.date_start" type="date" class="form-control" />
+                </div>
+                <div class="mb-3">
+                  <label class="form-label">Tanggal Selesai Projek</label>
+                  <input v-model="form.date_end" type="date" class="form-control" />
+                </div>
+              </div>
             </div>
-            <div id="map" style="width: 100%;height: 250px;"></div>
           </div>
+
 
           <div class="modal-footer">
             <button type="button" class="btn btn-secondary" @click="closeModal">
@@ -159,6 +175,9 @@ let projectMap = null
 const form = ref({
   nama_project: '',
   owner_project: '',
+  date_start: '',
+  date_end: '',
+  project_details:[]
 })
 
 const fetchProjects = async () => {
@@ -193,12 +212,16 @@ async function deleteProject(projectId) {
 const submitProject = async () => {
   const wkt = mpwkt.toWKT()
   form.value.geom = wkt
+  // console.log(form.value)
   await axios.post(apiUrl + '/Project/?format=json', form.value)
 
   // reset form
   form.value = {
-    "nama_project": "",
-    "owner_project": "",
+    nama_project: '',
+    owner_project: '',
+    date_start: '',
+    date_end: '',
+    project_details:[]
   }
   // console.log(form.value)
   closeModal()
@@ -208,11 +231,7 @@ const submitProject = async () => {
 // const fetchMap
 
 function initMap() {
-  map = L.map("map").setView([-2, 118], {
-      center: [-2.5, 121.0],
-      zoom: 10,
-      zoomControl: true
-    })
+  map = L.map("map").setView([-2, 118], 5)
 
   L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png")
     .addTo(map)
@@ -234,12 +253,8 @@ function randomMapColor() {
   return `hsl(${hue}, ${saturation}%, ${lightness}%)`
 }
 
-function initProjectMap(){
-  projectMap = L.map("mapProject",{
-      center: [-2.5, 121.0],
-      zoom: 10,
-      zoomControl: true
-    })
+function initProjectMap() {
+  projectMap = L.map("mapProject").setView([-2, 118], 5)
 
   L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png")
     .addTo(projectMap)
